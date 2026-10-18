@@ -59,6 +59,11 @@ $K = @{
   EnvanterRap     = @(258, 127);  GenelEnvanter  = @(332, 174);  UrunDokum = @(332, 203);  StokDokum = @(332, 233);  GenelKarekod = @(332, 352)
 }
 
+# Ekran ölçeği: konumlar %125 (120 DPI) ekranda alındı; başka ölçekte orantılı kaydırılır. C:\EczaneStok\olcek.txt varsa o kullanılır.
+$EO = 1.0
+try { $dpi = [int](Get-ItemProperty 'HKCU:\Control Panel\Desktop\WindowMetrics' -ErrorAction Stop).AppliedDPI; if ($dpi -gt 0) { $EO = $dpi / 120.0 } } catch { }
+$OLCEK = Join-Path $KOK "olcek.txt"; if (Test-Path $OLCEK) { $EO = [double]::Parse((Get-Content $OLCEK -Raw).Trim(), [Globalization.CultureInfo]::InvariantCulture) }
+
 # ---------- pencere yardımcıları ----------
 function RxSureci { $p = Get-Process -Name "RxMediaPharmaEYS" -ErrorAction SilentlyContinue | Select-Object -First 1; if (-not $p) { throw "Rx açık değil." }; $p }
 function Pencereler([int]$procId) {
@@ -117,10 +122,11 @@ function ElTikla($e) {
   if ($h -ne [IntPtr]::Zero) { [W2]::MesajTik($h, [int]($r.Width/2), [int]($r.Height/2)) }
   else { OneAl; [W2]::Tik([int]($r.X + $r.Width/2), [int]($r.Y + $r.Height/2)) }
 }
-function K($ad) { OneAl; [W2]::Tik($K[$ad][0], $K[$ad][1]); Start-Sleep -Milliseconds 900 }
+function K($ad) { OneAl; [W2]::Tik([int]($K[$ad][0]*$EO), [int]($K[$ad][1]*$EO)); Start-Sleep -Milliseconds 900 }
 function Tus($t) { [System.Windows.Forms.SendKeys]::SendWait($t); Start-Sleep -Milliseconds 250 }
 
 function RxOne($p) {
+  foreach ($w in (Pencereler $p.Id | Where-Object { $_.Ad -in @("Duyuru","Veritabanı Yedekleme") })) { [void][W2]::SendMessage($w.H, 0x10, [IntPtr]::Zero, [IntPtr]::Zero); Start-Sleep -Milliseconds 800; Log "Rx duyurusu kapatıldı" }
   $h = AnaPencere $p
   [void][W2]::ShowWindow($h, 3)          # tam ekran
   [void][W2]::SetForegroundWindow($h); Start-Sleep -Milliseconds 600
@@ -143,9 +149,11 @@ function YuklemeBekle($p, [int]$sn = 600) {
 function AnaPencere($p) { (Pencereler $p.Id | Where-Object { $_.Ad -eq "RxMediaPharma Eczane Yönetim Sistemi" } | Select-Object -First 1).H }
 
 # ---------- rapor açma ----------
+function MenuYuk($p) { $en = 99999; foreach ($w in (Pencereler $p.Id | Where-Object { $_.Ad -eq "" })) { $r = Dikdortgen $w.H; $y = $r.B - $r.T; if ($r.T -lt 400 -and $r.L -lt 1000 -and $y -gt 10 -and $y -lt $en) { $en = $y } }; $en }
+function MenuAc($p) { $h0 = MenuYuk $p; for ($i = 0; $i -lt 4; $i++) { Tus "^{DOWN}"; Start-Sleep -Milliseconds 400; $h1 = MenuYuk $p; if ($h1 -gt $h0) { break }; if ($h1 -lt $h0) { $h0 = $h1 } } }   # kısaltılmış (son kullanılanlar) menüyü tam listeye açar
 function RaporAc($p, [string]$grup, [string]$oge, [string]$baslik) {
   $rx = RxOne $p
-  K "RaporlarSekme"; K $grup; K $oge
+  K "RaporlarSekme"; K $grup; MenuAc $p; K $oge
   Log "Rapor açılıyor: $baslik"
 }
 
@@ -187,10 +195,11 @@ function OnizlemedenCsv($p, $rx, [string]$dosya) {
 
   # --- Dışa Aktar oku → CSV (konumlar pencerenin sağ-üst köşesine göre) ---
   $script:ON = $on.H
-  $okX = $r.R - 183; $okY = [Math]::Max($r.T, 0) + 97
+  if ($EO -lt 0.9) { $okX = $r.R - 225; $okY = [Math]::Max($r.T, 0) + 113; $csvX = 32; $csvY = 342 } else { $okX = $r.R - 183; $okY = [Math]::Max($r.T, 0) + 97; $csvX = 52; $csvY = 420 }
+  $KN = Join-Path $KOK "disaaktar.txt"; if (Test-Path $KN) { $v = (Get-Content $KN -Raw).Trim().Split(","); $okX = $r.R - [int]$v[0]; $okY = [Math]::Max($r.T, 0) + [int]$v[1]; $csvX = [int]$v[2]; $csvY = [int]$v[3] }
   Log "Dışa aktar oku: $okX,$okY"
   OneAl; [W2]::Tik($okX, $okY); Start-Sleep -Milliseconds 1200
-  OneAl; [W2]::Tik($okX + 52, $okY + 420); Start-Sleep -Milliseconds 1500
+  OneAl; [W2]::Tik($okX + $csvX, $okY + $csvY); Start-Sleep -Milliseconds 1500
   $ayar = PencereBekle $p.Id { $_.Ad -like "*Dışa Aktarma Ayarları*" } 15 "Dışa aktarma ayarları"
   Log ("Açılan pencere: " + $ayar.Ad)
   if ($ayar.Ad -notlike "CSV*") { [void][W2]::SendMessage($ayar.H, 0x10, [IntPtr]::Zero, [IntPtr]::Zero); throw ("CSV yerine '" + $ayar.Ad + "' açıldı, iptal edildi.") }
@@ -235,24 +244,24 @@ function SekmeKapat($p) {
     if (-not $pn) { Log "  kapatılacak rapor sekmesi bulunamadı"; return }
     $ust = [int]$pn.Current.BoundingRectangle.Y
     [void][W2]::ShowWindow($h, 3); [void][W2]::SetForegroundWindow($h); Start-Sleep -Milliseconds 700
-    $bm = New-Object System.Drawing.Bitmap 1920, 24
-    $g = [System.Drawing.Graphics]::FromImage($bm); $g.CopyFromScreen(0, $ust - 24, 0, 0, $bm.Size); $g.Dispose()
+    $bm = New-Object System.Drawing.Bitmap 1920, ([int](24*$EO))
+    $g = [System.Drawing.Graphics]::FromImage($bm); $g.CopyFromScreen(0, $ust - [int](24*$EO), 0, 0, $bm.Size); $g.Dispose()
     # satırı mavi (etkin sekme) / beyaz / diğer diye sınıflandır; mavinin içindeki 10-26 px beyaz kutu = çarpı düğmesi
     $kutu = $null
-    foreach ($sat in 3, 19, 6, 16) {
+    foreach ($sat in @(3, 19, 6, 16 | ForEach-Object { [int]($_*$EO) })) {
       $tip = for ($x = 0; $x -lt 1920; $x++) { $c = $bm.GetPixel($x, $sat); if ($c.B -gt $c.R + 50) { 'B' } elseif ($c.R -gt 200 -and $c.G -gt 200 -and $c.B -gt 200) { 'W' } else { '.' } }
       $x = 2
       while ($x -lt 1916) {
         if ($tip[$x] -eq 'W' -and ($tip[$x - 1] -eq 'B' -or $tip[$x - 2] -eq 'B')) {
           $b = $x; while ($x -lt 1916 -and $tip[$x] -eq 'W') { $x++ }; $gen = $x - $b
-          if (($tip[$x] -eq 'B' -or $tip[$x + 1] -eq 'B') -and $gen -ge 10 -and $gen -le 26) { $kutu = [int]($b + $gen / 2) } }
+          if (($tip[$x] -eq 'B' -or $tip[$x + 1] -eq 'B') -and $gen -ge [int](10*$EO) -and $gen -le 26) { $kutu = [int]($b + $gen / 2) } }
         $x++
       }
       if ($null -ne $kutu) { break }
     }
     $bm.Dispose()
     if ($null -eq $kutu) { Log "  sekmenin çarpısı bulunamadı, açık kaldı"; return }
-    [W2]::Tik($kutu, $ust - 13); Start-Sleep -Milliseconds 1500
+    [W2]::Tik($kutu, $ust - [int](13*$EO)); Start-Sleep -Milliseconds 1500
     Log "Rapor sekmesi kapatıldı"
   } catch { if ($_.Exception.Message -like "*Durdur*") { throw }; Log ("  sekme kapatılamadı: " + $_.Exception.Message) }
 }
@@ -283,11 +292,12 @@ function StoktakilerRaporu($p, [string]$oge, [string]$baslik, [string]$dosyaAdi)
   $fe = $A::FromHandle($f.H)
   ElTikla (Bul $fe "Temizle"); Start-Sleep 1                       # önceki filtreleri sıfırla
   $etiket = (Bul $fe "Sadece Stoktakiler").Current.BoundingRectangle
-  [W2]::Tik([int]($etiket.X + 260), [int]($etiket.Y + $etiket.Height/2)); Start-Sleep 1   # kutucuğu işaretle
+  [W2]::Tik([int]($etiket.X + 260*$EO), [int]($etiket.Y + $etiket.Height/2)); Start-Sleep 1   # kutucuğu işaretle
   ElTikla (Bul $fe "Filtrele")
   Log "$baslik sorgulandı, yüklenmesi bekleniyor"
   $rx = YuklemeBekle $p 600
   $script:ON = AnaPencere $p
+  if ($oge -eq "GenelEnvanter") { try { $sm = Bul $rx "Son Alım Maliyetleri Göster" 10; $sr = $sm.Current.BoundingRectangle; OneAl; [W2]::Tik([int]($sr.X + 7), [int]($sr.Y + $sr.Height/2)); Log "Son alım maliyetleri gösterildi"; $rx = YuklemeBekle $p 600; $script:ON = AnaPencere $p } catch { if ($_.Exception.Message -like "*Durdur*") { throw }; Log ("  UYARI: maliyet kutusu işaretlenemedi: " + $_.Exception.Message) } }
   OnizlemedenCsv $p $rx (Join-Path $VERI $dosyaAdi) | Out-Null
   SekmeKapat $p
 }
@@ -365,7 +375,7 @@ function AlisGecmis([string]$basAy) {
   while ($ay -le (Get-Date)) {
     $son = $ay.AddMonths(1).AddDays(-1); if ($son -gt (Get-Date)) { $son = (Get-Date).Date }
     AsamaAlis $p $ay.ToString("dd.MM.yyyy") $son.ToString("dd.MM.yyyy") "alis.csv" ; $ilk = $false
-    AlisYukle "alis.csv"
+    try { AlisYukle "alis.csv" } catch { if ($_.Exception.Message -like "*istenen tarihlerde*") { Log "  bu ay boş, geçiliyor"; Remove-Item (Join-Path $VERI "alis.csv") -Force -ErrorAction SilentlyContinue } else { throw } }
     $ay = $ay.AddMonths(1)
   }
 }
@@ -434,9 +444,10 @@ function Kayit([string]$rapor, [string]$durum, $satir, [string]$mesaj, [string]$
   try { $null = Bulut "toplama_kaydi" @{ bilgisayar = $env:COMPUTERNAME; rapor = $rapor; durum = $durum; satir = $satir; mesaj = $mesaj } $jeton } catch { Log ("  kayıt yazılamadı: " + $_.Exception.Message) }
 }
 
+function EnvanterOku([string]$dosya) { $sat = [IO.File]::ReadAllText($dosya, [Text.Encoding]::GetEncoding(1254)) -split "`r?`n"; $hi = -1; for ($k = 0; $k -lt $sat.Count; $k++) { if ($sat[$k] -match '^#;' -or $sat[$k] -match '^Ürün;') { $hi = $k; break } }; if ($hi -lt 0) { throw "$dosya içinde başlık satırı bulunamadı." }; $bas = @($sat[$hi].Split(';') | ForEach-Object { $_.Trim() }); $des = [ordered]@{ no = '^#$'; ad = '^Ürün'; grup = '^Grup'; uretici = 'Üretici'; stok = '^Stok'; ort = '^Ort\.?\s*Maliyet|Al[ıi]m\s*Mal'; brut = 'Br[üu]t'; envd = '^Envanter|Env\.'; kdv = '^KDV'; psf = '^PSF'; kamu = '^Kamu'; karlilik = '^Bir\.?\s*Karl' }; $idx = @{}; foreach ($a in $des.Keys) { for ($k = 0; $k -lt $bas.Count; $k++) { if ($bas[$k] -match $des[$a]) { $idx[$a] = $k; break } } }; if (-not $idx.ContainsKey('ad') -or -not $idx.ContainsKey('stok')) { throw ("Envanter dosyasında Ürün / Stok sütunu yok. Başlık: " + ($bas -join ' | ')) }; if (-not $idx.ContainsKey('ort')) { Log "  UYARI: Envanter'de maliyet sütunu yok - maliyet boş kalacak" }; Log ("  Envanter sütunları: " + (($idx.Keys | ForEach-Object { "$_=" + $bas[$idx[$_]] }) -join ', ')); $adlar = @(0..($bas.Count - 1) | ForEach-Object { "c$_" }); $satirlar = ($sat[($hi + 1)..($sat.Count - 1)]) | Where-Object { $_ -ne "" } | ConvertFrom-Csv -Delimiter ";" -Header $adlar; $liste = New-Object System.Collections.ArrayList; $beklenen = 1; foreach ($r in $satirlar) { if ($idx.ContainsKey('no')) { $no = [string]$r.("c" + $idx['no']); if (-not ($no -match '^\d+$' -and [int]$no -eq $beklenen)) { continue }; $beklenen++ } else { if (([string]$r.("c" + $idx['ad'])).Trim() -eq "" -or $null -eq (Sayi $r.("c" + $idx['stok']))) { continue } }; $o = [ordered]@{}; foreach ($a in $des.Keys) { $o[$a] = if ($idx.ContainsKey($a)) { $r.("c" + $idx[$a]) } else { $null } }; [void]$liste.Add([pscustomobject]$o) }; @($liste) }
 # Envanter (maliyet) + Ürün Döküm (barkod) birleştir → stok_yukle
 function StokYukle {
-  $envn = CsvOku (Join-Path $VERI "envanter.csv") @("no","ad","grup","uretici","stok","ort","bos","brut","envd","kdv","psf","toppsf","kamu","topkamu","karlilik")
+  $envn = EnvanterOku (Join-Path $VERI "envanter.csv")
   $ud  = CsvOku (Join-Path $VERI "urundokum.csv") @("no","ad","barkod","depo","bos","kki","psf","kamu","stok","toppsf","raf")
   Log ("Okundu: envanter {0} satır, ürün döküm {1} satır" -f $envn.Count, $ud.Count)
   # ada göre envanter havuzu
@@ -509,12 +520,13 @@ function TarihIso([string]$t) {
 }
 function BulutEkle([string]$tablo, $satirlar, [string]$jeton, [string]$cakisma) {
   $json = ConvertTo-Json @($satirlar) -Depth 4 -Compress
-  Invoke-RestMethod -Method Post -Uri "$SB_URL/rest/v1/${tablo}?on_conflict=$cakisma" -Headers @{ apikey = $SB_KEY; Authorization = "Bearer $jeton"; Prefer = "resolution=ignore-duplicates,return=minimal" } -ContentType "application/json; charset=utf-8" -Body ([Text.Encoding]::UTF8.GetBytes($json)) -TimeoutSec 300 | Out-Null
+  Invoke-RestMethod -Method Post -Uri "$SB_URL/rest/v1/${tablo}?on_conflict=$cakisma" -Headers @{ apikey = $SB_KEY; Authorization = "Bearer $jeton"; Prefer = $(if ($tablo -in @("satis","alis")) { "resolution=merge-duplicates,return=minimal" } else { "resolution=ignore-duplicates,return=minimal" }) } -ContentType "application/json; charset=utf-8" -Body ([Text.Encoding]::UTF8.GetBytes($json)) -TimeoutSec 300 | Out-Null
 }
+function SatisOku([string]$dosya) { $metin = [IO.File]::ReadAllText($dosya, [Text.Encoding]::GetEncoding(1254)); $i = $metin.IndexOf("`n#;"); if ($i -lt 0) { throw "$dosya içinde başlık satırı bulunamadı." }; $j = $metin.IndexOf("`n", $i + 1); $bas = @($metin.Substring($i + 1, $j - $i - 1).TrimEnd("`r").Split(';') | ForEach-Object { $_.Trim() }); $des = [ordered]@{ satis_no = '^Sat[ıi]ş\s*No'; tarih = 'Tarih'; urun = '^Ürün'; barkod = '^Barkod'; islem = '^İşlem'; aciklama = '^Açıklama'; env_maliyet = '^Env'; stok = '^Stok'; adet = '^Sat[ıi]lan|^Adet'; psf_top = '^PSF'; kamu_top = '^Kamu'; birim_sat = '^Birim'; top_sat = '^Top\.?\s*Sat'; kar = '^Karl|^K[âa]r'; top_env = '^Top\.?\s*Env'; iskonto = 'skonto' }; $idx = @{}; foreach ($a in $des.Keys) { for ($k = 0; $k -lt $bas.Count; $k++) { if ($bas[$k] -match $des[$a]) { $idx[$a] = $k; break } } }; $eksik = @(@('satis_no','tarih','barkod','adet','top_sat','kar') | Where-Object { -not $idx.ContainsKey($_) }); if ($eksik.Count) { throw ("Satış dosyasında sütun bulunamadı: " + ($eksik -join ', ') + " | Başlık: " + (($bas | Where-Object { $_ -notmatch 'Hasta' }) -join ' | ')) }; Log ("  Satış sütunları: " + (($des.Keys | Where-Object { $idx.ContainsKey($_) } | ForEach-Object { "$_=" + $bas[$idx[$_]] }) -join ', ')); $adlar = @(0..($bas.Count - 1) | ForEach-Object { "c$_" }); $satirlar = ($metin.Substring($j + 1) -split "`r?`n") | Where-Object { $_ -ne "" } | ConvertFrom-Csv -Delimiter ";" -Header $adlar; $liste = New-Object System.Collections.ArrayList; $beklenen = 1; foreach ($r in $satirlar) { if (-not ($r.c0 -match '^\d+$' -and [int]$r.c0 -eq $beklenen)) { continue }; $beklenen++; $o = [ordered]@{ no = $r.c0 }; foreach ($a in $des.Keys) { $o[$a] = if ($idx.ContainsKey($a)) { $r.("c" + $idx[$a]) } else { $null } }; [void]$liste.Add([pscustomobject]$o) }; @($liste) }
 # Ürün Bazlı Satış → satis tablosu. HASTA SÜTUNU OKUNMAZ, YÜKLENMEZ; dosya iş bitince silinir.
 function SatisYukle([string]$dosyaAdi) {
   $dosya = Join-Path $VERI $dosyaAdi
-  $ss = CsvOku $dosya @("no","satis_no","tarih","urun","barkod","b1","hasta","islem","aciklama","env_maliyet","stok","b2","adet","psf_top","kamu_top","birim_sat","top_sat","kar","top_env","iskonto")
+  $ss = SatisOku $dosya
   $sayac = @{}; $liste = New-Object System.Collections.ArrayList
   foreach ($r in $ss) {
     $tarih = TarihIso ([string]$r.tarih); $barkod = ([string]$r.barkod).Trim()
@@ -552,7 +564,7 @@ function SatisGecmis([string]$basAy) {
   while ($ay -le (Get-Date)) {
     $son = $ay.AddMonths(1).AddDays(-1); if ($son -gt (Get-Date)) { $son = (Get-Date).Date }
     AsamaSatis $p $ay.ToString("dd.MM.yyyy") $son.ToString("dd.MM.yyyy") "satis.csv" ; $ilk = $false
-    SatisYukle "satis.csv"
+    try { SatisYukle "satis.csv" } catch { if ($_.Exception.Message -like "*istenen tarihlerde*") { Log "  bu ay boş, geçiliyor"; Remove-Item (Join-Path $VERI "satis.csv") -Force -ErrorAction SilentlyContinue } else { throw } }
     $ay = $ay.AddMonths(1)
   }
 }
