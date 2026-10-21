@@ -701,7 +701,7 @@ function HastaYukle([string]$tuz) {
   $f = Join-Path $VERI "raporbiten.csv"
   if (Test-Path $f) {
     $o = HastaSatirlari $f; $b = $o.bas
-    $S = @{ hasta = Sutunu $b '^Hasta'; gsm = Sutunu $b '^Gsm'; tel = Sutunu $b '^Tel'; tani = Sutunu $b '^Tan'; no = Sutunu $b 'Rapor\s*No'; bit = Sutunu $b '^Bit'; bas = Sutunu $b '^Ba[sş]' }
+    $S = @{ hasta = Sutunu $b '^Hasta'; gsm = Sutunu $b '^Gsm'; tel = Sutunu $b '^Tel'; tani = Sutunu $b '^Tan'; no = Sutunu $b 'Rapor\s*No'; bit = Sutunu $b '^Bit'; bas = Sutunu $b '^Ba[sş]'; uyari = Sutunu $b '^Uyar' }
     $sonHasta = ""
     foreach ($r in $o.satirlar) {
       $c0 = ([string]$r.c0).Trim()
@@ -713,7 +713,8 @@ function HastaYukle([string]$tuz) {
       $kim = Ozet16 ($tuz + "|" + $ad)
       [void]$rap.Add([ordered]@{ k = (Ozet16 ($kim + "|" + ([string]$r.($S.no)) + "|" + $bit)); p = $kim; h = $ad; gsm = $gsm
         tel = if ($S.tel) { ([string]$r.($S.tel)).Trim() } else { "" }; tani = if ($S.tani) { ([string]$r.($S.tani)).Trim() } else { "" }
-        no = if ($S.no) { ([string]$r.($S.no)).Trim() } else { "" }; bas = if ($S.bas) { HastaTarih $r.($S.bas) } else { $null }; bit = $bit })
+        no = if ($S.no) { ([string]$r.($S.no)).Trim() } else { "" }; bas = if ($S.bas) { HastaTarih $r.($S.bas) } else { $null }; bit = $bit
+        uyari = if ($S.uyari) { ([string]$r.($S.uyari)).Trim() } else { $null } })
     }
   }
   $veri = [ordered]@{ zaman = (Get-Date).ToString("o"); ilac = $ilac.ToArray(); rapor = $rap.ToArray() }

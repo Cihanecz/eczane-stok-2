@@ -1050,10 +1050,13 @@ function hGruplar(){
     bugun:  kisiler(ilac.filter(r=>g(r.yaz)<=0 && g(r.yaz)>=-7).sort((a,b)=>a.yaz<b.yaz?-1:1), "ilac"),
     hafta:  kisiler(ilac.filter(r=>g(r.yaz)>0 && g(r.yaz)<=7).sort((a,b)=>a.yaz<b.yaz?-1:1), "ilac"),
     gecen:  kisiler(ilac.filter(r=>g(r.yaz)<-7).sort((a,b)=>a.yaz>b.yaz?-1:1), "ilac"),
-    rapor:  kisiler((V.rapor||[]).filter(r=>r.bit && g(r.bit)>=-7 && g(r.bit)<=30).sort((a,b)=>a.bit<b.bit?-1:1), "rapor"),
+    rapor:  kisiler((V.rapor||[]).filter(r=>r.bit && g(r.bit)>=-7 && g(r.bit)<=30 && !hDevamVar(r)).sort((a,b)=>a.bit<b.bit?-1:1), "rapor"),
+    devam:  new Set((V.rapor||[]).filter(r=>r.bit && g(r.bit)>=-7 && g(r.bit)<=30 && hDevamVar(r)).map(r=>r.p)).size,
     stok:   hStokUyari(ilac.filter(r=>g(r.yaz)<=7 && g(r.yaz)>=-7))
   };
 }
+// Rx "Uyarı" sütunu: yeni raporu olmayanlarda "Devam raporu yoktur!" yazar; boşsa devam raporu var demektir
+function hDevamVar(r){ return typeof r.uyari === "string" && !/devam raporu yok/i.test(r.uyari); }
 function hStokUyari(satirlar){
   const m = new Map();
   for(const r of satirlar){ const k=r.ilac; if(!m.has(k)) m.set(k,{ilac:k, hasta:new Set(), stok:r.stok}); m.get(k).hasta.add(r.p); }
@@ -1063,7 +1066,7 @@ function hRozetGuncelle(){
   if(!H.veri){ $("#hastaRozet").classList.add("gizli"); return; }
   const save = H.sadeceAtilmayan; H.sadeceAtilmayan = true; const f = H.filtre; H.filtre = "hepsi";
   const n = hGruplar().bugun.length; H.sadeceAtilmayan = save; H.filtre = f;
-  const r = $("#hastaRozet"); r.textContent = n; r.classList.toggle("gizli", !n);
+  const r = $("#hastaRozet"); r.textContent = n; r.title = "Bugün sırası gelip mesaj atılmamış hasta"; r.classList.toggle("gizli", !n);
 }
 function hKisiKart(k){
   const tel = hTel(k), m = hMesajTarihi(k.p, k.tip), yakin = hYakinMesaj(k.p, k.tip);
@@ -1081,9 +1084,9 @@ function hKisiKart(k){
       : `<span class="htel"><input type="tel" inputmode="tel" placeholder="05xx xxx xx xx" data-telgir><button class="ikincil" type="button" data-telkaydet>Kaydet</button></span>`}</div>
     <div class="ilaclar">${satirlar}</div></div>`;
 }
-function hBolum(baslik, aciklama, kisiler){
+function hBolum(baslik, aciklama, kisiler, not){
   return `<section class="hbolum"><h2>${baslik} <span class="say">${kisiler.length} hasta</span></h2>
-    ${kisiler.length ? kisiler.map(hKisiKart).join("") : `<div class="bilgi-not">${aciklama}</div>`}</section>`;
+    ${kisiler.length ? kisiler.map(hKisiKart).join("") : `<div class="bilgi-not">${aciklama}</div>`}${not?`<div class="bilgi-not" style="margin-top:6px">${not}</div>`:""}</section>`;
 }
 function hCiz(){
   const G = hGruplar(); hRozetGuncelle();
@@ -1092,9 +1095,11 @@ function hCiz(){
   $("#icerik").innerHTML = `
     <button class="geri" type="button" onclick="location.hash=''">‹ Ana ekran</button>
     <div class="liste-ust">
-      <div><h1>Hastalar</h1><p>${H.veri ? "Rx'ten son alınma: "+tarihSaat(H.veri.zaman) : "Henüz veri gelmedi. Toplayıcı bir sonraki çalışmasında listeyi getirecek."}</p></div>
+      <div><h1>Hastalar</h1><p>${H.veri ? "Rx'ten son alınma: "+tarihSaat(H.veri.zaman) : "Henüz veri gelmedi. Toplayıcı bir sonraki çalışmasında listeyi getirecek."}</p>
+        ${H.veri?(()=>{ const bek = G.bugun.filter(k=>!hYakinMesaj(k.p,k.tip)); const telsiz = bek.filter(k=>!hTel(k)).length;
+          return `<p class="hkucuk" style="margin-top:2px">Bugün sırası gelip mesaj atılmamış: <b>${bek.length}</b> hasta${telsiz?` (${telsiz}'${telsiz===1?"inin":"sinin"} telefonu yok)`:""}. Üstteki 👥 rozeti bu sayıdır.</p>`; })():""}</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        ${sirada.length?`<button class="wa" type="button" id="hSiradaki">Sıradakine mesaj (${sirada.length})</button>`:""}
+        ${sirada.length?`<button class="wa" type="button" id="hSiradaki" title="Telefonu kayıtlı ve henüz mesaj atılmamış hastalar">WhatsApp sırası: ${sirada.length} hasta</button>`:""}
         <button class="ikincil" type="button" id="hSablon">Mesaj metni</button>
         <button class="ikincil" type="button" id="hKilitle">🔒 Kilitle</button>
       </div>
@@ -1105,7 +1110,7 @@ function hCiz(){
       ${G.stok.map(s=>`<li><b>${kacis(s.ilac)}</b>: ${s.hasta} hastanın günü geliyor, stokta ${s.stok>0?sayi(s.stok):"yok"}</li>`).join("")}</ul></div>`:""}
     ${hBolum("Bugün reçetesi yazdırılabilecekler","Bugün reçete zamanı gelen hasta yok.", G.bugun)}
     ${hBolum("Bu hafta gelecekler","Önümüzdeki 7 günde reçete zamanı gelen hasta yok.", G.hafta)}
-    ${hBolum("Raporu bitecekler","Önümüzdeki 30 günde raporu biten hasta yok.", G.rapor)}
+    ${hBolum("Raporu bitecekler","Önümüzdeki 30 günde raporu biten hasta yok.", G.rapor, G.devam?`Raporu bitip <b>yeni raporu zaten çıkmış</b> ${G.devam} hasta listede gösterilmiyor.`:"")}
     ${hBolum("Günü geçmiş, gelmeyenler","Günü 7 günden fazla geçmiş hasta yok.", G.gecen)}`;
   document.querySelectorAll("[data-filtre]").forEach(b=>b.addEventListener("click",()=>{ H.filtre=b.dataset.filtre; hCiz(); }));
   $("#hAtilmayan").addEventListener("click",()=>{ H.sadeceAtilmayan=!H.sadeceAtilmayan; hCiz(); });
