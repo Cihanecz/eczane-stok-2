@@ -930,8 +930,8 @@ async function urunKarti(barkod){
 const H = { anahtar:null, veri:null, durum:{}, sablon:null, filtre:"hepsi", sadeceAtilmayan:false };
 const HKONTROL = "ECZANE-STOK-HASTA";
 const HSABLON_VARSAYILAN = {
-  ilac: "Merhaba {ad}, {eczane} olarak yazıyoruz. Düzenli kullandığınız ilacınızın reçete zamanı geldi. Uygun olduğunuzda eczanemize bekleriz. 😊",
-  rapor: "Merhaba {ad}, {eczane} olarak yazıyoruz. İlaç raporunuzun süresi dolmak üzere. Raporunuzu yenilettiğinizde ilaçlarınızı hazırlayabiliriz. 😊"
+  ilac: "Merhaba {ad}, İstiklal Üstün Eczanesi'nden yazıyoruz. {ilac} için reçete zamanınız geldi, {tarih} tarihinden itibaren yazdırabilirsiniz. Doktorunuza reçetenizi yazdırıp eczanemize uğrayabilirsiniz. İyi günler dileriz 😊",
+  rapor: "Merhaba {ad}, İstiklal Üstün Eczanesi'nden yazıyoruz. {ilac} için kullandığınız raporun bitiş tarihi {tarih}. İlacınızı aksatmamak için raporunuzu doktorunuza yeniletmenizi rica ederiz. İyi günler dileriz 😊"
 };
 const b64 = u8 => { let s=""; for(let i=0;i<u8.length;i+=0x8000) s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000)); return btoa(s); };
 const unb64 = s => Uint8Array.from(atob(s), c=>c.charCodeAt(0));
@@ -1125,17 +1125,44 @@ function hCiz(){
     b.disabled = true; try { await hDurumKaydet(k.p, {tel:t}); hCiz(); } catch(e){ b.disabled=false; alert(hataMetni(e)); }
   }));
 }
+// "DELİX ÇENTİKLİ TABLET 5 mg 28 tablet" → "Delix 5 mg"
+const HFORM = new Set("ÇENTİKLİ CENTIKLI FİLM FILM KAPLI TABLET TB TBL KAPSÜL KAPSUL KAP ŞURUP SURUP DAMLA DAMLASI AMPUL ENJEKSİYON ENJEKSIYON ENJEKSİYONLUK ENJ FLAKON KALEM İĞNESİ SPREY İNHALASYON INHALASYON TOZ TOZU KREM POMAD JEL SÜSPANSİYON SUSPANSIYON ŞASE SASE EFERVESAN DİSPERSE UZATILMIŞ KONTROLLÜ SALIMLI MODİFİYE ORAL GÖZ BURUN SERT YUMUŞAK XL SR CR MR RETARD ÇÖZELTİ ÇÖZELTİSİ ŞIRINGA".split(" "));
+function hIlacKisa(ad){
+  const t = String(ad||"").trim(); if(!t) return "";
+  const parca = t.split(/\s+/); let marka = [];
+  for(const w of parca){ const u = w.toLocaleUpperCase("tr-TR").replace(/[^\p{L}]/gu,""); if(HFORM.has(u) || /^\d/.test(w)) break; marka.push(w.replace(/[,;]+$/,"")); }
+  if(!marka.length) marka = [parca[0]];
+  const doz = (t.match(/\d+(?:[.,]\d+)?(?:\/\d+(?:[.,]\d+)?)?\s*(?:mg|mcg|µg|g|ml|iu|ıu|ü)(?![\p{L}])/iu)||[""])[0].replace(/\s+/," ").toLowerCase();
+  const m = marka.join(" ").toLocaleLowerCase("tr-TR").replace(/(^|[\s/-])\S/g, c=>c.toLocaleUpperCase("tr-TR"));
+  return (m + (doz?" "+doz:"")).trim();
+}
+function hBirlestir(l){ l = [...new Set(l.filter(Boolean))]; return l.length<=1 ? (l[0]||"") : l.slice(0,-1).join(", ")+" ve "+l[l.length-1]; }
+const hAdNorm = s => String(s||"").toLocaleUpperCase("tr-TR").replace(/\s+/g," ").trim();
+function hMesajIlac(k){
+  if(k.tip==="ilac") return hBirlestir(k.satir.map(r=>hIlacKisa(r.ilac))) || "ilacınız";
+  // rapor listesinde ilaç adı yok: aynı hastanın raporlu ilaçlarını ilaç listesinden bul, yoksa tanıyı yaz
+  const ad = hAdNorm(k.h); const il = ((H.veri&&H.veri.ilac)||[]).filter(r=>r.tur==="R" && hAdNorm(r.h)===ad).map(r=>hIlacKisa(r.ilac));
+  if(il.length) return hBirlestir(il);
+  const t = hBirlestir(k.satir.map(r=>String(r.tani||"").replace(/^[\d.\s]+-+>?\s*/,"").replace(/\(.*$/,"").trim()));
+  return t ? t+" ilaçlarınız" : "ilaçlarınız";
+}
+function hMesajTarih(k){
+  const t = k.tip==="ilac" ? k.satir.map(r=>r.yaz).filter(Boolean).sort()[0] : k.satir.map(r=>r.bit).filter(Boolean).sort()[0];
+  if(!t) return "";
+  const d = new Date(t+"T12:00:00"); return d.toLocaleDateString("tr-TR",{day:"numeric",month:"long"});
+}
 async function hMesajAt(k){
   if(!k) return; const tel = hTel(k); if(!tel) return;
   const ad = String(k.h||"").toLocaleLowerCase("tr-TR").replace(/(^|\s)\S/g, c=>c.toLocaleUpperCase("tr-TR"));
-  const metin = (H.sablon[k.tip]||HSABLON_VARSAYILAN[k.tip]).replaceAll("{ad}", ad).replaceAll("{eczane}", ECZANE_ADI || "eczanemiz");
+  const metin = (H.sablon[k.tip]||HSABLON_VARSAYILAN[k.tip]).replaceAll("{ad}", ad).replaceAll("{eczane}", ECZANE_ADI || "İstiklal Üstün Eczanesi")
+    .replaceAll("{ilac}", hMesajIlac(k)).replaceAll("{tarih}", hMesajTarih(k));
   window.open("https://wa.me/"+tel+"?text="+encodeURIComponent(metin), "_blank");
   try { await hDurumKaydet(k.p, {["m_"+k.tip]: new Date().toISOString()}); } catch(e){}
   hCiz();
 }
 function hSablonDuzenle(){
   $("#icerik").innerHTML = `<button class="geri" type="button" id="hGeri">‹ Hastalar</button>
-    <div class="liste-ust"><div><h1>Mesaj metni</h1><p>{ad} hastanın adı, {eczane} eczane adı olarak yazılır. İlaç adı yazmamanızı öneririz.</p></div></div>
+    <div class="liste-ust"><div><h1>Mesaj metni</h1><p>{ad} hastanın adı, {ilac} ilaç adı (raporda raporlu ilaçlar), {tarih} yazdırma ya da rapor bitiş tarihi olarak yazılır. Mesaj WhatsApp'ta açıldığında göndermeden önce düzeltebilirsiniz.</p></div></div>
     <div class="kart hsablon">
       <label class="alan"><span>Reçete zamanı gelenlere</span><textarea id="sIlac">${kacis(H.sablon.ilac)}</textarea></label>
       <label class="alan"><span>Raporu bitenlere</span><textarea id="sRapor">${kacis(H.sablon.rapor)}</textarea></label>
