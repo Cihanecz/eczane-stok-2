@@ -9,6 +9,7 @@ param(
   [string]$Bit = "",                 # bitiş tarihi
   [switch]$Kesif,                    # yeni açılan pencerelerin yapısını kaydet
   [switch]$Kur                       # bir kerelik: bulut giriş bilgisini kaydet
+  ,[switch]$HastaKur                 # bir kerelik: hasta şifresini bu bilgisayara kaydet
 )
 $ErrorActionPreference = "Stop"
 Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, System.Windows.Forms, System.Drawing
@@ -56,6 +57,9 @@ $K = @{
   UrunHareket     = @(156, 127);  UrunBazliAlis  = @(205, 202)
   AlisTarihBas    = @(356, 274);  AlisTarihBit   = @(514, 274);  AlisSorgula = @(1212, 360)
   SatisTarihBas   = @(356, 280);  SatisTarihBit  = @(514, 280);  SatisSorgula = @(1059, 348)
+  HastaRap        = @(758, 119);  RaporuBiten    = @(854, 170);  IlaciBiten = @(854, 202)
+  IlacBitBas      = @(463, 300);  IlacTurOk      = @(1282, 305); IlacRaporlu = @(908, 347);  IlacRaporsuz = @(908, 369);  IlacSorgula = @(790, 422)
+  RaporSorgula    = @(1166, 362)
   EnvanterRap     = @(258, 127);  GenelEnvanter  = @(332, 174);  UrunDokum = @(332, 203);  StokDokum = @(332, 233);  GenelKarekod = @(332, 352)
 }
 
@@ -150,10 +154,10 @@ function AnaPencere($p) { (Pencereler $p.Id | Where-Object { $_.Ad -eq "RxMediaP
 
 # ---------- rapor açma ----------
 function MenuYuk($p) { $en = 99999; foreach ($w in (Pencereler $p.Id | Where-Object { $_.Ad -eq "" })) { $r = Dikdortgen $w.H; $y = $r.B - $r.T; if ($r.T -lt 400 -and $r.L -lt 1000 -and $y -gt 10 -and $y -lt $en) { $en = $y } }; $en }
-function MenuAc($p) { $h0 = MenuYuk $p; for ($i = 0; $i -lt 4; $i++) { Tus "^{DOWN}"; Start-Sleep -Milliseconds 400; $h1 = MenuYuk $p; if ($h1 -gt $h0) { break }; if ($h1 -lt $h0) { $h0 = $h1 } } }   # kısaltılmış (son kullanılanlar) menüyü tam listeye açar
+function MenuAc($p, $grup) { $h0 = MenuYuk $p; for ($j = 0; $j -lt 2 -and $h0 -ge 99999; $j++) { Log "  menü açılmadı, tekrar deneniyor"; K "RaporlarSekme"; K $grup; $h0 = MenuYuk $p }; if ($h0 -ge 99999) { throw "Rapor menüsü açılmadı." }; for ($i = 0; $i -lt 4; $i++) { Tus "^{DOWN}"; Start-Sleep -Milliseconds 400; $h1 = MenuYuk $p; if ($h1 -ge 99999) { K $grup; $h0 = MenuYuk $p; continue }; if ($h1 -gt $h0) { break }; if ($h1 -lt $h0) { $h0 = $h1 } } }   # kısaltılmış (son kullanılanlar) menüyü tam listeye açar
 function RaporAc($p, [string]$grup, [string]$oge, [string]$baslik) {
   $rx = RxOne $p
-  K "RaporlarSekme"; K $grup; MenuAc $p; K $oge
+  K "RaporlarSekme"; K $grup; MenuAc $p $grup; K $oge
   Log "Rapor açılıyor: $baslik"
 }
 
@@ -215,7 +219,7 @@ function OnizlemedenCsv($p, $rx, [string]$dosya) {
   $ad = $ke.FindFirst($TS::Descendants, $kos)
   $yazildi = $false
   if ($ad) { try { $ad.SetFocus(); $vp = $ad.GetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern); $vp.SetValue($dosya); $yazildi = $true } catch { Log ("  değer yazılamadı: " + $_.Exception.Message) } }
-  if (-not $yazildi) { [void][W2]::SetForegroundWindow($kay.H); Start-Sleep -Milliseconds 300; Tus "^a"; Tus $dosya }
+  if (-not $yazildi) { [void][W2]::SetForegroundWindow($kay.H); Start-Sleep -Milliseconds 300; Tus "^a"; try { [System.Windows.Forms.Clipboard]::SetText($dosya); Tus "^v" } catch { Tus $dosya } }   # panodan: Caps Lock açık olsa da doğru yazılır
   Log "Dosya adı yazıldı: $dosya"
   Start-Sleep -Milliseconds 400; [void][W2]::SetForegroundWindow($kay.H); Start-Sleep -Milliseconds 300; Tus "{ENTER}"
   Log "Kaydediliyor: $dosya"
@@ -520,7 +524,7 @@ function TarihIso([string]$t) {
 }
 function BulutEkle([string]$tablo, $satirlar, [string]$jeton, [string]$cakisma) {
   $json = ConvertTo-Json @($satirlar) -Depth 4 -Compress
-  Invoke-RestMethod -Method Post -Uri "$SB_URL/rest/v1/${tablo}?on_conflict=$cakisma" -Headers @{ apikey = $SB_KEY; Authorization = "Bearer $jeton"; Prefer = $(if ($tablo -in @("satis","alis")) { "resolution=merge-duplicates,return=minimal" } else { "resolution=ignore-duplicates,return=minimal" }) } -ContentType "application/json; charset=utf-8" -Body ([Text.Encoding]::UTF8.GetBytes($json)) -TimeoutSec 300 | Out-Null
+  Invoke-RestMethod -Method Post -Uri "$SB_URL/rest/v1/${tablo}?on_conflict=$cakisma" -Headers @{ apikey = $SB_KEY; Authorization = "Bearer $jeton"; Prefer = $(if ($tablo -in @("satis","alis","ayar")) { "resolution=merge-duplicates,return=minimal" } else { "resolution=ignore-duplicates,return=minimal" }) } -ContentType "application/json; charset=utf-8" -Body ([Text.Encoding]::UTF8.GetBytes($json)) -TimeoutSec 300 | Out-Null
 }
 function SatisOku([string]$dosya) { $metin = [IO.File]::ReadAllText($dosya, [Text.Encoding]::GetEncoding(1254)); $i = $metin.IndexOf("`n#;"); if ($i -lt 0) { throw "$dosya içinde başlık satırı bulunamadı." }; $j = $metin.IndexOf("`n", $i + 1); $bas = @($metin.Substring($i + 1, $j - $i - 1).TrimEnd("`r").Split(';') | ForEach-Object { $_.Trim() }); $des = [ordered]@{ satis_no = '^Sat[ıi]ş\s*No'; tarih = 'Tarih'; urun = '^Ürün'; barkod = '^Barkod'; islem = '^İşlem'; aciklama = '^Açıklama'; env_maliyet = '^Env'; stok = '^Stok'; adet = '^Sat[ıi]lan|^Adet'; psf_top = '^PSF'; kamu_top = '^Kamu'; birim_sat = '^Birim'; top_sat = '^Top\.?\s*Sat'; kar = '^Karl|^K[âa]r'; top_env = '^Top\.?\s*Env'; iskonto = 'skonto' }; $idx = @{}; foreach ($a in $des.Keys) { for ($k = 0; $k -lt $bas.Count; $k++) { if ($bas[$k] -match $des[$a]) { $idx[$a] = $k; break } } }; $eksik = @(@('satis_no','tarih','barkod','adet','top_sat','kar') | Where-Object { -not $idx.ContainsKey($_) }); if ($eksik.Count) { throw ("Satış dosyasında sütun bulunamadı: " + ($eksik -join ', ') + " | Başlık: " + (($bas | Where-Object { $_ -notmatch 'Hasta' }) -join ' | ')) }; Log ("  Satış sütunları: " + (($des.Keys | Where-Object { $idx.ContainsKey($_) } | ForEach-Object { "$_=" + $bas[$idx[$_]] }) -join ', ')); $adlar = @(0..($bas.Count - 1) | ForEach-Object { "c$_" }); $satirlar = ($metin.Substring($j + 1) -split "`r?`n") | Where-Object { $_ -ne "" } | ConvertFrom-Csv -Delimiter ";" -Header $adlar; $liste = New-Object System.Collections.ArrayList; $beklenen = 1; foreach ($r in $satirlar) { if (-not ($r.c0 -match '^\d+$' -and [int]$r.c0 -eq $beklenen)) { continue }; $beklenen++; $o = [ordered]@{ no = $r.c0 }; foreach ($a in $des.Keys) { $o[$a] = if ($idx.ContainsKey($a)) { $r.("c" + $idx[$a]) } else { $null } }; [void]$liste.Add([pscustomobject]$o) }; @($liste) }
 # Ürün Bazlı Satış → satis tablosu. HASTA SÜTUNU OKUNMAZ, YÜKLENMEZ; dosya iş bitince silinir.
@@ -584,6 +588,149 @@ function GunlukKilit([string]$jeton) {
 }
 # Bannerı ayrı süreçte aç (Rx'e tıklamaları engellemeyen, odak çalmayan küçük pencere)
 function BannerAc { Remove-Item (Join-Path $KOK "bitti.flag") -Force -ErrorAction SilentlyContinue; $b = Join-Path $KOK "banner.ps1"; if (Test-Path $b) { Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$b`" -Ana $PID" -WindowStyle Hidden } }
+# ---------- HASTA TAKİBİ (İlacı Biten / Raporu Biten raporları) ----------
+# Hasta adı ve telefon eczanede ŞİFRELENİR, buluta şifreli gider; TC kimlik numarası hiç gönderilmez.
+$HASTA_ANAHTAR = Join-Path $KOK "hasta.key"
+function HastaSatirlari([string]$dosya) {
+  $sat = [IO.File]::ReadAllText($dosya, [Text.Encoding]::GetEncoding(1254)) -split "`r?`n"
+  $hi = -1; for ($k = 0; $k -lt $sat.Count; $k++) { if ($sat[$k] -match '^#;') { $hi = $k; break } }
+  if ($hi -lt 0) { throw "$dosya içinde başlık satırı bulunamadı." }
+  $bas = @($sat[$hi].Split(';') | ForEach-Object { $_.Trim() })
+  $adlar = @(0..($bas.Count - 1) | ForEach-Object { "c$_" })
+  $govde = @($sat[($hi + 1)..($sat.Count - 1)] | Where-Object { $_ -ne "" })
+  $satirlar = if ($govde.Count) { $govde | ConvertFrom-Csv -Delimiter ";" -Header $adlar } else { @() }
+  @{ bas = $bas; satirlar = @($satirlar) }
+}
+function Sutunu($bas, [string]$desen) { for ($k = 0; $k -lt $bas.Count; $k++) { if ($bas[$k] -match $desen) { return "c$k" } }; return $null }
+function Ozet16([string]$m) { $s = [Security.Cryptography.SHA256]::Create(); (($s.ComputeHash([Text.Encoding]::UTF8.GetBytes($m)) | Select-Object -First 8 | ForEach-Object { $_.ToString("x2") }) -join "") }
+function HastaAnahtari {
+  if (-not (Test-Path $HASTA_ANAHTAR)) { return $null }
+  $b = [Security.Cryptography.ProtectedData]::Unprotect([IO.File]::ReadAllBytes($HASTA_ANAHTAR), $null, 'CurrentUser'); $b
+}
+function Sifrele([byte[]]$anahtar, [string]$metin) {
+  $ham = [Text.Encoding]::UTF8.GetBytes($metin)
+  $ms = New-Object IO.MemoryStream; $gz = New-Object IO.Compression.GZipStream($ms, [IO.Compression.CompressionMode]::Compress); $gz.Write($ham, 0, $ham.Length); $gz.Close(); $ham = $ms.ToArray()
+  $aes = [Security.Cryptography.Aes]::Create(); $aes.Mode = 'CBC'; $aes.Padding = 'PKCS7'; $aes.Key = [byte[]]$anahtar[0..31]; $aes.GenerateIV()
+  $ct = $aes.CreateEncryptor().TransformFinalBlock($ham, 0, $ham.Length)
+  $iv_ct = [byte[]]($aes.IV + $ct)
+  $h = New-Object Security.Cryptography.HMACSHA256 -ArgumentList (,[byte[]]$anahtar[32..63])
+  [Convert]::ToBase64String([byte[]]($iv_ct + $h.ComputeHash($iv_ct)))
+}
+function HastaKur {
+  Add-Type -AssemblyName System.Security
+  $j = Jeton
+  $tuz = @(BulutOku "ayar?select=deger&anahtar=eq.hasta_tuz" $j)
+  if (-not $tuz.Count) { Write-Host "Önce Eczane Stok programında Hastalar sekmesini açıp hasta şifresini belirleyin." -ForegroundColor Yellow; return }
+  $tb = [Convert]::FromBase64String($tuz[0].deger)
+  $kont = @(BulutOku "ayar?select=deger&anahtar=eq.hasta_kontrol" $j)
+  for ($d = 0; $d -lt 3; $d++) {
+    $sf = Read-Host "Hasta şifresi (programda belirlediğiniz)" -AsSecureString
+    $duz = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($sf))
+    $kd = New-Object Security.Cryptography.Rfc2898DeriveBytes -ArgumentList $duz, $tb, 200000, ([Security.Cryptography.HashAlgorithmName]::SHA256)
+    $anahtar = $kd.GetBytes(64)
+    # kontrol: programın yazdığı şifreli kontrol metni bu anahtarla doğrulanır
+    $hm = [Convert]::FromBase64String($kont[0].deger); $iv_ct = [byte[]]$hm[0..($hm.Length - 33)]; $mac = [byte[]]$hm[($hm.Length - 32)..($hm.Length - 1)]
+    $h = New-Object Security.Cryptography.HMACSHA256 -ArgumentList (,[byte[]]$anahtar[32..63])
+    if ([Convert]::ToBase64String($h.ComputeHash($iv_ct)) -eq [Convert]::ToBase64String($mac)) {
+      [IO.File]::WriteAllBytes($HASTA_ANAHTAR, [Security.Cryptography.ProtectedData]::Protect($anahtar, $null, 'CurrentUser'))
+      Log "Hasta şifresi kaydedildi (bu bilgisayarda şifreli)"; return
+    }
+    Write-Host "Şifre yanlış, tekrar deneyin." -ForegroundColor Red
+  }
+}
+function IlaciBitenAl($p, [string]$tur) {
+  RaporAc $p "HastaRap" "IlaciBiten" "İlacı Biten Hastalar ($tur)"; Start-Sleep 3
+  $script:ON = AnaPencere $p
+  TarihYaz "IlacBitBas" ((Get-Date).AddDays(-45).ToString("dd.MM.yyyy"))
+  K "IlacTurOk"; Start-Sleep -Milliseconds 600; K $(if ($tur -eq "R") { "IlacRaporlu" } else { "IlacRaporsuz" }); Start-Sleep -Milliseconds 600
+  K "IlacSorgula"; Log "İlacı biten ($tur) sorgulandı"
+  $rx = YuklemeBekle $p 600
+  OnizlemedenCsv $p $rx (Join-Path $VERI "ilacbiten-$tur.csv") | Out-Null
+  SekmeKapat $p
+}
+function RaporuBitenAl($p) {
+  RaporAc $p "HastaRap" "RaporuBiten" "Raporu Biten Hastalar"; Start-Sleep 3
+  $script:ON = AnaPencere $p
+  K "RaporSorgula"; Log "Raporu biten sorgulandı"
+  $rx = YuklemeBekle $p 600
+  OnizlemedenCsv $p $rx (Join-Path $VERI "raporbiten.csv") | Out-Null
+  SekmeKapat $p
+}
+function HastaTarih([string]$t) { $t = ([string]$t).Trim(); if ($t -eq "") { return $null }; TarihIso $t }
+function HastaYukle([string]$tuz) {
+  $anahtar = HastaAnahtari; if (-not $anahtar) { throw "Hasta şifresi bu bilgisayarda kayıtlı değil (toplayici.ps1 -HastaKur)." }
+  $ilac = New-Object System.Collections.ArrayList
+  foreach ($tur in @("R","S")) {
+    $f = Join-Path $VERI "ilacbiten-$tur.csv"; if (-not (Test-Path $f)) { continue }
+    $o = HastaSatirlari $f; $b = $o.bas
+    $S = @{ no = Sutunu $b '^#$'; hasta = Sutunu $b '^Hasta'; tc = Sutunu $b 'TCKN|TC'; gsm = Sutunu $b '^Gsm'; tel = Sutunu $b '^Tel'; ilac = Sutunu $b '^İlaç$|^Ilaç$|^İlaç Adı'
+            adet = Sutunu $b '^Top\.?\s*Adet'; recadet = Sutunu $b 'Re[cç]\.?\s*Adet'; stok = Sutunu $b '^Stok'; alis = Sutunu $b 'Al\.?\s*Tar'
+            ver = Sutunu $b '^Verilebilece'; yaz = Sutunu $b '^Yazd'; sms = Sutunu $b '^Sms'; ara = Sutunu $b '^Arand' }
+    foreach ($z in @("hasta","ilac","yaz")) { if (-not $S[$z]) { throw "İlacı biten dosyasında '$z' sütunu yok. Başlık: $(($b | Where-Object { $_ -notmatch 'Hasta|TC' }) -join ' | ')" } }
+    $beklenen = 1
+    foreach ($r in $o.satirlar) {
+      if ($S.no) { $n = [string]$r.($S.no); if (-not ($n -match '^\d+$' -and [int]$n -eq $beklenen)) { continue }; $beklenen++ }
+      $ad = ([string]$r.($S.hasta)).Trim(); $il = ([string]$r.($S.ilac)).Trim(); if ($ad -eq "" -or $il -eq "") { continue }
+      $tc = if ($S.tc) { ([string]$r.($S.tc)).Trim() } else { "" }
+      $kim = Ozet16 ($tuz + "|" + $(if ($tc) { $tc } else { $ad }))
+      [void]$ilac.Add([ordered]@{ k = (Ozet16 ($kim + "|" + $il)); p = $kim; tur = $tur; h = $ad
+        gsm = if ($S.gsm) { ([string]$r.($S.gsm)).Trim() } else { "" }; tel = if ($S.tel) { ([string]$r.($S.tel)).Trim() } else { "" }
+        ilac = $il; adet = if ($S.adet) { Sayi $r.($S.adet) } else { $null }; stok = if ($S.stok) { Sayi $r.($S.stok) } else { $null }
+        alis = if ($S.alis) { HastaTarih $r.($S.alis) } else { $null }; ver = if ($S.ver) { HastaTarih $r.($S.ver) } else { $null }; yaz = HastaTarih $r.($S.yaz)
+        sms = if ($S.sms) { ([string]$r.($S.sms)).Trim() } else { "" }; ara = if ($S.ara) { ([string]$r.($S.ara)).Trim() } else { "" } })
+    }
+  }
+  $rap = New-Object System.Collections.ArrayList
+  $f = Join-Path $VERI "raporbiten.csv"
+  if (Test-Path $f) {
+    $o = HastaSatirlari $f; $b = $o.bas
+    $S = @{ hasta = Sutunu $b '^Hasta'; gsm = Sutunu $b '^Gsm'; tel = Sutunu $b '^Tel'; tani = Sutunu $b '^Tan'; no = Sutunu $b 'Rapor\s*No'; bit = Sutunu $b '^Bit'; bas = Sutunu $b '^Ba[sş]' }
+    $sonHasta = ""
+    foreach ($r in $o.satirlar) {
+      $c0 = ([string]$r.c0).Trim()
+      if (-not $S.hasta -and $c0 -and $c0 -notmatch '^\d+$') { $sonHasta = $c0; continue }   # gruplama satırı: hasta adı
+      $ad = if ($S.hasta) { ([string]$r.($S.hasta)).Trim() } else { $sonHasta }
+      $bit = if ($S.bit) { HastaTarih $r.($S.bit) } else { $null }
+      if ($ad -eq "" -or -not $bit) { continue }
+      $gsm = if ($S.gsm) { ([string]$r.($S.gsm)).Trim() } else { "" }
+      $kim = Ozet16 ($tuz + "|" + $ad)
+      [void]$rap.Add([ordered]@{ k = (Ozet16 ($kim + "|" + ([string]$r.($S.no)) + "|" + $bit)); p = $kim; h = $ad; gsm = $gsm
+        tel = if ($S.tel) { ([string]$r.($S.tel)).Trim() } else { "" }; tani = if ($S.tani) { ([string]$r.($S.tani)).Trim() } else { "" }
+        no = if ($S.no) { ([string]$r.($S.no)).Trim() } else { "" }; bas = if ($S.bas) { HastaTarih $r.($S.bas) } else { $null }; bit = $bit })
+    }
+  }
+  $veri = [ordered]@{ zaman = (Get-Date).ToString("o"); ilac = $ilac.ToArray(); rapor = $rap.ToArray() }
+  $sifreli = Sifrele $anahtar (ConvertTo-Json $veri -Depth 5 -Compress)
+  $j = Jeton
+  BulutEkle "ayar" @([ordered]@{ anahtar = "hasta_liste"; deger = $sifreli; guncelleme = (Get-Date).ToString("o") }) $j "anahtar"
+  Log ("Hasta takibi yüklendi: {0} ilaç satırı (raporlu {1}), {2} rapor (şifreli)" -f $ilac.Count, @($ilac | Where-Object { $_.tur -eq "R" }).Count, $rap.Count)
+  Kayit "hasta" "tamam" $ilac.Count "" $j
+}
+function HastaTemizle { foreach ($f in @("ilacbiten-R.csv","ilacbiten-S.csv","raporbiten.csv")) { Remove-Item (Join-Path $VERI $f) -Force -ErrorAction SilentlyContinue } }
+function AsamaHasta($p) {
+  if (-not (Test-Path $HASTA_ANAHTAR)) { Log "Hasta takibi atlandı: hasta şifresi bu bilgisayarda kayıtlı değil"; return }
+  Add-Type -AssemblyName System.Security
+  $tuz = @(BulutOku "ayar?select=deger&anahtar=eq.hasta_tuz" (Jeton)); if (-not $tuz.Count) { Log "Hasta takibi atlandı: programda hasta şifresi belirlenmemiş"; return }
+  try { IlaciBitenAl $p "R"; IlaciBitenAl $p "S"; RaporuBitenAl $p; HastaYukle $tuz[0].deger }
+  catch { if ($_.Exception.Message -like "*Durdur*") { throw }; Log ("HATA (hasta takibi): " + $_.Exception.Message) }
+  finally { HastaTemizle }   # hasta bilgisi içeren dosyalar bilgisayarda kalmasın
+}
+# Deneme: raporları alır, SADECE yapıyı (harfler x, rakamlar 9) gösterir, dosyaları siler. Hasta bilgisi ekrana yazılmaz.
+function HastaDene($p) {
+  try {
+    IlaciBitenAl $p "R"; RaporuBitenAl $p
+    foreach ($f in @("ilacbiten-R.csv","raporbiten.csv")) {
+      $yol = Join-Path $VERI $f; if (-not (Test-Path $yol)) { Write-Host "$f yok"; continue }
+      $sat = [IO.File]::ReadAllText($yol, [Text.Encoding]::GetEncoding(1254)) -split "`r?`n"
+      $hi = 0; for ($k = 0; $k -lt $sat.Count; $k++) { if ($sat[$k] -match '^#;') { $hi = $k; break } }
+      Write-Host "----- $f : $($sat.Count) satır, başlık satırı $hi -----"
+      Write-Host $sat[$hi]
+      foreach ($s in $sat[($hi+1)..([Math]::Min($hi+6, $sat.Count-1))]) { Write-Host (($s -creplace '\p{L}', 'x') -replace '\d', '9') }
+      Write-Host "son: " ((($sat | Where-Object { $_ -ne "" } | Select-Object -Last 1) -creplace '\p{L}', 'x') -replace '\d', '9')
+    }
+  } finally { HastaTemizle }
+}
+
 function Gunluk {
   $j = Jeton
   $neden = GunlukKilit $j
@@ -605,6 +752,7 @@ function Gunluk {
     $ab = if ($sa.Count -and $sa[0].fat_tarih) { ([datetime]$sa[0].fat_tarih).AddDays(-10) } else { (Get-Date).Date.AddDays(-30) }
     AsamaAlis $p $ab.ToString("dd.MM.yyyy") (Get-Date).ToString("dd.MM.yyyy") "alis.csv"
     AlisYukle "alis.csv"
+    AsamaHasta $p
     Kayit "gunluk" "tamam" 0 "" (Jeton)
   } catch {
     Kayit "gunluk" "hata" 0 $_.Exception.Message (Jeton)
@@ -616,6 +764,7 @@ function Gunluk {
 try {
   Log "=== Toplayıcı başladı (aşama: $Asama) ==="
   if ($Kur) { GirisKur; Log "Bitti."; return }
+  if ($HastaKur) { HastaKur; return }
   if ($Asama -eq "yukle") { StokYukle; Log "Bitti."; return }
   if ($Asama -eq "kkyukle") { KarekodYukle; Log "Bitti."; return }
   if ($Asama -eq "gunluk") { Gunluk; Log "Bitti."; $script:KOD = 0; return }
@@ -631,6 +780,8 @@ try {
     "stok"      { AsamaEnvanter $p; AsamaUrunDokum $p; StokYukle; AsamaKarekod $p; KarekodYukle }
     "yukle"     { StokYukle }
     "karekod"   { AsamaKarekod $p; KarekodYukle }
+    "hasta"     { AsamaHasta $p }
+    "hastadene" { HastaDene $p }
     "satis"     { AsamaSatis $p $Bas $Bit "satis.csv"; SatisYukle "satis.csv" }
     "satisgecmis" { SatisGecmis $Bas }
     "alis"      { AsamaAlis $p $Bas $Bit "alis.csv"; AlisYukle "alis.csv" }
