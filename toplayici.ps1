@@ -32,6 +32,7 @@ public static class W2 {
   [DllImport("user32.dll")] public static extern bool EnumWindows(EnumProc f, IntPtr l);
   [StructLayout(LayoutKind.Sequential)] public struct RECT { public int L, T, R, B; }
   public static void Tik(int x, int y) { SetCursorPos(x, y); System.Threading.Thread.Sleep(80); mouse_event(2,0,0,0,IntPtr.Zero); mouse_event(4,0,0,0,IntPtr.Zero); }
+  public static void SagTik(int x, int y) { SetCursorPos(x, y); System.Threading.Thread.Sleep(80); mouse_event(8,0,0,0,IntPtr.Zero); mouse_event(16,0,0,0,IntPtr.Zero); }
 }
 "@
 
@@ -59,6 +60,7 @@ $K = @{
   SatisTarihBas   = @(356, 280);  SatisTarihBit  = @(514, 280);  SatisSorgula = @(1059, 348)
   HastaRap        = @(758, 119);  RaporuBiten    = @(854, 170);  IlaciBiten = @(854, 202)
   IlacBitBas      = @(463, 300);  IlacTurOk      = @(1282, 305); IlacRaporlu = @(908, 347);  IlacRaporsuz = @(908, 369);  IlacSorgula = @(790, 422)
+  IlacTumu        = @(251, 468);  IlacSag        = @(1436, 727);  RaporTumu = @(252, 402);  RaporSag = @(1050, 727)
   RaporSorgula    = @(1166, 362)
   EnvanterRap     = @(258, 127);  GenelEnvanter  = @(332, 174);  UrunDokum = @(332, 203);  StokDokum = @(332, 233);  GenelKarekod = @(332, 352)
 }
@@ -162,18 +164,21 @@ function RaporAc($p, [string]$grup, [string]$oge, [string]$baslik) {
 }
 
 # Yazdır önizlemesinden CSV'ye aktar
-function OnizlemedenCsv($p, $rx, [string]$dosya) {
+function OnizlemedenCsv($p, $rx, [string]$dosya, [scriptblock]$ac = $null) {
   if (Test-Path $dosya) { Remove-Item $dosya -Force }
   $once = @(Pencereler $p.Id | ForEach-Object { $_.H })
+  if (-not $ac) {
   Log "Yazdır düğmesi aranıyor"
   $yz = Bul $rx "Yazdır" 20
   $rr = $yz.Current.BoundingRectangle
   Log ("Yazdır bulundu: {0},{1} {2}x{3} — tıklanıyor" -f [int]$rr.X,[int]$rr.Y,[int]$rr.Width,[int]$rr.Height)
+  }
   # Gerçek fare tıklaması: arkadaki sekmelerde aynı yerde duran gizli "Yazdır" düğmelerine değil, görünene basılır
-  $yeni = { Pencereler $p.Id | Where-Object { $_.Ad -eq "Yazdır" -and $once -notcontains $_.H } | Select-Object -First 1 }
+  $yeni = { Pencereler $p.Id | Where-Object { $_.Ad -in @("Yazdır","Preview","Önizleme") -and $once -notcontains $_.H } | Select-Object -First 1 }
   $on = $null
   for ($deneme = 1; $deneme -le 3 -and -not $on; $deneme++) {
-    if ($deneme -le 2) { [void][W2]::ShowWindow($script:ON, 3); OneAl; [W2]::Tik([int]($rr.X + $rr.Width/2), [int]($rr.Y + $rr.Height/2)) }
+    if ($ac) { if ($deneme -le 2) { [void][W2]::ShowWindow($script:ON, 3); OneAl; & $ac } else { break } }
+    elseif ($deneme -le 2) { [void][W2]::ShowWindow($script:ON, 3); OneAl; [W2]::Tik([int]($rr.X + $rr.Width/2), [int]($rr.Y + $rr.Height/2)) }
     else { Log "  fareyle açılmadı, doğrudan düğmeye basılıyor"; ElTikla $yz }
     Log "Önizleme bekleniyor (deneme $deneme)"
     $son = (Get-Date).AddSeconds($(if ($deneme -lt 3) { 25 } else { 300 }))
@@ -199,10 +204,12 @@ function OnizlemedenCsv($p, $rx, [string]$dosya) {
 
   # --- Dışa Aktar oku → CSV (konumlar pencerenin sağ-üst köşesine göre) ---
   $script:ON = $on.H
-  if ($EO -lt 0.9) { $okX = $r.R - 225; $okY = [Math]::Max($r.T, 0) + 113; $csvX = 32; $csvY = 342 } else { $okX = $r.R - 183; $okY = [Math]::Max($r.T, 0) + 97; $csvX = 52; $csvY = 420 }
-  $KN = Join-Path $KOK "disaaktar.txt"; if (Test-Path $KN) { $v = (Get-Content $KN -Raw).Trim().Split(","); $okX = $r.R - [int]$v[0]; $okY = [Math]::Max($r.T, 0) + [int]$v[1]; $csvX = [int]$v[2]; $csvY = [int]$v[3] }
+  if ($on.Ad -ne "Yazdır") { $okX = $r.R - 316; $okY = $r.T + 72; $csvX = 68; $csvY = 370 }   # DevExpress "Preview" (ızgaradan dışa aktar)
+  elseif ($EO -lt 0.9) { $okX = $r.R - 225; $okY = [Math]::Max($r.T, 0) + 113; $csvX = 32; $csvY = 342 } else { $okX = $r.R - 183; $okY = [Math]::Max($r.T, 0) + 97; $csvX = 52; $csvY = 420 }
+  $KN = Join-Path $KOK $(if ($on.Ad -ne "Yazdır") { "disaaktar-izgara.txt" } else { "disaaktar.txt" }); if (Test-Path $KN) { $v = (Get-Content $KN -Raw).Trim().Split(","); $okX = $r.R - [int]$v[0]; $okY = [Math]::Max($r.T, 0) + [int]$v[1]; $csvX = [int]$v[2]; $csvY = [int]$v[3] }
   Log "Dışa aktar oku: $okX,$okY"
   OneAl; [W2]::Tik($okX, $okY); Start-Sleep -Milliseconds 1200
+  [void][W2]::SetCursorPos($okX + $csvX, $okY + $csvY); Start-Sleep -Milliseconds 500
   OneAl; [W2]::Tik($okX + $csvX, $okY + $csvY); Start-Sleep -Milliseconds 1500
   $ayar = PencereBekle $p.Id { $_.Ad -like "*Dışa Aktarma Ayarları*" } 15 "Dışa aktarma ayarları"
   Log ("Açılan pencere: " + $ayar.Ad)
@@ -638,6 +645,14 @@ function HastaKur {
     Write-Host "Şifre yanlış, tekrar deneyin." -ForegroundColor Red
   }
 }
+function IzgaradanCsv($p, $rx, [string]$dosya, [string]$tumu, [string]$sag, [int]$mdx = 43, [int]$mdy = 227, [string]$menu = "Dışa Aktar") {
+  # ızgaradaki tüm satırları işaretle → sağ tık → "Dışa Aktar" → önizleme → CSV
+  K $tumu; Start-Sleep -Milliseconds 600; Log "Tüm satırlar işaretlendi"
+  $ac = { OneAl; [W2]::SagTik([int]($K[$sag][0]*$EO), [int]($K[$sag][1]*$EO)); Start-Sleep -Milliseconds 1200
+          $mx = [int](($K[$sag][0] + $mdx)*$EO); $my = [int](($K[$sag][1] + $mdy)*$EO)
+          [void][W2]::SetCursorPos($mx, $my); Start-Sleep -Milliseconds 500; [W2]::Tik($mx, $my); Log "$menu tıklandı" }   # değişkenler çağıran işlevden (dinamik kapsam) okunur
+  OnizlemedenCsv $p $rx $dosya $ac
+}
 function IlaciBitenAl($p, [string]$tur) {
   RaporAc $p "HastaRap" "IlaciBiten" "İlacı Biten Hastalar ($tur)"; Start-Sleep 3
   $script:ON = AnaPencere $p
@@ -645,7 +660,7 @@ function IlaciBitenAl($p, [string]$tur) {
   K "IlacTurOk"; Start-Sleep -Milliseconds 600; K $(if ($tur -eq "R") { "IlacRaporlu" } else { "IlacRaporsuz" }); Start-Sleep -Milliseconds 600
   K "IlacSorgula"; Log "İlacı biten ($tur) sorgulandı"
   $rx = YuklemeBekle $p 600
-  OnizlemedenCsv $p $rx (Join-Path $VERI "ilacbiten-$tur.csv") | Out-Null
+  IzgaradanCsv $p $rx (Join-Path $VERI "ilacbiten-$tur.csv") "IlacTumu" "IlacSag" | Out-Null
   SekmeKapat $p
 }
 function RaporuBitenAl($p) {
@@ -653,7 +668,7 @@ function RaporuBitenAl($p) {
   $script:ON = AnaPencere $p
   K "RaporSorgula"; Log "Raporu biten sorgulandı"
   $rx = YuklemeBekle $p 600
-  OnizlemedenCsv $p $rx (Join-Path $VERI "raporbiten.csv") | Out-Null
+  IzgaradanCsv $p $rx (Join-Path $VERI "raporbiten.csv") "RaporTumu" "RaporSag" 48 44 "Yazdır (sağ tık)" | Out-Null
   SekmeKapat $p
 }
 function HastaTarih([string]$t) { $t = ([string]$t).Trim(); if ($t -eq "") { return $null }; TarihIso $t }
@@ -773,7 +788,7 @@ try {
   $script:KONSOL = @(Get-Process -Name WindowsTerminal, powershell -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne [IntPtr]::Zero } | ForEach-Object { $_.MainWindowHandle })
   foreach ($h in $script:KONSOL) { [void][W2]::ShowWindow($h, 6) }; Start-Sleep 1
   foreach ($w in (Pencereler $p.Id | Where-Object { $_.Ad -in @("Save As","Farklı Kaydet","Filtreleme") -or $_.Ad -like "*Ayarları*" })) { [void][W2]::SendMessage($w.H, 0x10, [IntPtr]::Zero, [IntPtr]::Zero); Start-Sleep -Milliseconds 500 }
-  foreach ($w in (Pencereler $p.Id | Where-Object { $_.Ad -eq "Yazdır" })) { [void][W2]::SendMessage($w.H, 0x10, [IntPtr]::Zero, [IntPtr]::Zero); Log "Açık kalmış önizleme kapatıldı" }
+  foreach ($w in (Pencereler $p.Id | Where-Object { $_.Ad -in @("Yazdır","Preview") })) { [void][W2]::SendMessage($w.H, 0x10, [IntPtr]::Zero, [IntPtr]::Zero); Log "Açık kalmış önizleme kapatıldı" }
   switch ($Asama) {
     "envanter"  { AsamaEnvanter $p }
     "urundokum" { AsamaUrunDokum $p }
