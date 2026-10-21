@@ -204,7 +204,7 @@ function OnizlemedenCsv($p, $rx, [string]$dosya, [scriptblock]$ac = $null) {
 
   # --- Dışa Aktar oku → CSV (konumlar pencerenin sağ-üst köşesine göre) ---
   $script:ON = $on.H
-  if ($on.Ad -ne "Yazdır") { $okX = $r.R - 316; $okY = $r.T + 72; $csvX = 68; $csvY = 370 }   # DevExpress "Preview" (ızgaradan dışa aktar)
+  if ($on.Ad -ne "Yazdır") { $okX = $r.R - 316; $okY = [Math]::Max($r.T, 0) + 92; $csvX = 60; $csvY = 346 }   # DevExpress "Preview" (ızgaradan dışa aktar)
   elseif ($EO -lt 0.9) { $okX = $r.R - 225; $okY = [Math]::Max($r.T, 0) + 113; $csvX = 32; $csvY = 342 } else { $okX = $r.R - 183; $okY = [Math]::Max($r.T, 0) + 97; $csvX = 52; $csvY = 420 }
   $KN = Join-Path $KOK $(if ($on.Ad -ne "Yazdır") { "disaaktar-izgara.txt" } else { "disaaktar.txt" }); if (Test-Path $KN) { $v = (Get-Content $KN -Raw).Trim().Split(","); $okX = $r.R - [int]$v[0]; $okY = [Math]::Max($r.T, 0) + [int]$v[1]; $csvX = [int]$v[2]; $csvY = [int]$v[3] }
   Log "Dışa aktar oku: $okX,$okY"
@@ -600,11 +600,13 @@ function BannerAc { Remove-Item (Join-Path $KOK "bitti.flag") -Force -ErrorActio
 $HASTA_ANAHTAR = Join-Path $KOK "hasta.key"
 function HastaSatirlari([string]$dosya) {
   $sat = [IO.File]::ReadAllText($dosya, [Text.Encoding]::GetEncoding(1254)) -split "`r?`n"
-  $hi = -1; for ($k = 0; $k -lt $sat.Count; $k++) { if ($sat[$k] -match '^#;') { $hi = $k; break } }
+  $hi = -1; for ($k = 0; $k -lt $sat.Count; $k++) { if ($sat[$k] -match '(^|;)#;' -and $sat[$k] -match 'Gsm|Hasta') { $hi = $k; break } }
   if ($hi -lt 0) { throw "$dosya içinde başlık satırı bulunamadı." }
   $bas = @($sat[$hi].Split(';') | ForEach-Object { $_.Trim() })
   $adlar = @(0..($bas.Count - 1) | ForEach-Object { "c$_" })
-  $govde = @($sat[($hi + 1)..($sat.Count - 1)] | Where-Object { $_ -ne "" })
+  # bazı dışa aktarımlarda veri satırları başlıktan bir boş sütunla önde başlar → hizala
+  $govde = @($sat[($hi + 1)..($sat.Count - 1)] | Where-Object { $_ -ne "" } | ForEach-Object {
+    if ($_.StartsWith(";") -and $_.Split(';').Count -gt $bas.Count) { $_.Substring(1) } else { $_ } })
   $satirlar = if ($govde.Count) { $govde | ConvertFrom-Csv -Delimiter ";" -Header $adlar } else { @() }
   @{ bas = $bas; satirlar = @($satirlar) }
 }
@@ -703,7 +705,7 @@ function HastaYukle([string]$tuz) {
     $sonHasta = ""
     foreach ($r in $o.satirlar) {
       $c0 = ([string]$r.c0).Trim()
-      if (-not $S.hasta -and $c0 -and $c0 -notmatch '^\d+$') { $sonHasta = $c0; continue }   # gruplama satırı: hasta adı
+      if (-not $S.hasta -and $c0 -and $c0 -notmatch '^\d+$') { $sonHasta = ($c0 -replace '^Hasta\s*:\s*', '').Trim(); continue }   # gruplama satırı: "Hasta: AD SOYAD"
       $ad = if ($S.hasta) { ([string]$r.($S.hasta)).Trim() } else { $sonHasta }
       $bit = if ($S.bit) { HastaTarih $r.($S.bit) } else { $null }
       if ($ad -eq "" -or -not $bit) { continue }
@@ -738,7 +740,12 @@ function HastaDene($p) {
       $yol = Join-Path $VERI $f; if (-not (Test-Path $yol)) { Write-Host "$f yok"; continue }
       $sat = [IO.File]::ReadAllText($yol, [Text.Encoding]::GetEncoding(1254)) -split "`r?`n"
       $hi = 0; for ($k = 0; $k -lt $sat.Count; $k++) { if ($sat[$k] -match '^#;') { $hi = $k; break } }
-      Write-Host "----- $f : $($sat.Count) satır, başlık satırı $hi -----"
+      $hi = -1; for ($k = 0; $k -lt $sat.Count; $k++) { if ($sat[$k] -match '(^|;)#;' -and $sat[$k] -match 'Gsm|Hasta') { $hi = $k; break } }
+      Write-Host "----- $f : $($sat.Count) satır, başlık satırı $hi, başlık alan sayısı $($sat[$hi].Split(';').Count) -----"
+      $say = @{}; foreach ($s in $sat[($hi+1)..($sat.Count-1)]) { if ($s -ne "") { $n = "$($s.Split(';').Count)" + $(if ($s.StartsWith(";")) { "(;)" } else { "" }); $say[$n] = 1 + [int]$say[$n] } }
+      Write-Host ("alan sayıları: " + (($say.GetEnumerator() | Sort-Object Name | ForEach-Object { "$($_.Name)=$($_.Value)" }) -join "  "))
+      $o = HastaSatirlari $yol; $ilk = $o.satirlar | Where-Object { ([string]$_.c0) -match '^\d+$' -or ([string]$_.c1) -match '^\d+$' } | Select-Object -First 1
+      if ($ilk) { Write-Host ("ilk veri satırı alanları: " + ((0..($o.bas.Count-1) | ForEach-Object { "$($o.bas[$_])=" + ((([string]$ilk."c$_") -creplace '\p{L}', 'x') -replace '\d', '9') }) -join " | ")) }
       Write-Host $sat[$hi]
       foreach ($s in $sat[($hi+1)..([Math]::Min($hi+6, $sat.Count-1))]) { Write-Host (($s -creplace '\p{L}', 'x') -replace '\d', '9') }
       Write-Host "son: " ((($sat | Where-Object { $_ -ne "" } | Select-Object -Last 1) -creplace '\p{L}', 'x') -replace '\d', '9')
