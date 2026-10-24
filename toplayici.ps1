@@ -61,7 +61,7 @@ $K = @{
   SatisTarihBas   = @(356, 280);  SatisTarihBit  = @(514, 280);  SatisSorgula = @(1059, 348)
   HastaRap        = @(758, 119);  RaporuBiten    = @(854, 170);  IlaciBiten = @(854, 202)
   IlacBitBas      = @(463, 300);  IlacTurOk      = @(1282, 305); IlacRaporlu = @(908, 347);  IlacRaporsuz = @(908, 369);  IlacSorgula = @(790, 422)
-  IlacTumu        = @(251, 468);  IlacSag        = @(1436, 727);  RaporTumu = @(252, 402);  RaporSag = @(1050, 727)
+  IlacTumu        = @(251, 468);  IlacSag        = @(1125, 495);  RaporTumu = @(252, 402);  RaporSag = @(1050, 727)
   RaporSorgula    = @(1166, 362)
   EnvanterRap     = @(258, 127);  GenelEnvanter  = @(332, 174);  UrunDokum = @(332, 203);  StokDokum = @(332, 233);  GenelKarekod = @(332, 352)
 }
@@ -701,7 +701,7 @@ function IlaciBitenAl($p, [string]$tur) {
   K "IlacTurOk"; Start-Sleep -Milliseconds 600; K $(if ($tur -eq "R") { "IlacRaporlu" } else { "IlacRaporsuz" }); Start-Sleep -Milliseconds 600
   K "IlacSorgula"; Log "İlacı biten ($tur) sorgulandı"
   $rx = YuklemeBekle $p 600
-  IzgaradanCsv $p $rx (Join-Path $VERI "ilacbiten-$tur.csv") "IlacTumu" "IlacSag" | Out-Null
+  IzgaradanCsv $p $rx (Join-Path $VERI "ilacbiten-$tur.csv") "IlacTumu" "IlacSag" 82 234 | Out-Null   # 1366x768 ekranda ölçüldü: ilk satıra sağ tık, menü aşağı açılır
   SekmeKapat $p
 }
 function RaporuBitenAl($p) {
