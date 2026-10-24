@@ -212,8 +212,8 @@ function OnizlemedenCsv($p, $rx, [string]$dosya, [scriptblock]$ac = $null) {
   if ($on.Ad -eq "Yazdır" -and -not (Test-Path $KN)) {
     # Bu eczanede şerit dar: Dışa Aktar küçük düğme. Oku sırayla birkaç yerde dener; açılan menünün kendi konumundan CSV satırını hesaplar.
     # Yanlış biçim açılırsa başlığından sırasını bulup düzeltir (menü sırası: PDF HTML MHT RTF DOCX XLS XLSX CSV Metin Resim XPS).
-    $sira = @("PDF","HTML","MHT","RTF","DOCX","XLS","XLSX","CSV","Metin|Text|TXT","Resim|Image|Görüntü","XPS")
-    $okAdaylar = @(137, 129, 145, 121, 153, 113, 161); $okY = [Math]::Max($r.T, 0) + 74; $idx = 7; $ayar = $null
+    $sira = @("-","PDF","HTML","MHT","RTF","DOCX","XLS","XLSX","CSV","Metin|Text|TXT","Resim|Image|Görüntü","XPS")   # bu eczanede ölçüldü: 8. satır XLSX, 9. satır CSV
+    $okAdaylar = @(137, 129, 145, 121, 153, 113, 161); $okY = [Math]::Max($r.T, 0) + 74; $idx = 8; $ayar = $null
     for ($tur = 1; $tur -le 4 -and -not $ayar; $tur++) {
       $menu = $null
       foreach ($dx in $okAdaylar) {
@@ -240,7 +240,7 @@ function OnizlemedenCsv($p, $rx, [string]$dosya, [scriptblock]$ac = $null) {
       [void][W2]::SendMessage($w.H, 0x10, [IntPtr]::Zero, [IntPtr]::Zero); Start-Sleep -Milliseconds 800
       $bul = -1; for ($j = 0; $j -lt $sira.Count; $j++) { if ($w.Ad -match ("^(" + $sira[$j] + ")\b")) { $bul = $j; break } }
       if ($bul -lt 0) { throw ("CSV yerine '" + $w.Ad + "' açıldı, iptal edildi.") }
-      $idx = $idx + (7 - $bul); Log ("  yanlış satır, düzeltilip yeniden deneniyor (yeni satır: " + ($idx + 1) + ")")
+      $idx = $idx + (8 - $bul); Log ("  yanlış satır, düzeltilip yeniden deneniyor (yeni satır: " + ($idx + 1) + ")")
       if ($idx -lt 0 -or $idx -gt 10) { throw "CSV satırı bulunamadı." }
     }
     if (-not $ayar) { throw "CSV dışa aktarma açılamadı." }
