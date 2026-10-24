@@ -53,7 +53,13 @@
       const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
       setter.call(el, v); el.dispatchEvent(new Event("input", { bubbles: true })); el.dispatchEvent(new Event("change", { bubbles: true }));
     };
-    for (const [ad, v] of Object.entries(g)) {
+    if (g.__sifre !== undefined) {
+      // düz kaydedilmiş bilgi: görünen metin kutularına sırayla kullanıcı adı (+ varsa ek alan), şifre kutusuna şifre
+      const metin = [...form.querySelectorAll('input')].filter(e => e.offsetParent && !["hidden","password","checkbox","radio","submit","button"].includes(e.type));
+      if (metin[0]) yaz(metin[0], String(g.__kullanici || ""));
+      if (metin[1] && g.__ek) yaz(metin[1], String(g.__ek));
+      yaz(sifre, String(g.__sifre));
+    } else for (const [ad, v] of Object.entries(g)) {
       const el = form.querySelector(`[name="${CSS.escape(ad)}"]`);
       if (el && el.type !== "hidden") yaz(el, String(v));
     }
