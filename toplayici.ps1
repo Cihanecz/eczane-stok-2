@@ -193,10 +193,11 @@ function OnizlemedenCsv($p, $rx, [string]$dosya, [scriptblock]$ac = $null) {
   # Önizlemeyi ekranı kaplayacak şekilde yerleştir (tam ekran komutu her zaman çalışmıyor)
   for ($i = 0; $i -lt 5; $i++) {
     [void][W2]::ShowWindow($on.H, 9); Start-Sleep -Milliseconds 400
-    [void][W2]::MoveWindow($on.H, 0, 0, 1920, 1040, $true); Start-Sleep -Milliseconds 400
+    $ekr = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea   # ekran ne boyutta olursa olsun onu kapla (1366x768 de olabilir)
+    [void][W2]::MoveWindow($on.H, $ekr.X, $ekr.Y, $ekr.Width, $ekr.Height, $true); Start-Sleep -Milliseconds 400
     [void][W2]::SetForegroundWindow($on.H); Start-Sleep -Milliseconds 600
     $r = Dikdortgen $on.H
-    if ($r.L -le 0 -and $r.R -ge 1900) { break }
+    if ($r.L -le $ekr.X + 10 -and $r.R -ge $ekr.Right - 20) { break }
   }
   Start-Sleep 2
   Kesfet $on.H "onizleme"
