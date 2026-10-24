@@ -209,6 +209,42 @@ function OnizlemedenCsv($p, $rx, [string]$dosya, [scriptblock]$ac = $null) {
   if ($on.Ad -ne "Yazdır") { $okX = $r.R - 316; $okY = [Math]::Max($r.T, 0) + 92; $csvX = 60; $csvY = 346 }   # DevExpress "Preview" (ızgaradan dışa aktar)
   elseif ($EO -lt 0.9) { $okX = $r.R - 225; $okY = [Math]::Max($r.T, 0) + 113; $csvX = 32; $csvY = 342 } else { $okX = $r.R - 183; $okY = [Math]::Max($r.T, 0) + 97; $csvX = 52; $csvY = 420 }
   $KN = Join-Path $KOK $(if ($on.Ad -ne "Yazdır") { "disaaktar-izgara.txt" } else { "disaaktar.txt" }); if (Test-Path $KN) { $v = (Get-Content $KN -Raw).Trim().Split(","); $okX = $r.R - [int]$v[0]; $okY = [Math]::Max($r.T, 0) + [int]$v[1]; $csvX = [int]$v[2]; $csvY = [int]$v[3] }
+  if ($on.Ad -eq "Yazdır" -and -not (Test-Path $KN)) {
+    # Bu eczanede şerit dar: Dışa Aktar küçük düğme. Oku sırayla birkaç yerde dener; açılan menünün kendi konumundan CSV satırını hesaplar.
+    # Yanlış biçim açılırsa başlığından sırasını bulup düzeltir (menü sırası: PDF HTML MHT RTF DOCX XLS XLSX CSV Metin Resim XPS).
+    $sira = @("PDF","HTML","MHT","RTF","DOCX","XLS","XLSX","CSV","Metin|Text|TXT","Resim|Image|Görüntü","XPS")
+    $okAdaylar = @(137, 129, 145, 121, 153, 113, 161); $okY = [Math]::Max($r.T, 0) + 74; $idx = 7; $ayar = $null
+    for ($tur = 1; $tur -le 4 -and -not $ayar; $tur++) {
+      $menu = $null
+      foreach ($dx in $okAdaylar) {
+        $r = Dikdortgen $on.H; $okX = $r.R - $dx
+        $once2 = @(Pencereler $p.Id | ForEach-Object { $_.H })
+        Log "Dışa aktar oku deneniyor: $okX,$okY"
+        OneAl; [W2]::Tik($okX, $okY); Start-Sleep -Milliseconds 1300
+        $yeniW = @(Pencereler $p.Id | Where-Object { $once2 -notcontains $_.H })
+        $yanlis = $yeniW | Where-Object { $_.Ad -like "*Dışa Aktarma Ayarları*" } | Select-Object -First 1
+        if ($yanlis) { Log ("  düğmenin kendisine basıldı (" + $yanlis.Ad + "), kapatılıyor"); [void][W2]::SendMessage($yanlis.H, 0x10, [IntPtr]::Zero, [IntPtr]::Zero); Start-Sleep -Milliseconds 800; continue }
+        $menu = $yeniW | Where-Object { $_.Ad -eq "" } | ForEach-Object { $d = Dikdortgen $_.H; [pscustomobject]@{ H = $_.H; L = $d.L; T = $d.T; R = $d.R; B = $d.B } } | Where-Object { ($_.B - $_.T) -gt 200 -and ($_.R - $_.L) -gt 100 } | Select-Object -First 1
+        if ($menu) { $okAdaylar = @($dx) + @($okAdaylar | Where-Object { $_ -ne $dx }); break }
+        Tus "{ESC}"; Start-Sleep -Milliseconds 400
+      }
+      if (-not $menu) { throw "Dışa Aktar menüsü açılamadı." }
+      $sat = ($menu.B - $menu.T - 4) / 11.0
+      $cx = [int](($menu.L + $menu.R) / 2); $cy = [int]($menu.T + 2 + ($idx + 0.5) * $sat)
+      Log ("Menü: {0},{1}-{2},{3}; {4}. satır tıklanıyor: {5},{6}" -f $menu.L, $menu.T, $menu.R, $menu.B, ($idx + 1), $cx, $cy)
+      [void][W2]::SetCursorPos($cx, $cy); Start-Sleep -Milliseconds 400
+      [W2]::Tik($cx, $cy); Start-Sleep -Milliseconds 1500
+      $w = PencereBekle $p.Id { $_.Ad -like "*Dışa Aktarma Ayarları*" } 15 "Dışa aktarma ayarları"
+      Log ("Açılan pencere: " + $w.Ad)
+      if ($w.Ad -like "CSV*") { $ayar = $w; break }
+      [void][W2]::SendMessage($w.H, 0x10, [IntPtr]::Zero, [IntPtr]::Zero); Start-Sleep -Milliseconds 800
+      $bul = -1; for ($j = 0; $j -lt $sira.Count; $j++) { if ($w.Ad -match ("^(" + $sira[$j] + ")\b")) { $bul = $j; break } }
+      if ($bul -lt 0) { throw ("CSV yerine '" + $w.Ad + "' açıldı, iptal edildi.") }
+      $idx = $idx + (7 - $bul); Log ("  yanlış satır, düzeltilip yeniden deneniyor (yeni satır: " + ($idx + 1) + ")")
+      if ($idx -lt 0 -or $idx -gt 10) { throw "CSV satırı bulunamadı." }
+    }
+    if (-not $ayar) { throw "CSV dışa aktarma açılamadı." }
+  } else {
   Log "Dışa aktar oku: $okX,$okY"
   OneAl; [W2]::Tik($okX, $okY); Start-Sleep -Milliseconds 1200
   [void][W2]::SetCursorPos($okX + $csvX, $okY + $csvY); Start-Sleep -Milliseconds 500
@@ -216,6 +252,7 @@ function OnizlemedenCsv($p, $rx, [string]$dosya, [scriptblock]$ac = $null) {
   $ayar = PencereBekle $p.Id { $_.Ad -like "*Dışa Aktarma Ayarları*" } 15 "Dışa aktarma ayarları"
   Log ("Açılan pencere: " + $ayar.Ad)
   if ($ayar.Ad -notlike "CSV*") { [void][W2]::SendMessage($ayar.H, 0x10, [IntPtr]::Zero, [IntPtr]::Zero); throw ("CSV yerine '" + $ayar.Ad + "' açıldı, iptal edildi.") }
+  }
   Kesfet $ayar.H "csv-ayar"
   [void][W2]::SetForegroundWindow($ayar.H); Start-Sleep -Milliseconds 400; Tus "{ENTER}"
   $kay = PencereBekle $p.Id { $_.Ad -in @("Save As","Farklı Kaydet","Kaydet") } 20 "Kaydet penceresi"
