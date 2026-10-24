@@ -209,11 +209,13 @@ function OnizlemedenCsv($p, $rx, [string]$dosya, [scriptblock]$ac = $null) {
   if ($on.Ad -ne "Yazdır") { $okX = $r.R - 316; $okY = [Math]::Max($r.T, 0) + 92; $csvX = 60; $csvY = 346 }   # DevExpress "Preview" (ızgaradan dışa aktar)
   elseif ($EO -lt 0.9) { $okX = $r.R - 225; $okY = [Math]::Max($r.T, 0) + 113; $csvX = 32; $csvY = 342 } else { $okX = $r.R - 183; $okY = [Math]::Max($r.T, 0) + 97; $csvX = 52; $csvY = 420 }
   $KN = Join-Path $KOK $(if ($on.Ad -ne "Yazdır") { "disaaktar-izgara.txt" } else { "disaaktar.txt" }); if (Test-Path $KN) { $v = (Get-Content $KN -Raw).Trim().Split(","); $okX = $r.R - [int]$v[0]; $okY = [Math]::Max($r.T, 0) + [int]$v[1]; $csvX = [int]$v[2]; $csvY = [int]$v[3] }
-  if ($on.Ad -eq "Yazdır" -and -not (Test-Path $KN)) {
+  if (-not (Test-Path $KN)) {
     # Bu eczanede şerit dar: Dışa Aktar küçük düğme. Oku sırayla birkaç yerde dener; açılan menünün kendi konumundan CSV satırını hesaplar.
     # Yanlış biçim açılırsa başlığından sırasını bulup düzeltir (menü sırası: PDF HTML MHT RTF DOCX XLS XLSX CSV Metin Resim XPS).
     $sira = @("-","PDF","HTML","MHT","RTF","DOCX","XLS","XLSX","CSV","Metin|Text|TXT","Resim|Image|Görüntü","XPS")   # bu eczanede ölçüldü: 8. satır XLSX, 9. satır CSV
-    $okAdaylar = @(137, 129, 145, 121, 153, 113, 161); $okY = [Math]::Max($r.T, 0) + 74; $idx = 8; $ayar = $null
+    if ($on.Ad -eq "Yazdır") { $okAdaylar = @(137, 129, 145, 121, 153, 113, 161); $okY = [Math]::Max($r.T, 0) + 74 }
+    else { $okAdaylar = @(122, 114, 130, 106, 138, 98, 146); $okY = [Math]::Max($r.T, 0) + 51 }   # ızgaradan açılan İngilizce "Preview" (sekme satırı yok)
+    $idx = 8; $ayar = $null
     for ($tur = 1; $tur -le 4 -and -not $ayar; $tur++) {
       $menu = $null
       foreach ($dx in $okAdaylar) {
@@ -222,7 +224,7 @@ function OnizlemedenCsv($p, $rx, [string]$dosya, [scriptblock]$ac = $null) {
         Log "Dışa aktar oku deneniyor: $okX,$okY"
         OneAl; [W2]::Tik($okX, $okY); Start-Sleep -Milliseconds 1300
         $yeniW = @(Pencereler $p.Id | Where-Object { $once2 -notcontains $_.H })
-        $yanlis = $yeniW | Where-Object { $_.Ad -like "*Dışa Aktarma Ayarları*" } | Select-Object -First 1
+        $yanlis = $yeniW | Where-Object { $_.Ad -like "*Dışa Aktarma Ayarları*" -or $_.Ad -like "*Export Options*" } | Select-Object -First 1
         if ($yanlis) { Log ("  düğmenin kendisine basıldı (" + $yanlis.Ad + "), kapatılıyor"); [void][W2]::SendMessage($yanlis.H, 0x10, [IntPtr]::Zero, [IntPtr]::Zero); Start-Sleep -Milliseconds 800; continue }
         $menu = $yeniW | Where-Object { $_.Ad -eq "" } | ForEach-Object { $d = Dikdortgen $_.H; [pscustomobject]@{ H = $_.H; L = $d.L; T = $d.T; R = $d.R; B = $d.B } } | Where-Object { ($_.B - $_.T) -gt 200 -and ($_.R - $_.L) -gt 100 } | Select-Object -First 1
         if ($menu) { $okAdaylar = @($dx) + @($okAdaylar | Where-Object { $_ -ne $dx }); break }
@@ -234,7 +236,7 @@ function OnizlemedenCsv($p, $rx, [string]$dosya, [scriptblock]$ac = $null) {
       Log ("Menü: {0},{1}-{2},{3}; {4}. satır tıklanıyor: {5},{6}" -f $menu.L, $menu.T, $menu.R, $menu.B, ($idx + 1), $cx, $cy)
       [void][W2]::SetCursorPos($cx, $cy); Start-Sleep -Milliseconds 400
       [W2]::Tik($cx, $cy); Start-Sleep -Milliseconds 1500
-      $w = PencereBekle $p.Id { $_.Ad -like "*Dışa Aktarma Ayarları*" } 15 "Dışa aktarma ayarları"
+      $w = PencereBekle $p.Id { $_.Ad -like "*Dışa Aktarma Ayarları*" -or $_.Ad -like "*Export Options*" } 15 "Dışa aktarma ayarları"
       Log ("Açılan pencere: " + $w.Ad)
       if ($w.Ad -like "CSV*") { $ayar = $w; break }
       [void][W2]::SendMessage($w.H, 0x10, [IntPtr]::Zero, [IntPtr]::Zero); Start-Sleep -Milliseconds 800
@@ -271,7 +273,7 @@ function OnizlemedenCsv($p, $rx, [string]$dosya, [scriptblock]$ac = $null) {
   Log "Kaydediliyor: $dosya"
   $son = (Get-Date).AddSeconds(600)
   while ((Get-Date) -lt $son) {
-    $soru = Pencereler $p.Id | Where-Object { $_.Ad -like "*Aktar*" -and $_.Ad -notlike "*Ayarları*" } | Select-Object -First 1
+    $soru = Pencereler $p.Id | Where-Object { ($_.Ad -like "*Aktar*" -and $_.Ad -notlike "*Ayarları*") -or ($_.Ad -like "*Export*" -and $_.Ad -notlike "*Options*") } | Select-Object -First 1
     if ($soru) { Kesfet $soru.H "acsoru"; $se = $A::FromHandle($soru.H); try { ElTikla (Bul $se "Hayır" 5) } catch { [void][W2]::SetForegroundWindow($soru.H); Tus "{ESC}" }; break }
     if ((Test-Path $dosya) -and ((Get-Item $dosya).Length -gt 0) -and ((Get-Date) - (Get-Item $dosya).LastWriteTime).TotalSeconds -gt 5) { break }
     Start-Sleep -Milliseconds 700
