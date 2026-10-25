@@ -1365,6 +1365,7 @@ try {
   if ($Asama -eq "kolay") { AsamaKolay; Log "Bitti."; $script:KOD = 0; return }
   if ($Asama -eq "yukle") { StokYukle; Log "Bitti."; return }
   if ($Asama -eq "kkyukle") { KarekodYukle; Log "Bitti."; return }
+  if ($Asama -eq "aratest") { DepoAra ([pscustomobject]@{ id = "test"; q = $Bas }) (Jeton); Log "Bitti."; return }   # deneme: toplayici.ps1 -Asama aratest -Bas "parol"
   if ($Asama -eq "gunluk") { Gunluk; Log "Bitti."; $script:KOD = 0; return }
   $p = RxSureci
   # elle çalıştırılınca konsol Rx'in önünde kalıp tıklamaları yutmasın: küçült (sonda geri açılır)
