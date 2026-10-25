@@ -1166,6 +1166,7 @@ function AsAra([string]$q) {
   $null = Invoke-WebRequest "https://webdepo.selcukecza.com.tr/Siparis/hizlisiparis.aspx" -WebSession $ses -UseBasicParsing -TimeoutSec 60
   $u = DepoPost $ses "https://webdepo.selcukecza.com.tr/Siparis/hizlisiparis-ajax.aspx" @{ action = "GetUrunler"; searchText = $q; isInculude = "true"; isStoktakiler = "false"; siralama = "ilacASC"; marka = ""; baslangicSayfasi = "0"; topRowNum = "0"; sayfaMaxRowAdet = "10"; s = "s" }
   $out = New-Object System.Collections.ArrayList
+  if ($Asama -eq "aratest") { Log ("  ham cevap: " + ((ConvertTo-Json $u -Depth 3 -Compress) -replace '^(.{0,600}).*$', '$1')) }
   foreach ($e in @($u.obj.urunler | Where-Object { $_ } | Select-Object -First 8)) {
     $d = $null; try { $d = (DepoPost $ses "https://webdepo.selcukecza.com.tr/Ilac/IlacGetir-ajax.aspx" @{ action = "GetIlacDetay"; kod = $e.kodu; isEsdeger = "false"; esdeger = ""; isJenerik = "false"; jenerikId = ""; tip = "null"; ILACTIP = $e.ILACTIP; kampKodu = "" }).obj } catch { }
     $mf = @(); $vade = $null
@@ -1365,7 +1366,7 @@ try {
   if ($Asama -eq "kolay") { AsamaKolay; Log "Bitti."; $script:KOD = 0; return }
   if ($Asama -eq "yukle") { StokYukle; Log "Bitti."; return }
   if ($Asama -eq "kkyukle") { KarekodYukle; Log "Bitti."; return }
-  if ($Asama -eq "aratest") { DepoAra ([pscustomobject]@{ id = "test"; q = $Bas }) (Jeton); Log "Bitti."; return }   # deneme: toplayici.ps1 -Asama aratest -Bas "parol"
+  if ($Asama -eq "aratest") { $jt = Jeton; DepoAra ([pscustomobject]@{ id = "test"; q = $Bas }) $jt; $o = BulutOku "ayar?anahtar=eq.depo_ara_sonuc&select=deger" $jt; $x = @(($o[0].deger | ConvertFrom-Json).liste | Where-Object { $_.id -eq "test" })[0]; foreach ($p in $x.depolar.PSObject.Properties) { foreach ($u in @($p.Value.u)) { "{0,-4} {1,-45} {2,-14} d={3} s={4} mf={5}" -f $p.Name, "$($u.ad)".Substring(0, [Math]::Min(45, "$($u.ad)".Length)), $u.b, $u.d, $u.s, ((@($u.mf) | ForEach-Object { "$($_.a)+$($_.m)=$($_.n)" }) -join " ") } }; Log "Bitti."; return }   # deneme: toplayici.ps1 -Asama aratest -Bas "parol"
   if ($Asama -eq "gunluk") { Gunluk; Log "Bitti."; $script:KOD = 0; return }
   $p = RxSureci
   # elle çalıştırılınca konsol Rx'in önünde kalıp tıklamaları yutmasın: küçült (sonda geri açılır)
