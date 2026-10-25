@@ -1167,7 +1167,9 @@ function AsAra([string]$q) {
   $u = DepoPost $ses "https://webdepo.selcukecza.com.tr/Siparis/hizlisiparis-ajax.aspx" @{ action = "GetUrunler"; searchText = $q; isInculude = "true"; isStoktakiler = "false"; siralama = "ilacASC"; marka = ""; baslangicSayfasi = "0"; topRowNum = "0"; sayfaMaxRowAdet = "10"; s = "s" }
   $out = New-Object System.Collections.ArrayList
   if ($Asama -eq "aratest") { Log ("  ham cevap: " + ((ConvertTo-Json $u -Depth 3 -Compress) -replace '^(.{0,600}).*$', '$1')) }
-  foreach ($e in @($u.obj.urunler | Where-Object { $_ } | Select-Object -First 8)) {
+  $liste = New-Object System.Collections.ArrayList   # PS 5.1: JSON dizisi tek nesne gibi gelebilir → düzleştir
+  foreach ($x in $u.obj.urunler) { if ($x -is [array]) { foreach ($y in $x) { if ($y) { [void]$liste.Add($y) } } } elseif ($x) { [void]$liste.Add($x) } }
+  foreach ($e in @($liste | Select-Object -First 8)) {
     $d = $null; try { $d = (DepoPost $ses "https://webdepo.selcukecza.com.tr/Ilac/IlacGetir-ajax.aspx" @{ action = "GetIlacDetay"; kod = $e.kodu; isEsdeger = "false"; esdeger = ""; isJenerik = "false"; jenerikId = ""; tip = "null"; ILACTIP = $e.ILACTIP; kampKodu = "" }).obj } catch { }
     $mf = @(); $vade = $null
     if ($d) { foreach ($k in @($d.kampanyalar)) { if (-not $vade) { $vade = $k.vadeGun }; for ($i = 0; $i -lt @($k.miktar).Count; $i++) { if ($k.miktar[$i] -gt 0) { $mf += [ordered]@{ a = $k.miktar[$i]; m = $k.mf[$i]; n = [math]::Round([double]$k.netFiyati[$i], 2); v = $k.vadeGun } } } } }
@@ -1203,9 +1205,12 @@ function AraKopru([string[]]$araDepolar, [string]$q, $sonuc, [scriptblock]$yaz) 
           HttpYaz $st 200 '{"tamam":true}'
           $o = $r.govde | ConvertFrom-Json
           $k = if ("$($o.depo)") { "$($o.depo)" } else { $verilen }
+          if ($Asama -eq "aratest") { Log ("  ham {0}: {1}" -f $k, ((ConvertTo-Json @($o.u)[0] -Depth 4 -Compress) -replace '^(.{0,900}).*$', '$1')) }
           $u = New-Object System.Collections.ArrayList
           if ("$($o.durum)" -eq "ok") {
-            foreach ($x in @($o.u | Where-Object { $_ })) {
+            $ham = New-Object System.Collections.ArrayList
+            foreach ($x in $o.u) { if ($x -is [array]) { foreach ($y in $x) { if ($y) { [void]$ham.Add($y) } } } elseif ($x) { [void]$ham.Add($x) } }
+            foreach ($x in $ham) {
               try {
                 if ($k -eq "bek") {
                   $v = BekCoz @($x); if (-not $v) { continue }
