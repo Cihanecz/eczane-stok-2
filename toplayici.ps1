@@ -1013,7 +1013,7 @@ function SnCoz($liste, [string]$barkod) {
   if (-not $e) { $e = $l[0] }
   $tek = @(); foreach ($o in @($e.EQOffers)) { if ($o -and $o.Quantity -gt 0) { $np = if ($o.NetPrice) { $o.NetPrice } else { [double]$o.NetPriceWithTaxes / (1 + [double]$e.TaxRate / 100) }; $tek += [ordered]@{ a = $o.Quantity; m = $o.ExtraQuantity; n = [math]::Round([double]$np, 2); v = $o.DaysDue } } }
   $fiyat = foreach ($a in "SalesPrice","ListPrice") { if ($e.$a) { [double]$e.$a; break } }
-  [ordered]@{ d = [double]$fiyat; s = [int]([bool]$e.HasStock -or [bool]$e.IsAvailableForSales); k = $e.TaxRate; mf = $tek }
+  [ordered]@{ d = [double]$fiyat; s = $(if ([bool]$e.HasStock -or [bool]$e.IsAvailableForSales) { 1 } elseif ("$($e.NotAvailableMessage)") { 0 } else { $null }); k = $e.TaxRate; mf = $tek }
 }
 function JsonNesneler($o, [string]$alan) {
   # iç içe JSON içinde belirtilen alanı taşıyan nesneleri bulur
@@ -1177,7 +1177,7 @@ function AsAra([string]$q) {
     $fiyat = if ($d) { [double]$d.depocuFiyati } else { 0 }
     [void]$out.Add([ordered]@{ ad = (IlkDeger @($d, $e) @("ilacAdi", "ilacAdı", "adi", "ad", "urunAdi", "ilac_adi", "name", "ilac")); b = $b; d = $fiyat; s = $(if ("$($e.stokDurumu)" -match '^[1-9]') { 1 } else { 0 }); v = $vade; mf = $mf })
   }
-  ,$out.ToArray()
+  $out.ToArray()
 }
 # Eklentili depolar (Sancak / BEK): Chrome eklentisi 127.0.0.1:47813'ten "ara" işini alır, depo sekmesinde arar
 function AraKopru([string[]]$araDepolar, [string]$q, $sonuc, [scriptblock]$yaz) {
