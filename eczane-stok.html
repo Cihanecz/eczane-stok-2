@@ -63,6 +63,7 @@ a{color:inherit}
 .ara-kutu input::placeholder{color:var(--soluk)}
 .ara-kutu svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--soluk)}
 .ara-kutu input{padding-right:48px}
+@media (max-width:640px){body[data-ekran="ilacbul"] .ara-kutu,body[data-ekran="neverelim"] .ara-kutu{display:none}}
 .tara-dugme{position:absolute;right:5px;top:50%;transform:translateY(-50%);background:var(--yesil-acik);border:1px solid var(--yesil-koyu);color:var(--yesil);border-radius:9px;width:38px;height:32px;font-size:17px;cursor:pointer;display:grid;place-items:center}
 .tarayici{position:fixed;inset:0;z-index:60;background:#000;display:flex;flex-direction:column}
 .tarayici video{flex:1;width:100%;object-fit:cover;min-height:0}
@@ -703,6 +704,7 @@ db.auth.onAuthStateChange(ev=>{ if(ev==="SIGNED_OUT" && !$("#program").classList
 window.addEventListener("hashchange", yonlendir);
 function yonlendir(){
   const h = decodeURIComponent(location.hash.slice(1));
+  document.body.dataset.ekran = (h.split("/")[0] || "ana");
   window.scrollTo(0,0);
   if(h.startsWith("urun/")) return urunKarti(h.slice(5));
   if(h.startsWith("liste/")) return liste(h.slice(6));
