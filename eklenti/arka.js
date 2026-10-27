@@ -24,7 +24,7 @@ async function hizliDongu() {
 chrome.runtime.onStartup.addListener(hizliDongu);
 chrome.runtime.onInstalled.addListener(hizliDongu);
 chrome.alarms.onAlarm.addListener(hizliDongu);
-hizliDongu();
+// hizliDongu() ilk çağrısı dosya sonunda (tüm const/let tanımları yüklendikten sonra) — başlangıç TDZ hatası olmasın
 
 const bekle = ms => new Promise(r => setTimeout(r, ms));
 
@@ -40,6 +40,7 @@ async function bildir(govde) {
 }
 
 const DEPO = {
+  as:  { desen: "https://webdepo.selcukecza.com.tr/*",  adres: "https://webdepo.selcukecza.com.tr/Siparis/hizlisiparis.aspx" },
   sn:  { desen: "https://eticaret.sancakecza.com.tr/*", adres: "https://eticaret.sancakecza.com.tr/" },
   bek: { desen: "https://esube.bek.org.tr/*",           adres: "https://esube.bek.org.tr/irj/portal/" },
 };
@@ -62,7 +63,7 @@ async function sekmeyeSor(id, mesaj) {
   try { return await chrome.tabs.sendMessage(id, mesaj); }
   catch {
     // sekme eklentiden önce açılmışsa içerik betiği yoktur: ekle ve tekrar dene
-    await chrome.scripting.executeScript({ target: { tabId: id, allFrames: mesaj.depo === "bek" }, files: [mesaj.depo === "bek" ? "bek.js" : "sancak.js"] });
+    await chrome.scripting.executeScript({ target: { tabId: id, allFrames: mesaj.depo === "bek" }, files: [mesaj.depo === "bek" ? "bek.js" : mesaj.depo === "as" ? "as.js" : "sancak.js"] });
     await bekle(300);
     return await chrome.tabs.sendMessage(id, mesaj);
   }
@@ -156,3 +157,6 @@ async function araYokla() {
     }
   } finally { araCalisiyor = false; }
 }
+
+// Hizli dongu basla (tum tanimlar yuklendikten sonra)
+hizliDongu();
