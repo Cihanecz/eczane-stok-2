@@ -59,7 +59,7 @@ a{color:inherit}
 .marka{display:flex;align-items:center;gap:9px;font-weight:700;font-size:18px;white-space:nowrap;
   background:none;border:0;color:var(--murekkep);cursor:pointer;padding:4px 0}
 .marka svg{flex:none}
-.ara-kutu{flex:1;position:relative;max-width:560px;margin-left:auto}
+.ara-kutu{flex:1 1 380px;position:relative;max-width:680px;min-width:300px;margin-left:auto}
 .ara-kutu input{width:100%;border:1px solid var(--cizgi);border-radius:12px;padding:10px 14px 10px 40px;font-size:16px;
   background:var(--yuzey);color:var(--murekkep)}
 .ara-kutu input::placeholder{color:var(--soluk)}
@@ -350,6 +350,40 @@ button.lj{cursor:pointer} button.lj:hover{background:var(--hover)}
 .nv-cip.on b{color:#fff}
 .nv-bolum{font-size:17px;margin:22px 0 8px}
 .nv-bolum small{font-weight:400;font-size:13px;color:var(--soluk);margin-left:6px}
+/* Bu İlaç Neydi? */
+.ib-filtre{margin:-2px 0 16px;background:var(--yuzey);border:1px solid var(--cizgi);border-radius:14px;padding:12px 14px;box-shadow:var(--golge)}
+.ib-grup{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed var(--cizgi);flex-wrap:wrap}
+.ib-grup:last-child{margin-bottom:0;padding-bottom:0;border-bottom:0}
+.ib-bas{font-size:11px;color:var(--yesil);min-width:96px;padding-top:8px;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+.ib-cipler{display:flex;flex-wrap:wrap;gap:6px;flex:1}
+.ib-cip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--cizgi);background:var(--yuzey);color:var(--murekkep);border-radius:999px;padding:6px 11px;font-size:13.5px;cursor:pointer}
+.ib-cip:hover{background:var(--hover)}
+.ib-cip.on{background:var(--yesil);border-color:var(--yesil);color:#fff}
+.ib-boya{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.18);display:inline-block;flex:none}
+.ib-boya.buyuk{width:44px;height:44px;border-radius:10px}
+.ib-boya.ib-bos{background:repeating-linear-gradient(45deg,var(--yuzey2),var(--yuzey2) 3px,var(--cizgi) 3px,var(--cizgi) 6px)}
+.ib-resim{width:44px;height:44px;border-radius:10px;object-fit:contain;background:#fff;border:1px solid var(--cizgi);flex:none;cursor:zoom-in}
+.ib-buyut{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+.ib-buyut.acik{display:flex}
+.ib-buyut img{max-width:95vw;max-height:92vh;object-fit:contain;border-radius:12px;background:#fff;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.ib-buyut-kapat{position:fixed;top:14px;right:18px;width:46px;height:46px;border-radius:50%;border:0;background:rgba(255,255,255,.95);color:#111;font-size:28px;line-height:46px;text-align:center;cursor:pointer;font-weight:700;box-shadow:0 2px 12px rgba(0,0,0,.35)}
+.ib-liste{display:flex;flex-direction:column;gap:10px}
+.ib-kart{background:var(--yuzey);border:1px solid var(--cizgi);border-radius:14px;padding:12px 14px;box-shadow:var(--golge)}
+.ib-kart-ust{display:flex;align-items:center;gap:10px}
+.ib-kart-ad{flex:1;min-width:0}
+.ib-kart-ad b{display:block;font-size:15px;line-height:1.3}
+.ib-kart-ad small{color:var(--soluk);font-size:12.5px}
+.ib-stok{font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap;flex:none}
+.ib-var{background:var(--yesil-acik);color:var(--yesil)}
+.ib-yok{background:var(--yuzey2);color:var(--soluk)}
+.ib-bekle{background:var(--yuzey2);color:var(--soluk);opacity:.7}
+.ib-nitelik{margin-top:7px;font-size:13.5px;color:var(--murekkep)}
+.ib-kutu{margin-top:5px;font-size:12.5px;color:var(--soluk);display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.ib-kutu .ib-boya{width:13px;height:13px}
+.ib-amac{margin-top:4px;font-size:13px;color:var(--yesil);font-weight:600}
+.ib-baski{margin-top:3px;font-size:13px;color:var(--soluk)}
+.ib-gorunum{margin-top:5px;font-size:12.5px;color:var(--soluk);line-height:1.45}
+@media (max-width:600px){.ib-bas{min-width:100%;padding-top:0}}
 .hrozet{background:var(--kirmizi);color:#fff;font-size:11px;font-weight:700;border-radius:999px;padding:1px 6px;min-width:18px;text-align:center}
 .hcipler{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
 .hcip{background:var(--yuzey);border:1px solid var(--cizgi);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:14px}
@@ -409,6 +443,8 @@ button.lj{cursor:pointer} button.lj:hover{background:var(--hover)}
       <button class="ust-dugme hasta" id="hastaDugme" type="button" aria-label="Hasta takibi"><span>👥</span><span class="ek-yazi">Hastalar</span><b class="hrozet gizli" id="hastaRozet"></b></button>
       <button class="ust-dugme hasta" id="depoDugme" type="button" aria-label="Depolar"><span>🏷️</span><span class="ek-yazi">Depolar</span><b class="hrozet gizli" id="depoRozet"></b></button>
       <button class="ust-dugme hasta" id="nvDugme" type="button" aria-label="Ne verelim"><span>💊</span><span class="ek-yazi">Ne Verelim</span></button>
+      <button class="ust-dugme hasta" id="ibDugme" type="button" aria-label="Bu ilaç neydi"><span>🔎</span><span class="ek-yazi">Bu İlaç Neydi?</span></button>
+      <button class="ust-dugme hasta" id="siparisDugme" type="button" aria-label="Sipariş takibi"><span>📦</span><span class="ek-yazi">Sipariş</span><b class="hrozet gizli" id="siparisRozet"></b></button>
       <button class="ust-dugme kilit" id="kilit" type="button" aria-label="Tutarları aç"><span id="kilitSimge">🔒</span><span class="ek-yazi">Tutarlar</span></button>
       <button class="ust-dugme" id="cikis" type="button" aria-label="Çıkış" title="Çıkış"><span>🚪</span><span class="ek-yazi">Çıkış</span></button>
     </div>
@@ -726,17 +762,23 @@ db.auth.onAuthStateChange(ev=>{ if(ev==="SIGNED_OUT" && !$("#program").classList
 
 /* ---------- yönlendirme ---------- */
 window.addEventListener("hashchange", yonlendir);
+let SON_BOLUM = "";   // en son ana bölüm; alt ekranlarda "Geri" buraya döner (başka bölüme atmaz)
+function geriBolum(){ location.hash = SON_BOLUM || ""; }
 function yonlendir(){
   const h = decodeURIComponent(location.hash.slice(1));
   document.body.dataset.ekran = (h.split("/")[0] || "ana");
   window.scrollTo(0,0);
+  const _base = h.split("/")[0] || "";
+  if(["","neverelim","ilacbul","hastalar","siparis","depolar"].includes(_base)) SON_BOLUM = _base;
   if(h.startsWith("urun/")) return urunKarti(h.slice(5));
   if(h.startsWith("liste/")) return liste(h.slice(6));
   if(h.startsWith("ara/")) return aramaSonucu(h.slice(4));
   if(h.startsWith("depoara/")) return depoAraSayfasi(h.slice(8));
-  $("#hastaDugme").classList.remove("aktif"); $("#depoDugme").classList.remove("aktif"); $("#nvDugme").classList.remove("aktif");
+  $("#hastaDugme").classList.remove("aktif"); $("#depoDugme").classList.remove("aktif"); $("#nvDugme").classList.remove("aktif"); $("#ibDugme").classList.remove("aktif"); $("#siparisDugme").classList.remove("aktif");
   if(h==="neverelim" || h.startsWith("neverelim/")) return neVerelim(h.slice(10));
+  if(h==="ilacbul" || h.startsWith("ilacbul/")) return ilacBul(h.slice(8));
   if(h==="hastalar") return hastaSayfasi();
+  if(h==="siparis") return siparisSayfasi();
   if(h==="depolar") return depoSayfasi();
   return anaEkran();
 }
@@ -1126,7 +1168,7 @@ async function urunKarti(barkod){
   const hata = oz.error || kk.error || ay.error; if(hata) return hataGoster(hata);
   const geb = (gb && !gb.error && gb.data && gb.data.gebelik) ? gb.data.gebelik : "";
   const r = oz.data;
-  if(!r){ $("#icerik").innerHTML = `<button class="geri" type="button" onclick="history.back()">‹ Geri</button><button class="da-dugme" type="button" onclick="location.hash='depoara/${kacis(barkod)}'">🏷️ Depolarda ara <small>bu barkod stok listende yok</small></button><div class="tablo"><div class="bos">Bu barkodla ürün bulunamadı.</div></div>`; return; }
+  if(!r){ $("#icerik").innerHTML = `<button class="geri" type="button" onclick="geriBolum()">‹ Geri</button><button class="da-dugme" type="button" onclick="location.hash='depoara/${kacis(barkod)}'">🏷️ Depolarda ara <small>bu barkod stok listende yok</small></button><div class="tablo"><div class="bos">Bu barkodla ürün bulunamadı.</div></div>`; return; }
 
   const aylik = (r.adet_90||0)/3;
   const kutuKar = r.adet_365 ? r.kar_365 / r.adet_365 : null;
@@ -1141,7 +1183,7 @@ async function urunKarti(barkod){
   const enYuksek = Math.max(1, ...(ay.data||[]).map(a=>Number(a.adet)));
 
   $("#icerik").innerHTML = `
-    <button class="geri" type="button" onclick="history.length>1?history.back():location.hash=''">‹ Geri</button>
+    <button class="geri" type="button" onclick="geriBolum()">‹ Geri</button>
     ${okutmaBandi(barkod)}<div class="urun-bas"><h1>${kacis(r.ad||barkod)}</h1><p>${kacis(barkod)}${r.uretici?" · "+kacis(r.uretici):""}</p>${gebelikKisa(geb)?`<div style="margin-top:4px">${gebelikKisa(geb)}</div>`:""}</div>
     <div class="bilgiler">
       <div class="bilgi"><span>Stok</span><b>${sayi(r.stok)} kutu</b><small>${kilitli()?"&nbsp;":tl(r.stok_maliyet)+" maliyet"}</small></div>
@@ -1322,6 +1364,7 @@ async function depoSayfasi(){
   $("#icerik").innerHTML = `
     <button class="geri" type="button" onclick="location.hash=''">‹ Ana ekran</button>
     <div class="liste-ust"><div><h1>Depolar</h1><p>${kacis((v.depolar||[]).join(" · "))} · son güncelleme ${tarihSaat(v.zaman)} · en çok satan ${v.u.length} ürün</p>${depoSnNot(v)}</div></div>
+    <div style="display:flex;gap:8px;margin:4px 0 12px"><input id="depoAraKutu" type="search" placeholder="🔎 Herhangi bir ürünü 3 depoda da ara — ad ya da barkod" style="flex:1;max-width:640px;padding:12px 14px;border:1px solid var(--cizgi);border-radius:12px;background:var(--yuzey);color:var(--murekkep);font-size:15px"><button class="hcip" id="depoAraBtn" type="button">Ara</button></div>
     <div class="hcipler">${Object.entries(filtreler).map(([k,a])=>`<button class="hcip ${DEPO_FILTRE===k?"secili":""}" type="button" data-df="${k}">${a}</button>`).join("")}</div>
     <div class="dl">
       ${l.length ? l.map(u=>depoListeSatiri(u, aktif)).join("") : `<div class="tablo"><div class="bos">Bu filtrede ürün yok.</div></div>`}
@@ -1329,6 +1372,10 @@ async function depoSayfasi(){
     <p class="alt-not" style="margin-top:12px">✅ Al: eldeki stokla birlikte ${VADE_AY} ayda (vade dolmadan) satılır, MF'nin parası satıştan çıkar. ⚠️ Dikkat: vadeyi aşar. Fiyatlar KDV dahil kutu başı geliş fiyatıdır; ayrıntı için ürüne dokunun.</p>`;
   document.querySelectorAll("[data-df]").forEach(b=>b.addEventListener("click",()=>{ DEPO_FILTRE=b.dataset.df; depoSayfasi(); }));
   document.querySelectorAll("[data-barkod]").forEach(b=>b.addEventListener("click",()=>location.hash="urun/"+b.dataset.barkod));
+  const dak=$("#depoAraKutu"), dab=$("#depoAraBtn");
+  const depoAraGit=()=>{ const q=(dak.value||"").trim(); if(q.length>=2) location.hash="depoara/"+encodeURIComponent(q); };
+  if(dak) dak.addEventListener("keydown", e=>{ if(e.key==="Enter") depoAraGit(); });
+  if(dab) dab.addEventListener("click", depoAraGit);
 }
 async function depoRozet(){
   try { const v = await depoYukle(); const n = v ? v.u.filter(u=>{ const o = depoOncelik(u); return o && (o.gun < 15 || depoYeni(u)); }).length : 0;
@@ -1573,6 +1620,191 @@ async function nvTikla(e){
 }
 
 /* =====================================================================
+   BU İLAÇ NEYDİ? — Hastanın tarif ettiği hapı (renk/şekil/baskı/ad) bulma.
+   Veri: ilac-gorunum.json (TİTCK KÜB + Kolay, sabit katalog). Şifresiz.
+   Stok "var/yok": urun_ozet'teki adlarla (marka + doz) eşleşmeyle.
+   SADECE ECZANE 1'de. Supabase'e yazmaz.
+   ===================================================================== */
+let IB = null, ibNo = 0, ibZaman, ibStok = null, ibSecim = { irenk:"", krenk:"", sekil:"", form:"", amac:"", centik:false };
+// token -> [etiket, hex]  (hem içerik hem kutu rengi için ortak palet)
+const IB_RENK = [["beyaz","Beyaz","#FFFFFF"],["sari","Sarı","#F4D23C"],["pembe","Pembe","#F5A9C0"],["mavi","Mavi","#5B9BD5"],["turuncu","Turuncu","#ED8B3C"],["kirmizi","Kırmızı","#D3433B"],["kahverengi","Kahverengi","#8A5A32"],["yesil","Yeşil","#5BB97E"],["krem","Krem","#F3E9C8"],["siyah","Siyah","#2B2B2B"],["seffaf","Şeffaf","#DDE6EA"],["gri","Gri","#AEB6BA"],["mor","Mor","#8667C4"],["bej","Bej","#D8C3A0"],["turkuaz","Turkuaz","#3FBDBD"],["lacivert","Lacivert","#243B82"],["haki","Haki","#8A8A4C"],["bordo","Bordo","#7B2733"]];
+const IB_RENK_IC = IB_RENK.slice(0,14);   // içerik rengi (ilacın kendi rengi)
+const IB_RENK_KT = IB_RENK;               // kutu rengi (turkuaz/lacivert/haki/bordo dahil)
+const IB_SEKIL = [["yuvarlak","Yuvarlak"],["oval","Oval"],["oblong","Uzun/Oblong"],["badem","Badem"],["ucgen","Üçgen"],["kare","Kare"],["dikdortgen","Dikdörtgen"],["baklava","Baklava"],["torpido","Torpido"],["altigen","Altıgen"],["besgen","Beşgen"],["sekizgen","Sekizgen"],["kalp","Kalp"]];
+// form kodu -> [etiket, ...eşanlamlar(arama için)]
+const IB_FORMLAR = {film:["Film tablet","kapli","tablet"],tablet:["Tablet"],kapsul:["Kapsül"],surup:["Şurup"],suspansiyon:["Süspansiyon"],solusyon:["Solüsyon","cozelti"],damla:["Damla"],sprey:["Sprey"],ampul:["Ampul","enjeksiyon","iğne"],efervesan:["Efervesan"],krem:["Krem","pomad"],jel:["Jel"],merhem:["Merhem","pomat","pomad"],toz:["Toz","sase"],ovul:["Ovül","vajinal"],supozituvar:["Supozituvar","fitil","makat"],draje:["Draje"],cigneme:["Çiğneme"],agizda:["Ağızda dağılan","odt","dilde"],losyon:["Losyon"],flaster:["Flaster/Bant","bant","yaki"],pastil:["Pastil"],sampuan:["Şampuan"],kopuk:["Köpük"],dilalti:["Dil altı"],diger:["Diğer"]};
+const IB_FORM_CIP = ["film","tablet","kapsul","surup","damla","krem","jel","merhem","supozituvar","ovul","sprey","ampul","efervesan","cigneme","agizda"];
+// amaç/kategori çipleri: [etiket, [araMetni-normalize eşleşme kelimeleri]]
+const IB_AMAC = [["Ağrı kesici",["agri kesic"]],["Ateş düşürücü",["ates dusur"]],["Antibiyotik",["antibiyot"]],["Soğuk algınlığı",["soguk algin","grip","nezle"]],["Alerji",["alerji"]],["Öksürük/balgam",["balgam","oksuru"]],["Mide/reflü",["reflu","mide","gastrit"]],["Tansiyon",["tansiyo"]],["Kalp",["kalp"]],["Kolesterol",["kolester"]],["Diyabet/şeker",["diyabet","seker"]],["Kan sulandırıcı",["kan suland","pihti"]],["Astım/KOAH",["astim","koah"]],["Depresyon/psikiyatri",["antidepres","psikiyatr"]],["Kas gevşetici",["kas gevset"]],["Romatizma",["romatizm"]],["Kaşıntı/cilt",["kasint","kizarik","egzama"]],["Mantar",["mantar"]],["Kortizon",["kortiz"]],["Vitamin",["vitamin"]]];
+const IB_AD = Object.fromEntries(IB_RENK.map(x=>[x[0],x[1]]));            // renk token -> etiket
+const IB_BOYA = Object.fromEntries(IB_RENK.map(x=>[x[0],x[2]]));         // renk token -> hex
+const IB_SAD = Object.fromEntries(IB_SEKIL.map(x=>[x[0],x[1]]));         // sekil token -> etiket
+function ibFormEt(f){ return (IB_FORMLAR[f]||[f])[0]; }
+// tarif kelimesi -> aranacak çekirdek kelimeler (ilaç metninde)
+const IB_ES = {
+  toparlak:["yuvarlak"], yumru:["yuvarlak"], daire:["yuvarlak"], top:["yuvarlak"], degirmi:["yuvarlak"], tombul:["yuvarlak"], yuvarlak:["yuvarlak"],
+  oval:["oval"], badem:["badem","oval"], elips:["oval"], yumurta:["oval"], bikonveks:["bikonveks"],
+  uzun:["uzun","oblong"], oblong:["oblong","uzun"], cubuk:["oblong","kapsul"], uzunca:["oblong"], kapsul:["kapsul"],
+  torpido:["torpido"], ucgen:["ucgen"], kare:["kare"], dikdortgen:["dikdortgen"], baklava:["baklava","elmas"], elmas:["baklava"], altigen:["altigen"], besgen:["besgen"], sekizgen:["sekizgen"], kalp:["kalp"],
+  cizgili:["centikli","cizik","centik"], centikli:["centikli","centik"], centik:["centikli"], bolunen:["centikli"], kirilan:["centikli"], cizik:["centikli","cizik"], ortadan:["centikli"],
+  ak:["beyaz"], beyaz:["beyaz"], sari:["sari"], pembe:["pembe"], mavi:["mavi"], turuncu:["turuncu"], portakal:["turuncu"], kirmizi:["kirmizi"], kahverengi:["kahverengi"], kahve:["kahverengi"], yesil:["yesil"], krem:["krem"], siyah:["siyah"], seffaf:["seffaf"], renksiz:["seffaf"], gri:["gri"], mor:["mor"], bej:["bej"], turkuaz:["turkuaz"], lacivert:["lacivert"], haki:["haki"], bordo:["bordo"],
+  fitil:["fitil","supozituvar"], pomat:["pomat","merhem"], pomad:["pomad","krem","merhem"], krem:["krem"], merhem:["merhem"], jel:["jel"], surup:["surup"], damla:["damla"], sprey:["sprey"], ampul:["ampul"], igne:["ampul"], efervesan:["efervesan"], sase:["toz","sase"]
+};
+const IB_KUCUK = ["kucuk","minik","ufak","minicik","ufacik","kucukce"], IB_BUYUK = ["buyuk","iri","kocaman","buyukce","koca"];
+// bilinen sözlük (renk+şekil+form): bunlar tam kelime eşleşir ("jel" -> "jelatin"e takılmasın)
+const IB_VOKAB = new Set([...Object.keys(IB_AD), ...Object.keys(IB_SAD), ...Object.keys(IB_FORMLAR), "uzun","oblong","fitil","pomat","pomad","cozelti","odt","bant","sase","igne","enjeksiyon","vajinal","makat","dilde","yaki","bikonveks","elmas","centikli","centik","cizik","film","tablet","kapsul"]);
+const IB_DOLGU = new Set(["ustunde","uzerinde","uzeri","uzerine","ustune","ustu","yazan","yaziyor","yazili","yaziyordu","yazanlar","yazar","vardi","variyor","birsey","bisey","sey","seyler","gibi","renkli","renginde","rengi","renk","biraz","galiba","sanirim","herhalde","hani","ilac","hap","tane","adet","boyutunda","boyunda","seklinde","falan","filan","vs","olan","bir","ile","icin","kutu","kutusu","kutulu","kutunun","ici","ici","dis","disi"]);
+const IB_GENEL = new Set(["film","kapli","tablet","tablets","kapsul","kaps","draje","efervesan","cigneme","agizda","dagilan","dil","alti","mg","ml","mcg","gr","g","mikrogram","sase","ampul","flakon","oral","surup","liquid","fort","tb","adet","mikrog","iu","ui"]);
+function ibKelimeler(ad){ return String(ad||"").toLocaleUpperCase("tr-TR").replace(/Ç/g,"C").replace(/Ğ/g,"G").replace(/İ/g,"I").replace(/Ö/g,"O").replace(/Ş/g,"S").replace(/Ü/g,"U").replace(/Â/g,"A").replace(/Î/g,"I").replace(/Û/g,"U").toLowerCase().replace(/([a-z])(\d)/g,"$1 $2").replace(/(\d)([a-z])/g,"$1 $2").replace(/[^a-z0-9]+/g," ").trim().split(/\s+/).filter(Boolean); }
+function ibAnahtar(ad){ // marka = ilk dozdan önceki alfa kelimeler (üretici/yer ekleri hariç), doz = ilk sayı
+  const k = ibKelimeler(ad); const marka = []; let doz = "";
+  for(const t of k){ if(/^\d/.test(t)){ doz = (t.match(/^\d+/)||[""])[0]; break; } if(!IB_GENEL.has(t)) marka.push(t); }
+  return { marka, doz };
+}
+async function ibVeri(){
+  if(IB) return IB;
+  const r = await fetch("./ilac-gorunum.json?s=34", { cache:"force-cache" });
+  if(!r.ok) throw new Error("İlaç görünüm listesi yüklenemedi");
+  const j = await r.json();
+  IB = j.map(x=>{
+    const f = x.f||"", rn = x.r||[], sk = x.s||[], kt = x.kt||[];
+    const fet = ibFormEt(f), fsyn = (IB_FORMLAR[f]||[]).slice(1).join(" ");
+    return { ad:x.n||"", et:x.m||"", am:x.k||"", amn:" "+araMetni(x.k||"")+" ", gr:x.g||"", bs:x.b||"",
+      rn, sk, f, fet, cn:x.c?1:0, kt, img:x.img||"", bar:x.bar||"",
+      ara:" " + araMetni([x.n,x.m,x.k, rn.join(" "), sk.join(" "), fet, fsyn, x.b, x.g, kt.join(" ")].join(" ")) + " " };
+  });
+  return IB;
+}
+// Stoktaki ilaçların "marka+doz" indeksini kurar (var/yok için). Sadece okur.
+let ibStokBar = null;
+function ibBarNorm(b){ b = String(b||"").replace(/\D/g,""); return b.replace(/^0+/,"") || "0"; }
+async function ibStokKur(){
+  if(ibStok) return ibStok;
+  const idx = {}, bar = new Set();
+  for(let s=0;s<40000;s+=1000){
+    const { data, error } = await db.from("urun_ozet").select("barkod,ad").gt("stok",0).range(s, s+999);
+    if(error) break;
+    for(const r of data){ if(r.barkod) bar.add(ibBarNorm(r.barkod)); const k = ibKelimeler(r.ad||""); const set = new Set(k); const ilk = k.find(t=>!IB_GENEL.has(t) && !/^\d/.test(t));
+      if(ilk){ (idx[ilk] = idx[ilk] || []).push(set); } }
+    if(data.length < 1000) break;
+  }
+  ibStok = idx; ibStokBar = bar; return idx;
+}
+function ibStokta(d){
+  if(!ibStok) return null;
+  if(d.bar && ibStokBar && ibStokBar.has(ibBarNorm(d.bar))) return true;   // barkod kesin eşleşme
+  const { marka, doz } = ibAnahtar(d.ad); if(!marka.length) return false;
+  const liste = ibStok[marka[0]]; if(!liste) return false;
+  for(const set of liste){ if(marka.every(m=>set.has(m)) && (!doz || set.has(doz))) return true; }
+  return false;
+}
+async function ilacBul(q){
+  $("#ibDugme").classList.add("aktif");
+  $("#icerik").innerHTML = `
+    <button class="geri" type="button" onclick="location.hash=''">‹ Ana ekran</button>
+    <div class="liste-ust"><div><h1>💊 Bu İlaç Neydi?</h1><p>Hastanın tarif ettiğini yaz: renk, kutu rengi, şekil, üstündeki yazı, aklında kalan isim, form (krem/jel/merhem/şurup…). Her kelime aramayı daraltır. Aşağıdan renk/şekil/form da seçebilirsin.</p></div></div>
+    <div class="nv-kutu"><span aria-hidden="true">🔎</span><input id="ibAra" type="search" placeholder="ör. sarı merhem · mavi kutu krem · üstünde 20 yazan beyaz · majezik" aria-label="İlaç tarifi" autocomplete="off"></div>
+    <div class="ib-filtre">
+      <div class="ib-grup"><span class="ib-bas">İlacın rengi</span><div class="ib-cipler" id="ibIRenk">${IB_RENK_IC.map(([tok,ad,h])=>`<button type="button" class="ib-cip" data-tur="irenk" data-deger="${tok}"><span class="ib-boya" style="background:${h}"></span>${ad}</button>`).join("")}</div></div>
+      <div class="ib-grup"><span class="ib-bas">Kutu rengi</span><div class="ib-cipler" id="ibKRenk">${IB_RENK_KT.map(([tok,ad,h])=>`<button type="button" class="ib-cip" data-tur="krenk" data-deger="${tok}"><span class="ib-boya" style="background:${h}"></span>${ad}</button>`).join("")}</div></div>
+      <div class="ib-grup"><span class="ib-bas">İlacın şekli</span><div class="ib-cipler" id="ibSekil">${IB_SEKIL.map(([tok,ad])=>`<button type="button" class="ib-cip" data-tur="sekil" data-deger="${tok}">${ad}</button>`).join("")}</div></div>
+      <div class="ib-grup"><span class="ib-bas">Form</span><div class="ib-cipler" id="ibForm">${IB_FORM_CIP.map(c=>`<button type="button" class="ib-cip" data-tur="form" data-deger="${c}">${ibFormEt(c)}</button>`).join("")}<button type="button" class="ib-cip" data-tur="centik" data-deger="1">Çentikli / çizgili</button></div></div>
+      <div class="ib-grup"><span class="ib-bas">Ne için</span><div class="ib-cipler" id="ibAmac">${IB_AMAC.map((a,i)=>`<button type="button" class="ib-cip" data-tur="amac" data-deger="${i}">${a[0]}</button>`).join("")}</div></div>
+    </div>
+    <div id="ibSonuc"><div class="yukleniyor">Yükleniyor…</div></div>`;
+  const inp = $("#ibAra"); inp.value = q || "";
+  inp.addEventListener("input", ()=>{ clearTimeout(ibZaman); ibZaman = setTimeout(()=>{ history.replaceState(null,"","#ilacbul/"+encodeURIComponent(inp.value)); ibListele(); }, 250); });
+  document.querySelectorAll("#ibIRenk,#ibKRenk,#ibSekil,#ibForm,#ibAmac").forEach(k=>k.addEventListener("click", ibCipTik));
+  ibSecim = { irenk:"", krenk:"", sekil:"", form:"", amac:"", centik:false };
+  ibStokKur().then(()=>{ if($("#ibSonuc")) ibListele(); });   // stok arka planda
+  if(!q) inp.focus();
+  ibListele();
+}
+function ibCipTik(e){
+  const c = e.target.closest("[data-tur]"); if(!c) return;
+  const tur = c.dataset.tur, deger = c.dataset.deger;
+  if(tur==="centik") ibSecim.centik = !ibSecim.centik;
+  else ibSecim[tur] = (ibSecim[tur]===deger) ? "" : deger;
+  document.querySelectorAll(`[data-tur="${tur}"]`).forEach(b=>{
+    const on = tur==="centik" ? ibSecim.centik : (ibSecim[tur]===b.dataset.deger);
+    b.classList.toggle("on", on);
+  });
+  ibListele();
+}
+async function ibListele(){
+  const benim = ++ibNo, kutu = $("#ibSonuc"); if(!kutu) return;
+  let veri; try { veri = await ibVeri(); } catch(e){ return hataGoster(e); }
+  if(benim !== ibNo) return;
+  const q = araMetni($("#ibAra") ? $("#ibAra").value : "");
+  const ham = q.split(/\s+/).filter(Boolean);
+  const kelimeler = [];
+  for(const w of ham){
+    if(IB_KUCUK.includes(w) || IB_BUYUK.includes(w)) continue;
+    if(IB_DOLGU.has(w) || w.length<2) continue;
+    kelimeler.push(IB_ES[w] || [w]);
+  }
+  const s = ibSecim, sir = s.irenk, skr = s.krenk, ssk = s.sekil, sfm = s.form, sam = s.amac;
+  if(!kelimeler.length && !sir && !skr && !ssk && !sfm && !sam && !s.centik){
+    kutu.innerHTML = `<div class="tablo"><div class="bos">Yukarıya tarif yaz ya da renk/şekil/form seç. Örn: “sarı merhem”, “mavi kutu krem”, “üstünde 20 yazan beyaz”, “majezik”.</div></div>`; return;
+  }
+  let l = veri.filter(d=>{
+    if(sir && !d.rn.includes(sir)) return false;
+    if(skr && !d.kt.includes(skr)) return false;
+    if(ssk && !d.sk.includes(ssk)) return false;
+    if(sfm && d.f!==sfm) return false;
+    if(sam && !IB_AMAC[+sam][1].some(w=>d.amn.includes(w))) return false;
+    if(s.centik && !d.cn) return false;
+    for(const alt of kelimeler){ if(!alt.some(t=>(/^\d+$/.test(t)||IB_VOKAB.has(t)) ? d.ara.includes(" "+t+" ") : (t.length<=2 ? d.ara.includes(" "+t) : d.ara.includes(t)))) return false; }
+    return true;
+  });
+  l.sort((a,b)=> ((b.img?1:0)-(a.img?1:0)) || (((b.rn.length&&b.sk.length)?1:0)-((a.rn.length&&a.sk.length)?1:0)) || a.ad.localeCompare(b.ad,"tr"));
+  const toplam = l.length, goster = l.slice(0,80);
+  if(!toplam){ kutu.innerHTML = `<div class="tablo"><div class="bos">Bu tarife uyan ilaç bulunamadı. Daha az kelimeyle dene ya da rengi/şekli/formu değiştir.</div></div>`; return; }
+  kutu.innerHTML = `
+    <p style="margin:0 0 10px;color:var(--soluk)">${toplam} ilaç uyuyor${toplam>80?" (ilk 80)":""}. ${toplam>25?"Daraltmak için kelime ekle ya da renk/şekil/form seç.":""}</p>
+    <div class="ib-liste">${goster.map(ibKart).join("")}</div>`;
+}
+function ibRozet(d){
+  const v = ibStokta(d);
+  if(v===null) return `<span class="ib-stok ib-bekle">stok…</span>`;
+  return v ? `<span class="ib-stok ib-var">✓ stokta var</span>` : `<span class="ib-stok ib-yok">✗ stokta yok</span>`;
+}
+function ibKart(d){
+  const boya = IB_BOYA[d.rn[0]];
+  const kutuSwatch = d.kt.map(t=>`<span class="ib-boya" style="background:${IB_BOYA[t]||'#ccc'}" title="${IB_AD[t]||t}"></span>`).join("");
+  const nitelik = [ d.rn.map(t=>IB_AD[t]||t).join("/"), d.sk.map(t=>IB_SAD[t]||t).join("/"), d.fet, d.cn?"çentikli":"" ].filter(Boolean).join(" · ");
+  const gorsel = d.img
+    ? `<img class="ib-resim" loading="lazy" src="${kacis(d.img)}" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'ib-boya buyuk ib-bos'}))">`
+    : (boya?`<span class="ib-boya buyuk" style="background:${boya}" title="${kacis(d.rn.map(t=>IB_AD[t]||t).join(', '))}"></span>`:`<span class="ib-boya buyuk ib-bos"></span>`);
+  return `<div class="ib-kart">
+    <div class="ib-kart-ust">
+      ${gorsel}
+      <div class="ib-kart-ad"><b>${kacis(d.ad)}</b>${d.et?`<small>${kacis(d.et)}</small>`:""}</div>
+      ${ibRozet(d)}
+    </div>
+    ${nitelik?`<div class="ib-nitelik">${kacis(nitelik)}</div>`:""}
+    ${d.kt.length?`<div class="ib-kutu">Kutu: ${kutuSwatch}<span>${kacis(d.kt.map(t=>IB_AD[t]||t).join(", "))}</span></div>`:""}
+    ${d.am?`<div class="ib-amac">${kacis(d.am)}</div>`:""}
+    ${d.bs?`<div class="ib-baski">Üzerinde: <b>${kacis(d.bs)}</b></div>`:""}
+    ${d.gr?`<div class="ib-gorunum">${kacis(d.gr)}</div>`:""}
+  </div>`;
+}
+function ibBuyut(src){
+  let o=document.getElementById("ibBuyutKat");
+  if(!o){
+    o=document.createElement("div"); o.id="ibBuyutKat"; o.className="ib-buyut";
+    o.innerHTML='<button class="ib-buyut-kapat" type="button" aria-label="Kapat">×</button><img alt="">';
+    o.addEventListener("click",e=>{ if(e.target===o||e.target.classList.contains("ib-buyut-kapat")) ibBuyutKapat(); });
+    document.body.appendChild(o);
+  }
+  o.querySelector("img").src=src; o.classList.add("acik");
+  document.addEventListener("keydown",ibBuyutEsc);
+}
+function ibBuyutKapat(){ const o=document.getElementById("ibBuyutKat"); if(o) o.classList.remove("acik"); document.removeEventListener("keydown",ibBuyutEsc); }
+function ibBuyutEsc(e){ if(e.key==="Escape") ibBuyutKapat(); }
+document.addEventListener("click",e=>{ const im=e.target.closest(".ib-resim"); if(im&&im.src) ibBuyut(im.src); });
+
+/* =====================================================================
    HASTA TAKİBİ — İlacı biten / raporu biten hastalar
    Hasta adı ve telefon şifreli saklanır: anahtar "hasta şifresi"nden
    türetilir (PBKDF2-SHA256), veri AES-CBC + HMAC-SHA256 ile şifrelidir.
@@ -1581,8 +1813,8 @@ async function nvTikla(e){
 const H = { anahtar:null, veri:null, durum:{}, sablon:null, gorunum:"raporlu", mesaj:"hepsi" };
 const HKONTROL = "ECZANE-STOK-HASTA";
 const HSABLON_VARSAYILAN = {
-  ilac: "Merhaba {ad}, İstiklal Üstün Eczanesi'nden yazıyoruz. {ilac} için reçete zamanınız geldi, {tarih} tarihinden itibaren yazdırabilirsiniz. Doktorunuza reçetenizi yazdırıp eczanemize uğrayabilirsiniz. İyi günler dileriz 😊",
-  rapor: "Merhaba {ad}, İstiklal Üstün Eczanesi'nden yazıyoruz. {ilac} için kullandığınız raporun bitiş tarihi {tarih}. İlacınızı aksatmamak için raporunuzu doktorunuza yeniletmenizi rica ederiz. İyi günler dileriz 😊"
+  ilac: "Merhaba {ad}, {eczane}'nden yazıyoruz. {ilac} için reçete zamanınız geldi, {tarih} tarihinden itibaren yazdırabilirsiniz. Doktorunuza reçetenizi yazdırıp eczanemize uğrayabilirsiniz. İyi günler dileriz 😊",
+  rapor: "Merhaba {ad}, {eczane}'nden yazıyoruz. {ilac} için kullandığınız raporun bitiş tarihi {tarih}. İlacınızı aksatmamak için raporunuzu doktorunuza yeniletmenizi rica ederiz. İyi günler dileriz 😊"
 };
 const b64 = u8 => { let s=""; for(let i=0;i<u8.length;i+=0x8000) s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000)); return btoa(s); };
 const unb64 = s => Uint8Array.from(atob(s), c=>c.charCodeAt(0));
@@ -1615,9 +1847,24 @@ async function hCoz(k, s){
 }
 async function ayarOku(anahtar){ const { data, error } = await db.from("ayar").select("deger,guncelleme").eq("anahtar",anahtar).maybeSingle(); if(error) throw error; return data; }
 async function ayarYaz(anahtar, deger){ const { error } = await db.from("ayar").upsert({ anahtar, deger, guncelleme:new Date().toISOString() }); if(error) throw error; }
-function hAnahtarSakla(k){ H.anahtar = k; try{ sessionStorage.setItem(ANAHTAR("hastaKey"), b64(k)); }catch(e){} }
-function hAnahtarYukle(){ if(H.anahtar) return H.anahtar; try{ const s = sessionStorage.getItem(ANAHTAR("hastaKey")); if(s) H.anahtar = unb64(s); }catch(e){} return H.anahtar; }
-function hUnut(){ H.anahtar = null; H.veri = null; H.durum = {}; try{ sessionStorage.removeItem(ANAHTAR("hastaKey")); }catch(e){} $("#hastaRozet").classList.add("gizli"); }
+function hAnahtarSakla(k){ H.anahtar = k; try{ localStorage.setItem(ANAHTAR("hastaKey"), b64(k)); }catch(e){} }
+function hAnahtarYukle(){ if(H.anahtar) return H.anahtar; try{ const s = localStorage.getItem(ANAHTAR("hastaKey")) || sessionStorage.getItem(ANAHTAR("hastaKey")); if(s) H.anahtar = unb64(s); }catch(e){} return H.anahtar; }
+function hUnut(){ H.anahtar = null; H.veri = null; H.durum = {}; try{ localStorage.removeItem(ANAHTAR("hastaKey")); sessionStorage.removeItem(ANAHTAR("hastaKey")); }catch(e){} $("#hastaRozet").classList.add("gizli"); }
+// Otomatik anahtar: hasta anahtarı Supabase'de (RLS ile sadece giriş yapan okur) saklanır,
+// böylece Hastalar/Sipariş hasta şifresi SORMADAN açılır. Veri yine şifreli + login arkasında.
+async function hOtoYukle(){
+  if(H.anahtar) return H.anahtar;
+  try{ const o = await ayarOku("hasta_anahtar_oto"); if(o && o.deger){ const k = unb64(o.deger); H.anahtar = k; try{ localStorage.setItem(ANAHTAR("hastaKey"), o.deger); }catch(e){} return k; } }catch(e){}
+  return null;
+}
+async function hOtoYaz(){ try{ if(H.anahtar) await ayarYaz("hasta_anahtar_oto", b64(H.anahtar)); }catch(e){} }
+// Geçerli bir anahtar bul (local → oto), doğrula; yoksa null (çağıran bir kez şifre sorar = bootstrap)
+async function hAnahtarHazirla(kontDeger){
+  let k = hAnahtarYukle() || await hOtoYukle();
+  if(k){ try{ await hCoz(k, kontDeger); }catch(e){ k=null; hUnut(); } }
+  if(k) hOtoYaz();   // diğer cihazlar bir daha sormasın diye buluta yaz (bootstrap)
+  return k;
+}
 
 function gunStr(d){ const x=new Date(d); return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); }
 function gunGoreli(d){ const g = gunFarki(d); if(g===null) return "—"; if(g===0) return "bugün"; if(g===1) return "yarın"; if(g===-1) return "dün"; return g>0 ? g+" gün sonra" : (-g)+" gün geçti"; }
@@ -1640,8 +1887,7 @@ async function hastaSayfasi(){
   try { tuz = await ayarOku("hasta_tuz"); kont = await ayarOku("hasta_kontrol"); }
   catch(e){ return hataGoster(e); }
   if(!tuz || !kont) return hSifreBelirle();
-  if(!hAnahtarYukle()) return hSifreSor(tuz.deger, kont.deger);
-  try { await hCoz(H.anahtar, kont.deger); } catch(e){ hUnut(); return hSifreSor(tuz.deger, kont.deger); }
+  if(!await hAnahtarHazirla(kont.deger)) return hSifreSor(tuz.deger, kont.deger);
   try {
     const [l, d, s] = await Promise.all([ayarOku("hasta_liste"), ayarOku("hasta_durum"), ayarOku("hasta_mesaj")]);
     H.veri = l ? JSON.parse(await hCoz(H.anahtar, l.deger)) : null;
@@ -1837,9 +2083,653 @@ function hSablonDuzenle(){
     try { await ayarYaz("hasta_mesaj", JSON.stringify(H.sablon)); hCiz(); } catch(e){ $("#sHata").textContent = hataMetni(e); }
   });
 }
+/* =====================================================================
+   SİPARİŞ TAKİBİ — SGK reçetesi eksikleri + sipariş yaşam döngüsü
+   Veri hasta şifresiyle (hasta.key ile birebir) şifreli:
+     ayar.sgk_son     : köprü (siparis-tara.ps1) yazar — Ctrl+Alt+S ile OCR'lanan TEK aday (şifreli)
+     ayar.sgk_aday    : web yazar — biriktirdiği bekleyen aday listesi {sonZaman, liste[]} (şifreli)
+     ayar.siparisler  : web yazar — onaylanan siparişler + durum
+     ayar.siparis_ayar: yerler + ses (PII değil, düz JSON)
+   ===================================================================== */
+const S = { aday:null, kayit:[], eksikDb:{zaman:null,liste:[]}, eksikGizli:[], tel:{}, ara:"", hastaIdx:null, alimSon:{zaman:null,ilac:{}}, ayar:{ yerler:["Banko","Buzdolabı"], ses:true, mesaj:{} }, gorunum:"bekleyen" };
+const S_DURUM_AD = { verildi:"🟡 Bekliyor — depoya verilecek", depoda:"🏪 Depoya sipariş verildi", geldi:"📦 Geldi", hazir:"✅ Hazırlandı", haber:"💬 Haber verildi", teslim:"🎉 Teslim edildi" };
+const S_MILLET = [["TR","tr","Türkçe"],["EN","gb","İngilizce"],["DE","de","Almanca"],["RU","ru","Rusça"],["AR","sa","Arapça"],["FA","ir","Farsça"],["UK","ua","Ukraynaca"],["FR","fr","Fransızca"],["ES","es","İspanyolca"],["PT","pt","Portekizce"]];
+const bayrak = cc => `<img src="https://flagcdn.com/20x15/${cc}.png" srcset="https://flagcdn.com/40x30/${cc}.png 2x" width="20" height="15" alt="" style="border-radius:2px;vertical-align:-2px;box-shadow:0 0 0 1px rgba(0,0,0,.08)">`;
+const S_MESAJ = {
+  TR:"Merhaba {ad}, siparişiniz eczanemize ulaşmıştır. İstediğiniz zaman gelip teslim alabilirsiniz. Sağlıklı günler dileriz. İstiklal Üstün Eczanesi",
+  EN:"Hello {ad}, your order has arrived at our pharmacy. You can come and pick it up whenever you like. We wish you good health. İstiklal Üstün Pharmacy",
+  DE:"Hallo {ad}, Ihre Bestellung ist in unserer Apotheke eingetroffen. Sie können sie jederzeit abholen. Wir wünschen Ihnen gute Gesundheit. İstiklal Üstün Apotheke",
+  RU:"Здравствуйте, {ad}! Ваш заказ поступил в нашу аптеку. Вы можете забрать его в любое удобное время. Желаем вам крепкого здоровья. Аптека İstiklal Üstün",
+  AR:"مرحباً {ad}، لقد وصل طلبك إلى صيدليتنا. يمكنك القدوم لاستلامه في أي وقت تشاء. نتمنى لك دوام الصحة والعافية. صيدلية İstiklal Üstün",
+  FA:"سلام {ad}، سفارش شما به داروخانه ما رسیده است. هر زمان که مایل بودید می‌توانید آن را تحویل بگیرید. برایتان سلامتی آرزومندیم. داروخانه İstiklal Üstün",
+  UK:"Вітаємо, {ad}! Ваше замовлення надійшло до нашої аптеки. Ви можете забрати його в будь-який зручний час. Бажаємо вам міцного здоров'я. Аптека İstiklal Üstün",
+  FR:"Bonjour {ad}, votre commande est arrivée à notre pharmacie. Vous pouvez venir la récupérer quand vous le souhaitez. Nous vous souhaitons une bonne santé. Pharmacie İstiklal Üstün",
+  ES:"Hola {ad}, su pedido ha llegado a nuestra farmacia. Puede venir a recogerlo cuando quiera. Le deseamos buena salud. Farmacia İstiklal Üstün",
+  PT:"Olá {ad}, a sua encomenda chegou à nossa farmácia. Pode vir levantá-la quando quiser. Desejamos-lhe boa saúde. Farmácia İstiklal Üstün"
+};
+// mesaj: kullanıcı düzenlediyse S.ayar.mesaj[mil], yoksa varsayılan çeviri
+function sMesaj(mil){ return (S.ayar.mesaj && S.ayar.mesaj[mil]) || S_MESAJ[mil] || S_MESAJ.TR; }
+// borç/ödeme — PIN'siz, hep görünür (sayi()+TL); para() kâr için kilitli olduğundan kullanılmaz
+function sPara(v){ return sayi(v) + " TL"; }
+function sKalan(o){ const t=Number(o&&o.odeme&&o.odeme.toplam)||0, od=Number(o&&o.odeme&&o.odeme.odenen)||0; return Math.max(0, Math.round((t-od)*100)/100); }
+function sOdemeBagla(){
+  const top=$("#sTop"), ode=$("#sOde"), chk=$("#sOdendi"), g=$("#sKalanG"); if(!top) return;
+  function yg(){ const t=Number(top.value)||0; if(chk&&chk.checked){ ode.value=t?t:""; ode.disabled=true; } else if(ode){ ode.disabled=false; }
+    let od = chk&&chk.checked ? t : (Number(ode&&ode.value)||0); const k=Math.max(0,Math.round((t-od)*100)/100);
+    if(g) g.innerHTML = t>0 ? (k>0?`<b style="color:#C0552E">Kalan: ${sPara(k)}</b>`:`<span style="color:#1F7A4D">✓ Tamamı ödendi</span>`) : ""; }
+  top.addEventListener("input",yg); if(ode) ode.addEventListener("input",yg); if(chk) chk.addEventListener("change",yg); yg();
+}
+function sOdemeOku(){ const t=Math.round((Number(($("#sTop")||{}).value)||0)*100)/100; const chk=$("#sOdendi");
+  let od = chk&&chk.checked ? t : (Number(($("#sOde")||{}).value)||0); od=Math.round(od*100)/100; return { toplam:t, odenen:Math.min(od, t||od) }; }
+const SODEME_HTML = `<div class="alan" style="margin-top:10px"><span>Ödeme (hastanın ödeyeceği)</span>
+    <label class="hkucuk" style="display:flex;align-items:center;gap:6px;cursor:pointer;margin:4px 0"><input type="checkbox" id="sOdendi"> Tamamı ödendi</label>
+    <div style="display:flex;gap:8px"><input id="sTop" type="number" min="0" step="0.01" placeholder="Toplam TL" style="flex:1;padding:8px;border:1px solid var(--cizgi);border-radius:8px;background:var(--yuzey);color:var(--murekkep)">
+      <input id="sOde" type="number" min="0" step="0.01" placeholder="Ödenen TL" style="flex:1;padding:8px;border:1px solid var(--cizgi);border-radius:8px;background:var(--yuzey);color:var(--murekkep)"></div>
+    <div class="hkucuk" id="sKalanG" style="margin-top:4px"></div></div>`;
+// telefon hatırlama: hasta (tc/ad) -> telefon, şifreli saklanır (siparis_tel)
+function sTelAnahtar(tc,ad){ return (String(tc||"").trim() || ("ad:"+String(ad||"").trim().toLocaleLowerCase("tr"))); }
+function sTelBul(tc,ad){ const k=sTelAnahtar(tc,ad); return (S.tel&&S.tel[k]) || ""; }
+async function sTelHatirla(tc,ad,tel){ const t=telNo(tel); const k=sTelAnahtar(tc,ad); if(!k) return; if(t){ S.tel[k]=tel; } await sTelDepoKaydet(); }
+async function sTelDepoKaydet(){ try { await ayarYaz("siparis_tel", await hSifrele(H.anahtar, JSON.stringify(S.tel||{}))); } catch(e){} }
+function sTelUnutBagla(tc,ad){ const b=$("#sTelUnut"); if(!b) return; b.addEventListener("click", async ()=>{ delete S.tel[sTelAnahtar(tc,ad)]; await sTelDepoKaydet(); const t=$("#sTel"); if(t) t.value=""; b.remove(); }); }
+function sSuz(list){ const q=(S.ara||"").trim().toLocaleLowerCase("tr"); if(!q) return list; return list.filter(o=>(((o.ad||"")+" "+(o.rec||"")).toLocaleLowerCase("tr")).includes(q)); }
+// ---- Elden siparişte otomatik tamamlama ----
+// tüm hasta kartları (rx-kart feed -> hasta_kart, şifreli); bir kez yüklenip önbelleğe alınır
+async function sHastaYukle(){
+  if(S.hastaIdx!==null) return S.hastaIdx;
+  S.hastaIdx = [];
+  try { const k=await ayarOku("hasta_kart"); if(k){ const o=JSON.parse(await hCoz(H.anahtar,k.deger)); S.hastaIdx=(o.liste||[]).map(x=>({ad:x.ad||"",tc:x.tc||"",tel:x.tel||"",q:(x.ad||"").toLocaleLowerCase("tr")})); } } catch(e){ S.hastaIdx=[]; }
+  return S.hastaIdx;
+}
+function sHastaAra(term){ const q=(term||"").trim().toLocaleLowerCase("tr"); if(q.length<2||!S.hastaIdx) return []; const r=[]; for(const h of S.hastaIdx){ if(h.q.includes(q)){ r.push(h); if(r.length>=8) break; } } return r; }
+async function sIlacAra(term){
+  const t = araMetni(term); if(!t || t.length<2) return [];
+  const sorgu = /^\d{4,}$/.test(t) ? db.from("urun_ozet").select("barkod,ad,stok,adet_90,psf").like("barkod",`%${t}%`)
+                                   : db.from("urun_ozet").select("barkod,ad,stok,adet_90,psf").ilike("ara",`%${t.split(/\s+/).join("%")}%`);
+  try { const { data } = await sorgu.order("stok",{ascending:false}).limit(8); return data||[]; } catch(e){ return []; }
+}
+// bir ilacın satış/stok/para + MF özeti (elden ve ürün ekleme ekranlarında gösterilir)
+async function sIlacAciklama(bar){
+  if(!bar) return "";
+  let z=null; try{ const { data }=await db.from("urun_ozet").select("adet_90,stok,stok_maliyet,kac_ay_yeter").eq("barkod",bar).maybeSingle(); z=data; }catch(e){}
+  let mf=""; try{ const DP=await depoYukle(); const u=DP&&DP.u&&DP.u.find(x=>x.b===bar); if(u){ const o=mfOneri(u); if(o){ const h=o.en, mk=MF_KARAR[h.karar]||["",""]; mf=` · <b>MF:</b> ${mk[0]} ${DEPO_AD[h.k]} ${h.a}+${h.m}`; } } }catch(e){}
+  const p=[]; if(z){ if(z.adet_90!=null) p.push(`3 ayda ~${sayi(z.adet_90)} satıyor`); if(z.stok!=null) p.push(`stok ${sayi(z.stok)} kutu`); if(z.stok_maliyet) p.push(`~${tl(z.stok_maliyet)} para bağlı`); if(z.kac_ay_yeter>0) p.push(`~${Number(z.kac_ay_yeter).toFixed(1)} ay yeter`); }
+  if(!p.length && !mf) return "";
+  return `📊 ${p.join(" · ")}${mf}`;
+}
+// input + hemen altındaki kutu. getir(deger)->[{_html,...}]; sec(secili) çağrılır.
+function sOneriKutu(input, kutu, getir, sec){
+  let zaman=null;
+  function kapat(){ kutu.innerHTML=""; kutu.style.display="none"; }
+  function ac(liste){ if(!liste || !liste.length){ kapat(); return; }
+    kutu.innerHTML = liste.map((x,i)=>`<button type="button" class="sOne" data-i="${i}" style="display:block;width:100%;text-align:left;padding:9px 10px;border:none;border-bottom:1px solid var(--cizgi);background:var(--yuzey);color:var(--murekkep);cursor:pointer;font-size:14px">${x._html}</button>`).join("");
+    kutu.style.display="block";
+    kutu.querySelectorAll(".sOne").forEach(b=>b.addEventListener("mousedown", e=>{ e.preventDefault(); sec(liste[+b.dataset.i]); kapat(); }));
+  }
+  input.addEventListener("input", ()=>{ clearTimeout(zaman); const v=input.value; zaman=setTimeout(async ()=>{ try{ ac(await getir(v)); }catch(e){ kapat(); } }, 180); });
+  input.addEventListener("blur", ()=>setTimeout(kapat, 180));
+}
+const SONE_STIL = "display:none;width:100%;box-sizing:border-box;border:1px solid var(--cizgi);border-radius:10px;max-height:240px;overflow:auto;margin:-6px 0 8px;box-shadow:0 6px 18px rgba(0,0,0,.08)";
+let S_SES_SON = 0;
+function sBul(id){ return S.kayit.find(o=>o.id===id); }
+
+async function siparisSayfasi(){
+  $("#siparisDugme").classList.add("aktif");
+  yukleniyor();
+  let tuz, kont;
+  try { tuz = await ayarOku("hasta_tuz"); kont = await ayarOku("hasta_kontrol"); }
+  catch(e){ return hataGoster(e); }
+  if(!tuz || !kont){ $("#icerik").innerHTML = `<button class="geri" type="button" onclick="location.hash=''">‹ Ana ekran</button><div class="liste-ust"><div><h1>📦 Sipariş</h1><p>Önce <b>Hastalar</b> ekranından hasta şifresini belirle; sipariş verileri de o şifreyle korunur.</p></div></div>`; return; }
+  if(!await hAnahtarHazirla(kont.deger)) return sSifreSor(tuz.deger, kont.deger);
+  try {
+    const [a, s, son, cfg, edb, egz, tl, al] = await Promise.all([ayarOku("sgk_aday"), ayarOku("siparisler"), ayarOku("sgk_son"), ayarOku("siparis_ayar"), ayarOku("sgk_eksik_db"), ayarOku("sgk_eksik_gizli"), ayarOku("siparis_tel"), ayarOku("alim_son")]);
+    S.aday = a ? JSON.parse(await hCoz(H.anahtar, a.deger)) : { sonZaman:null, liste:[] };
+    if(!S.aday.liste) S.aday.liste = [];
+    S.kayit = s ? JSON.parse(await hCoz(H.anahtar, s.deger)) : [];
+    if(cfg){ try{ S.ayar = Object.assign(S.ayar, JSON.parse(cfg.deger)); if(!S.ayar.mesaj) S.ayar.mesaj={}; if(!S.ayar.yerler) S.ayar.yerler=["Banko","Buzdolabı"]; }catch(e){} }
+    try { S.tel = tl ? JSON.parse(await hCoz(H.anahtar, tl.deger)) : {}; } catch(e){ S.tel = {}; }
+    try { S.eksikDb = edb ? JSON.parse(await hCoz(H.anahtar, edb.deger)) : { zaman:null, liste:[] }; } catch(e){ S.eksikDb = { zaman:null, liste:[] }; }
+    if(!S.eksikDb.liste) S.eksikDb.liste = [];
+    try { S.eksikGizli = egz ? JSON.parse(await hCoz(H.anahtar, egz.deger)) : []; } catch(e){ S.eksikGizli = []; }
+    if(son){ try{ await sSonBirlestir(JSON.parse(await hCoz(H.anahtar, son.deger))); }catch(e){} }
+    try { S.alimSon = al ? JSON.parse(al.deger) : {zaman:null,ilac:{}}; if(!S.alimSon.ilac) S.alimSon.ilac={}; } catch(e){ S.alimSon={zaman:null,ilac:{}}; }
+    await sAlimKontrol();
+  } catch(e){ return hataGoster(e); }
+  sCiz();
+  sYoklamaBaslat();
+}
+/* Köprü (siparis-tara.ps1) sgk_son'a tek aday yazar; web burada kendi kalıcı
+   listesine (sgk_aday) ekler. sonZaman = en son işlenen tarama; aynı tarama
+   tekrar eklenmez (reddedilen geri gelmez), yeni tarama (yeni zaman) eklenir. */
+async function sSonBirlestir(son){
+  if(!son || !son.zaman || !son.rec) return false;
+  if(S.aday.sonZaman === son.zaman) return false;           // bu tarama zaten işlendi
+  S.aday.sonZaman = son.zaman;
+  const ordered = S.kayit.some(o=>o.kaynak==="sgk" && o.rec===son.rec && o.durum!=="teslim");
+  const idx = S.aday.liste.findIndex(r=>r.rec===son.rec);
+  const kayit = { rec:son.rec, prot:son.prot||"", tarih:son.tarih||"", ad:son.ad||"", tc:son.tc||"", tel:son.tel||"", ilac:son.ilac||[], eklendi:son.zaman };
+  if(idx>=0) S.aday.liste[idx] = kayit;                     // aynı reçete tekrar tarandı → güncelle
+  else if(!ordered) S.aday.liste.unshift(kayit);            // yeni aday
+  await sAdayKaydet();
+  return true;
+}
+let S_YOKLA = null;
+function sYoklamaBaslat(){
+  if(S_YOKLA) clearInterval(S_YOKLA);
+  S_YOKLA = setInterval(async ()=>{
+    if(location.hash.replace(/^#/,"")!=="siparis"){ clearInterval(S_YOKLA); S_YOKLA=null; return; }
+    if(!H.anahtar) return;
+    try{
+      let degisti=false, sesCal=false;
+      const son = await ayarOku("sgk_son");
+      if(son){ const c = JSON.parse(await hCoz(H.anahtar, son.deger)); if(c.zaman && c.zaman!==S.aday.sonZaman){ if(await sSonBirlestir(c)){ degisti=true; sesCal=true; } } }
+      const edb = await ayarOku("sgk_eksik_db");
+      if(edb){ const e = JSON.parse(await hCoz(H.anahtar, edb.deger)); if(e.zaman && e.zaman!==(S.eksikDb&&S.eksikDb.zaman)){ const onceki=sEksikDbAcik().length; S.eksikDb=e; if(!S.eksikDb.liste)S.eksikDb.liste=[]; degisti=true; if(sEksikDbAcik().length>onceki) sesCal=true; } }
+      const al = await ayarOku("alim_son");
+      if(al){ try{ const a=JSON.parse(al.deger); if(a.zaman && a.zaman!==(S.alimSon&&S.alimSon.zaman)){ S.alimSon=a; if(!S.alimSon.ilac)S.alimSon.ilac={}; if(await sAlimKontrol()){ degisti=true; sesCal=true; } } }catch(e){} }
+      try{ if(S.kayit.some(o=>o.durum==="verildi")){ const sl=await sepetListe(); let dd=false; for(const it of sl){ if(it.sip && it.durum==="sepette"){ const oo=sBul(it.sip); if(oo && oo.durum==="verildi"){ oo.durum="depoda"; oo.sira=oo.sira||{}; oo.sira.depoda=new Date().toISOString(); dd=true; } } } if(dd){ await sKaydet(); degisti=true; } } }catch(e){}
+      if(degisti){ if(sesCal && S.ayar.ses) sSesCal(); sCiz(); }
+    }catch(e){}
+  }, 2000);
+}
+function sSifreSor(tuz, kont){
+  $("#icerik").innerHTML = hSifreFormu("Sipariş / hasta şifresi", "Sipariş ve hasta bilgileri bu şifreyle korunur.", false, "Aç");
+  $("#hs1").focus();
+  $("#hSifreForm").addEventListener("submit", async e => {
+    e.preventDefault(); $("#hsHata").textContent="Açılıyor…";
+    try { const k = await hAnahtarTuret($("#hs1").value, tuz); await hCoz(k, kont); hAnahtarSakla(k); siparisSayfasi(); }
+    catch(err){ $("#hsHata").textContent = "Şifre yanlış."; }
+  });
+}
+async function sKaydet(){ try { await ayarYaz("siparisler", await hSifrele(H.anahtar, JSON.stringify(S.kayit))); } catch(e){ alert("Kaydedilemedi: "+hataMetni(e)); } }
+async function sAdayKaydet(){ try { await ayarYaz("sgk_aday", await hSifrele(H.anahtar, JSON.stringify(S.aday))); } catch(e){} }
+async function sAyarKaydet(){ try { await ayarYaz("siparis_ayar", JSON.stringify(S.ayar)); } catch(e){} }
+function sAdayAcik(){
+  const alinmis = new Set(S.kayit.filter(o=>o.kaynak==="sgk").map(o=>o.rec));
+  return ((S.aday&&S.aday.liste)||[]).filter(r=>!alinmis.has(r.rec));
+}
+function sBannerStil(){ if(document.getElementById("sYanipStil")) return; const st=document.createElement("style"); st.id="sYanipStil"; st.textContent="@keyframes sYanip{0%,100%{background:#C0552E}50%{background:#7d2a10}} .sGeldiBanner{animation:sYanip 1s infinite;color:#fff;padding:14px 16px;border-radius:12px;font-weight:700;cursor:pointer;margin:10px 0 4px;box-shadow:0 2px 12px rgba(192,85,46,.45);font-size:15px}"; document.head.appendChild(st); }
+function sCiz(){
+  const acikAll = S.kayit.filter(o=>o.durum!=="teslim");
+  const adayAll = sAdayAcik();
+  const dbEksikAll = sEksikDbAcik();
+  const acik = sSuz(acikAll), aday = sSuz(adayAll), dbEksik = sSuz(dbEksikAll);
+  const gizliAll = sGizliAcik();
+  const geldiBek = S.kayit.filter(o=>o.durum==="geldi" && !o.geldiGor);
+  const geldiBanner = geldiBek.length ? `<div class="sGeldiBanner" id="sGeldiB">📦 ${geldiBek.length} sipariş geldi — hazırlamak için dokun</div>` : "";
+  sBannerStil();
+  const yeniSay = adayAll.length + dbEksikAll.length;
+  const son = S.eksikDb&&S.eksikDb.zaman ? "Otomatik güncel: "+tarihSaat(S.eksikDb.zaman) : "Rx'ten otomatik eksik reçeteler buraya düşer";
+  let g = `<button class="geri" type="button" onclick="location.hash=''">‹ Ana ekran</button>
+    <div class="liste-ust"><div><h1>📦 Sipariş Takibi</h1><p>${son} · ${yeniSay} eksik reçete · ${acikAll.length} aktif sipariş</p></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <button class="hcip" id="sElden" type="button">➕ Elden sipariş</button>
+        <button class="hcip" id="sAyar" type="button" title="Mesaj ve yer ayarları">⚙️ Ayarlar</button>
+        <button class="hcip" id="sYenile" type="button" title="Yenile">🔄 Yenile</button>
+        <label class="hkucuk" style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="sSes" ${S.ayar.ses?"checked":""}> 🔔 Sesli uyarı</label>
+      </div></div>
+    <input id="sAra" type="search" value="${kacis(S.ara||"")}" placeholder="🔍 Hasta adı / reçete ara" style="width:100%;padding:10px 12px;margin:6px 0 10px;border:1px solid var(--cizgi);border-radius:10px;background:var(--yuzey);color:var(--murekkep);font-size:15px">
+    <div class="hcipler">
+      <button class="hcip ${S.gorunum==="bekleyen"?"secili":""}" type="button" data-sg="bekleyen">🆕 Eksik reçeteler <b>${yeniSay}</b></button>
+      <button class="hcip ${S.gorunum==="aktif"?"secili":""}" type="button" data-sg="aktif">📦 Aktif siparişler <b>${acikAll.length}</b></button>
+      <button class="hcip ${S.gorunum==="gizli"?"secili":""}" type="button" data-sg="gizli" style="margin-left:auto">🙈 Gizlenenler <b>${gizliAll.length}</b></button>
+      <button class="hcip ${S.gorunum==="arsiv"?"secili":""}" type="button" data-sg="arsiv">🗂️ Arşiv</button>
+    </div>${geldiBanner}`;
+  if(S.gorunum==="bekleyen"){
+    let b = "";
+    if(dbEksik.length) b += `<div class="hbolum"><h2>Eksik SGK reçeteleri <span class="say">${dbEksik.length}</span></h2>${dbEksik.map(sEksikDbKart).join("")}</div>`;
+    if(aday.length)    b += `<div class="hbolum"><h2>Elle taranan <span class="say">${aday.length}</span></h2>${aday.map(sAdayKart).join("")}</div>`;
+    g += b || `<div class="hkart"><p class="hkucuk" style="margin:0">${S.ara?"Aramana uyan eksik reçete yok.":"Şu an eksik reçete yok. Rx'te karekodu tamamlanmamış SGK reçetesi oldukça <b>otomatik</b> burada görünür."}</p></div>`;
+  } else if(S.gorunum==="aktif"){
+    g += acik.length ? acik.map(sKart).join("") : `<div class="hkart"><p class="hkucuk" style="margin:0">${S.ara?"Aramana uyan aktif sipariş yok.":"Aktif sipariş yok."}</p></div>`;
+  } else if(S.gorunum==="gizli"){
+    const giz = sSuz(gizliAll);
+    g += giz.length ? `<div class="hbolum"><h2>Gizlenen reçeteler <span class="say">${giz.length}</span></h2>${giz.map(sGizliKart).join("")}</div>`
+                    : `<div class="hkart"><p class="hkucuk" style="margin:0">${S.ara?"Aramana uyan gizli kayıt yok.":"Gizlenen reçete yok. Eksik listesinde ‘Gizle’ dediklerin buraya düşer, buradan geri alabilirsin."}</p></div>`;
+  } else {
+    const ars = sSuz(S.kayit.filter(o=>o.durum==="teslim")).slice().reverse();
+    g += ars.length ? `<div class="hbolum"><h2>Teslim edilenler <span class="say">${ars.length}</span></h2>${ars.map(sKart).join("")}</div>`
+                    : `<div class="hkart"><p class="hkucuk" style="margin:0">${S.ara?"Aramana uyan kayıt yok.":"Arşiv boş."}</p></div>`;
+  }
+  $("#icerik").innerHTML = g;
+  const ara=$("#sAra"); if(ara){ ara.addEventListener("input", ()=>{ S.ara=ara.value; const p=ara.selectionStart; sCiz(); const n=$("#sAra"); if(n){ n.focus(); try{ n.setSelectionRange(p,p); }catch(e){} } }); }
+  const eb=$("#sElden"); if(eb) eb.addEventListener("click", sEldenForm);
+  const ab=$("#sAyar"); if(ab) ab.addEventListener("click", sAyarEkrani);
+  const gb=$("#sGeldiB"); if(gb) gb.addEventListener("click", async ()=>{ S.kayit.forEach(o=>{ if(o.durum==="geldi") o.geldiGor=true; }); await sKaydet(); S.gorunum="aktif"; sCiz(); });
+  const ses=$("#sSes"); if(ses) ses.addEventListener("change", ()=>{ S.ayar.ses=ses.checked; sAyarKaydet(); });
+  const yb=$("#sYenile"); if(yb) yb.addEventListener("click", ()=>{ yb.textContent="⏳ Yenileniyor…"; siparisSayfasi(); });
+  document.querySelectorAll("[data-sg]").forEach(b=>b.addEventListener("click", ()=>{ S.gorunum=b.dataset.sg; sCiz(); }));
+  document.querySelectorAll("[data-sol]").forEach(b=>b.addEventListener("click", ()=>sOlusturForm(b.dataset.sol)));
+  document.querySelectorAll("[data-sred]").forEach(b=>b.addEventListener("click", ()=>sAdayRed(b.dataset.sred)));
+  document.querySelectorAll("[data-soldb]").forEach(b=>b.addEventListener("click", ()=>sOlusturFormDb(b.dataset.soldb)));
+  document.querySelectorAll("[data-sgiz]").forEach(b=>b.addEventListener("click", ()=>sGizle(b.dataset.sgiz)));
+  document.querySelectorAll("[data-sgal]").forEach(b=>b.addEventListener("click", ()=>sGeriAl(b.dataset.sgal)));
+  document.querySelectorAll("[data-sdur]").forEach(b=>b.addEventListener("click", ()=>sDurumGecir(b.dataset.sid, b.dataset.sdur)));
+  document.querySelectorAll("[data-swa]").forEach(b=>b.addEventListener("click", ()=>sWhatsapp(b.dataset.swa)));
+  document.querySelectorAll("[data-syer]").forEach(b=>b.addEventListener("click", ()=>sYerSec(b.dataset.syer)));
+  document.querySelectorAll("[data-smil]").forEach(b=>b.addEventListener("click", ()=>sMilletSec(b.dataset.smil)));
+  document.querySelectorAll("[data-ssil]").forEach(b=>b.addEventListener("click", ()=>sSil(b.dataset.ssil)));
+  document.querySelectorAll("[data-sode]").forEach(b=>b.addEventListener("click", ()=>sOdemeDuzenle(b.dataset.sode)));
+  document.querySelectorAll("[data-sdepo]").forEach(b=>b.addEventListener("click", ()=>sDepoEkle(b.dataset.sdepo)));
+  document.querySelectorAll("[data-sekle]").forEach(b=>b.addEventListener("click", ()=>sUrunEkleForm(b.dataset.sekle)));
+  document.querySelectorAll("[data-sidsil]").forEach(b=>b.addEventListener("click", ()=>sItemSil(b.dataset.sidsil, +b.dataset.sidx)));
+}
+function sAdayKart(r){
+  const il = (r.ilac||[]).map(x=>`<div class="hilac"><span class="n">${kacis(x.ad)}</span><span class="hetk kirmizi">${x.eksik} eksik</span>${x.stok>0?`<span class="hetk">stok ${x.stok}</span>`:""}</div>`).join("");
+  return `<div class="hkart"><div class="ad">${kacis(r.ad||"(isim yok)")} <span class="hkucuk">· ${kacis(r.rec)}${r.tarih?" · "+kacis(r.tarih):""}</span></div>
+    <div class="hdugmeler"><button class="wa" type="button" data-sol="${kacis(r.rec)}">✅ Sipariş oluştur</button>
+      <button class="hcip" type="button" data-sred="${kacis(r.rec)}" title="Bu reçeteyi listeden çıkar">✖ Oluşturma</button></div>
+    <div class="ilaclar">${il}</div></div>`;
+}
+async function sAdayRed(rec){
+  S.aday.liste = (S.aday.liste||[]).filter(r=>r.rec!==rec);
+  await sAdayKaydet(); sCiz();
+}
+/* ---- DB tabanlı eksik (rx-eksik.ps1 feed -> sgk_eksik_db): karekodu tamamlanmamis
+   SGK receteleri. Otomatik, OCR'siz, tum PC'lerde. Siparis verilince (alinmis) ya da
+   gizlenince listeden duser; recete Rx'te tamamlaninca feed'den de duser. ---- */
+function sEksikDbAcik(){
+  const alinmis = new Set(S.kayit.filter(o=>o.kaynak==="sgk").map(o=>o.rec));
+  const gizli = new Set(S.eksikGizli||[]);
+  return ((S.eksikDb&&S.eksikDb.liste)||[]).filter(r=>!alinmis.has(r.rec) && !gizli.has(r.rec));
+}
+function sEksikDbKart(r){
+  const il = (r.ilac||[]).map(x=>{
+    const yok = (x.stok||0)<=0;
+    return `<div class="hilac"><span class="n">${kacis(x.ad)}</span><span class="hetk">${x.yaz} yazılan</span><span class="hetk ${yok?'kirmizi':''}">stok ${x.stok}</span></div>`;
+  }).join("");
+  return `<div class="hkart"><div class="ad">${kacis(r.ad||"(isim yok)")} <span class="hetk" style="background:#2B78C8;color:#fff;margin-left:4px">🟦 SGK reçetesi</span></div>
+    <div class="hkucuk" style="margin:3px 0 7px">${kacis(r.rec)}${r.tarih?" · "+kacis(r.tarih):""} · <b style="color:#C0552E">karekod eksik (okutulamadı)</b>${r.tutar>0?` · 💰 hasta ödeyecek <b>${sPara(r.tutar)}</b>`:""}</div>
+    <div class="hdugmeler"><button class="wa" type="button" data-soldb="${kacis(r.rec)}">✅ Sipariş oluştur</button>
+      <button class="hcip" type="button" data-sgiz="${kacis(r.rec)}" title="Bu reçeteyi gizle">✖ Gizle</button></div>
+    <div class="ilaclar">${il}</div></div>`;
+}
+async function sGizliKaydet(){ try{ await ayarYaz("sgk_eksik_gizli", await hSifrele(H.anahtar, JSON.stringify(S.eksikGizli||[]))); }catch(e){} }
+async function sGizle(rec){
+  S.eksikGizli = S.eksikGizli||[]; if(!S.eksikGizli.includes(rec)) S.eksikGizli.push(rec);
+  await sGizliKaydet(); sCiz();
+}
+// gizlenen ama hâlâ feed'de olan (Rx'te tamamlanmamış) reçeteler
+function sGizliAcik(){ const g=new Set(S.eksikGizli||[]); return ((S.eksikDb&&S.eksikDb.liste)||[]).filter(r=>g.has(r.rec)); }
+function sGizliKart(r){
+  const il = (r.ilac||[]).map(x=>{ const yok=(x.stok||0)<=0; return `<div class="hilac"><span class="n">${kacis(x.ad)}</span><span class="hetk">${x.yaz} yazılan</span><span class="hetk ${yok?'kirmizi':''}">stok ${x.stok}</span></div>`; }).join("");
+  return `<div class="hkart"><div class="ad">${kacis(r.ad||"(isim yok)")} <span class="hkucuk">· ${kacis(r.rec)}${r.tarih?" · "+kacis(r.tarih):""} · 🙈 gizli</span></div>
+    <div class="hdugmeler"><button class="wa" type="button" data-sgal="${kacis(r.rec)}">↩️ Geri al</button></div>
+    <div class="ilaclar">${il}</div></div>`;
+}
+async function sGeriAl(rec){ S.eksikGizli=(S.eksikGizli||[]).filter(x=>x!==rec); await sGizliKaydet(); sCiz(); }
+async function sOlusturFormDb(rec){
+  const r = ((S.eksikDb&&S.eksikDb.liste)||[]).find(x=>x.rec===rec); if(!r) return;
+  let oz = {};
+  try { const barlar=(r.ilac||[]).map(x=>x.bar).filter(Boolean); if(barlar.length){ const {data}=await db.from("urun_ozet").select("barkod,adet_90,kac_ay_yeter,stok").in("barkod",barlar); for(const u of data||[]) oz[u.barkod]=u; } } catch(e){}
+  const satir = (r.ilac||[]).map((x,i)=>{
+    const u=oz[x.bar]||{}; const yok=(x.stok||0)<=0;
+    const s90 = u.adet_90!=null ? ("90 günde "+u.adet_90+" sattı") : "satış verisi yok";
+    const ay = (u.kac_ay_yeter!=null && u.kac_ay_yeter>0) ? (" · ~"+Number(u.kac_ay_yeter).toFixed(1)+" ay yeter") : "";
+    return `<div class="hilac" style="align-items:center">
+      <label style="display:flex;align-items:center;gap:8px;flex:1;cursor:pointer;min-width:0"><input type="checkbox" data-sc="${i}" ${yok?"checked":""}>
+        <span class="n">${kacis(x.ad)} <span class="hkucuk">${s90}${ay} · stok ${x.stok||0}</span></span></label>
+      <input type="number" min="1" value="${x.yaz||1}" data-si="${i}" style="width:66px;padding:6px;border:1px solid var(--cizgi);border-radius:8px;background:var(--yuzey);color:var(--murekkep)">
+      <span class="hkucuk">adet</span></div>`;
+  }).join("");
+  const milCip = S_MILLET.map(m=>`<button type="button" class="hcip ${m[0]==="TR"?"secili":""}" data-mv="${m[0]}">${bayrak(m[1])} ${m[2]}</button>`).join("");
+  $("#icerik").innerHTML = `<button class="geri" type="button" onclick="sCiz()">‹ Geri</button>
+    <div class="liste-ust"><div><h1>Sipariş oluştur</h1><p>${kacis(r.ad||"")} · ${kacis(r.rec)} · <span class="hkucuk">işaretli ilaçlar sipariş edilir (stoksuzlar ön-işaretli)</span></p></div></div>
+    <div class="hkart"><div class="ilaclar">${satir}</div>
+      <div class="alan" style="margin-top:12px"><span>Milliyet (mesaj dili)</span><div class="hcipler" id="sMilCip">${milCip}</div></div><input type="hidden" id="sMil" value="TR">
+      <label class="alan"><span>Telefon (WhatsApp)</span><input id="sTel" type="tel" value="${kacis(r.tel||sTelBul(r.tc,r.ad)||"")}" placeholder="05xx xxx xx xx"></label>
+      ${sTelBul(r.tc,r.ad)?`<button class="hcip" id="sTelUnut" type="button" style="margin:2px 0 4px;color:#C0552E">🗑️ Kayıtlı numarayı unut</button>`:""}
+      ${SODEME_HTML}
+      <button class="ana-dugme" id="sOnayla" type="button" style="margin-top:12px">Siparişi oluştur</button></div>`;
+  document.querySelectorAll("#sMilCip [data-mv]").forEach(b=>b.addEventListener("click", ()=>{ $("#sMil").value=b.dataset.mv; document.querySelectorAll("#sMilCip .hcip").forEach(x=>x.classList.remove("secili")); b.classList.add("secili"); }));
+  if(r.tutar>0 && $("#sTop")) $("#sTop").value=r.tutar;   // Hasta Tutari otomatik on-dolum (duzenlenebilir)
+  sOdemeBagla();
+  sTelUnutBagla(r.tc,r.ad);
+  $("#sOnayla").addEventListener("click", async ()=>{
+    const ad = [];
+    document.querySelectorAll("[data-sc]").forEach(chk=>{ if(!chk.checked) return; const i=+chk.dataset.sc; const inp=document.querySelector(`[data-si="${i}"]`); const n=Math.max(1,parseInt(inp&&inp.value)||1); const x=r.ilac[i]; const u=oz[x.bar]||{}; const not=[(u.adet_90!=null?"90g "+u.adet_90:""),(u.stok!=null?"stok "+u.stok:"")].filter(Boolean).join(" · "); ad.push({ad:x.ad,bar:x.bar,adet:n,not}); });
+    if(!ad.length) return alert("En az bir ilaç seçin.");
+    const tel=$("#sTel").value.trim();
+    const o = { id:"s"+Date.now().toString(36), kaynak:"sgk", rec:r.rec, prot:r.erec||"", ad:r.ad, tc:r.tc, tel, mil:$("#sMil").value, ilac:ad, odeme:sOdemeOku(), durum:"verildi", tarih:new Date().toISOString(), sira:{verildi:new Date().toISOString()} };
+    S.kayit.push(o);
+    await sKaydet(); await sTelHatirla(r.tc, r.ad, tel);
+    S.gorunum="aktif"; siparisSayfasi();
+  });
+}
+function sKart(o){
+  const il = (o.ilac||[]).map((x,i)=>`<div class="hilac"><span class="n">${kacis(x.ad)}${x.elden?' <span class="hetk">elden</span>':''}${x.not?` <span class="hkucuk">${kacis(x.not)}</span>`:''}</span><span class="hetk">${x.adet} adet${x.fiyat?` · ${sPara(x.fiyat*(x.adet||1))}`:''}</span>${(x.elden && o.durum!=="teslim")?` <button class="hcip" type="button" data-sidsil="${o.id}" data-sidx="${i}" title="Bu ürünü çıkar" style="padding:1px 7px;color:#C0552E">×</button>`:''}</div>`).join("");
+  const mil = S_MILLET.find(m=>m[0]===(o.mil||"TR")) || S_MILLET[0];
+  const tel = telNo(o.tel);
+  const elden = o.kaynak==="elden";
+  let dug = "";
+  if(o.durum==="verildi" || o.durum==="depoda"){ dug += `<button class="hcip" type="button" data-sdepo="${o.id}">🏪 Depoya ekle</button><button class="wa" type="button" data-sdur="geldi" data-sid="${o.id}">📦 Geldi</button>`; }
+  if(o.durum==="geldi")   dug += `<button class="wa" type="button" data-syer="${o.id}">✅ Hazırla / yere koy</button>`;
+  if(o.durum==="hazir" || o.durum==="haber"){
+    dug += tel ? `<button class="wa" type="button" data-swa="${o.id}">💬 WhatsApp ${bayrak(mil[1])}</button>` : `<span class="hetk kirmizi">telefon yok</span>`;
+    dug += `<button class="wa" type="button" style="background:#1F7A4D" data-sdur="teslim" data-sid="${o.id}">🎉 Teslim edildi</button>`;
+  }
+  if(o.durum!=="teslim") dug += `<button class="hcip" type="button" data-sekle="${o.id}" title="Ürün ekle (elden)">➕ Ürün</button> <button class="hcip" type="button" data-sode="${o.id}" title="Ödeme">💰</button> <button class="hcip" type="button" data-smil="${o.id}" title="Milliyet / dil">${bayrak(mil[1])}</button> <button class="hcip" type="button" data-ssil="${o.id}" title="Sil">🗑️</button>`;
+  let borcHtml = "";
+  if(o.odeme && Number(o.odeme.toplam)>0){
+    const k = sKalan(o); const vurgu = (o.durum==="geldi"||o.durum==="hazir"||o.durum==="haber");
+    const eldenTop = (o.ilac||[]).filter(x=>x.elden && x.fiyat>0).reduce((t,x)=>t+x.fiyat*(x.adet||1),0);
+    const receteKismi = Math.round(((Number(o.odeme.toplam)||0)-eldenTop)*100)/100;
+    const sat=[]; if(receteKismi>0.009) sat.push(`SGK reçetesi (hasta payı): <b>${sPara(receteKismi)}</b>`);
+    (o.ilac||[]).filter(x=>x.elden && x.fiyat>0).forEach(x=> sat.push(`${kacis(x.ad)}${(x.adet>1)?" ×"+x.adet:""}: <b>${sPara(x.fiyat*(x.adet||1))}</b>`));
+    const detay = sat.length>1 ? `<div class="hkucuk" style="margin:6px 0 2px;line-height:1.7;color:var(--soluk)">${sat.join("<br>")}</div>` : "";
+    borcHtml = detay + (k>0
+      ? `<div style="margin-top:4px;${vurgu?"font-size:16px;":""}color:#C0552E;font-weight:700">💰 Borç: ${sPara(k)} <span class="hkucuk" style="color:var(--soluk);font-weight:400">(toplam ${sPara(o.odeme.toplam)}${Number(o.odeme.odenen)>0?", ödenen "+sPara(o.odeme.odenen):""})</span></div>`
+      : `<div class="hkucuk" style="margin-top:4px;color:#1F7A4D;font-weight:600">✓ Ödendi (${sPara(o.odeme.toplam)})</div>`);
+  }
+  const yer = o.yer ? ` · 📍 ${kacis(o.yer)}` : "";
+  return `<div class="hkart ${o.durum==="teslim"?"gonderildi":""}">
+    <div class="ad">${kacis(o.ad||"(isim yok)")} ${o.kaynak==="sgk"?`<span class="hetk" style="background:#2B78C8;color:#fff">🟦 SGK reçetesi${(o.rec&&o.rec!=="ELDEN")?" "+kacis(o.rec):""}</span>`:`<span class="hetk" style="background:#6E8780;color:#fff">✋ Elden</span>`}${o.tel?` <span class="hkucuk">· ${kacis(o.tel)}</span>`:""}</div>
+    <div class="hdugmeler">${dug}</div>
+    <div class="ilaclar">${il}${borcHtml}<div class="hkucuk" style="margin-top:4px">${S_DURUM_AD[o.durum]||o.durum}${yer}${o.sira&&o.sira.haber?" · haber: "+tarihSaat(o.sira.haber):""}</div></div>
+  </div>`;
+}
+// kartlardaki ödeme/dil/sil/yer/whatsapp/durum butonları sCiz sonunda bağlanıyor (data-sode dahil)
+async function sOdemeDuzenle(id){
+  const o = sBul(id); if(!o) return;
+  const od = o.odeme||{toplam:0,odenen:0}; const tam = Number(od.toplam)>0 && sKalan(o)<=0;
+  $("#icerik").innerHTML = `<button class="geri" type="button" onclick="sCiz()">‹ Geri</button>
+    <div class="liste-ust"><div><h1>Ödeme</h1><p>${kacis(o.ad||"")} · ${o.kaynak==="elden"?"elden":kacis(o.rec||"")}</p></div></div>
+    <div class="hkart">${SODEME_HTML}<button class="ana-dugme" id="sOdeKaydet" type="button" style="margin-top:12px">Kaydet</button></div>`;
+  if(Number(od.toplam)>0) $("#sTop").value = od.toplam;
+  if(Number(od.odenen)>0) $("#sOde").value = od.odenen;
+  if(tam) $("#sOdendi").checked = true;
+  sOdemeBagla();
+  $("#sOdeKaydet").addEventListener("click", async ()=>{ o.odeme = sOdemeOku(); await sKaydet(); S.gorunum = o.durum==="teslim"?"arsiv":"aktif"; sCiz(); });
+}
+// Siparişteki ilaçları depo fiyatları/MF ile göster. Depo listesinde olmayan (eksik) ilaçlar
+// açılır açılmaz OTOMATİK depolarda aranır (barkodla); sonuç satır satır düşer.
+async function sDepoEkle(id){
+  const o = sBul(id); if(!o) return; const ilaclar=o.ilac||[];
+  // 1) iskeleti HEMEN çiz (bekletme yok) — isim + adet + yer tutucular
+  $("#icerik").innerHTML = `<button class="geri" type="button" onclick="sCiz()">‹ Geri</button>
+    <div class="liste-ust"><div><h1>🏪 Depoya ekle</h1><p>${kacis(o.ad||"")} · ${o.kaynak==="elden"?"elden":kacis(o.rec||"")} · <span class="hkucuk">seçeneğe dokun → adet sor → depo sepetine ekler</span></p></div></div>
+    ${ilaclar.length ? ilaclar.map((x,i)=>`<div class="hkart"><div class="ad">${kacis(x.ad)} <span class="hkucuk">· ${x.adet} sipariş</span></div><div data-dacik="${i}" class="hkucuk" style="margin:4px 0;color:var(--soluk)"></div><div data-dfiyat="${i}"><p class="hkucuk" style="margin:4px 0;color:var(--soluk)">⏳ yükleniyor…</p></div></div>`).join("") : '<div class="hkart"><p class="hkucuk" style="margin:0">İlaç yok.</p></div>'}`;
+  if(!ilaclar.length) return;
+  // 2) depo fiyatları + urun_ozet PARALEL yüklenir
+  const barlar=[...new Set(ilaclar.map(x=>x.bar).filter(Boolean))];
+  const ozFetch = async()=>{ const m={}; try{ for(let j=0;j<barlar.length;j+=200){ const { data }=await db.from("urun_ozet").select("barkod,adet_90,stok,stok_maliyet,kac_ay_yeter").in("barkod", barlar.slice(j,j+200)); for(const u of data||[]) m[u.barkod]=u; } }catch(e){} return m; };
+  const [DP, oz] = await Promise.all([ depoYukle().catch(()=>null), ozFetch() ]);
+  const idx={}; if(DP&&DP.u) for(const u of DP.u) idx[u.b]=u;
+  const satisBilgi = (bar)=>{ const z=oz[bar]; if(!z) return ""; const p=[];
+    if(z.adet_90!=null){ p.push(`3 ayda ~${sayi(z.adet_90)} satıyor`); p.push(`ayda ~${sayi(Math.round((z.adet_90||0)/3*10)/10)}`); }
+    if(z.stok!=null) p.push(`stok ${sayi(z.stok)} kutu`);
+    if(z.stok_maliyet) p.push(`~${tl(z.stok_maliyet)} para bağlı`);
+    if(z.kac_ay_yeter>0) p.push(`~${Number(z.kac_ay_yeter).toFixed(1)} ay yeter`);
+    return p.length ? `📊 ${p.join(" · ")}` : ""; };
+  const fiyatHtml = (x,u)=>{
+    const dBtn=(k,a,m,n,et)=>`<button class="hcip" type="button" style="margin:2px 4px 2px 0${m>0?'':';border-style:dashed'}" data-dep="${k}" data-bar="${kacis(x.bar)}" data-ad="${kacis(x.ad)}" data-a="${a}" data-m="${m}">${et} → ${tl(kdvli(n,u))}</button>`;
+    const dep=["as","sn","bek"].map(k=>{ const d=u[k]; if(!d) return ""; const tek=mfTaban(d); const mfSecs=depoSecenekler(d).filter(s=>s.m>0).slice(0,4); if(!(tek>0)&&!mfSecs.length) return ""; const btns=(tek>0?dBtn(k,1,0,tek,"MF'siz 1 adet"):"")+mfSecs.map(s=>dBtn(k,s.a,s.m||0,s.n,secenekAd(s))).join(""); return `<div style="margin-top:6px"><b>${DEPO_AD[k]}</b>${d.s===0?' <span class="hetk kirmizi">stok yok</span>':''} <span>${btns}</span></div>`; }).join("");
+    const oneri=mfOneri(u); const oneriTxt=oneri?(()=>{ const h=oneri.en, mk=MF_KARAR[h.karar]||["",""]; return `${mk[0]} <b>${mk[1]}</b> — ${DEPO_AD[h.k]} <b>${h.a}+${h.m}</b>: stokla birlikte ${ayMetin(h.erime)} erir · kutu %${Math.round(h.indirim*100)} ucuz${h.kazanc>0?` · kazanç ~${tl(kdvli(h.kazanc,u))}`:""}`; })():"";
+    return `${oneriTxt?`<p class="hkucuk" style="margin:4px 0">${oneriTxt}</p>`:""}${dep||'<p class="hkucuk" style="margin:4px 0 0">Depolarda fiyat yok.</p>'}`; };
+  // 3) her ilacı doldur
+  const eksik=[];
+  ilaclar.forEach((x,i)=>{
+    const acikEl=document.querySelector(`[data-dacik="${i}"]`); if(acikEl) acikEl.innerHTML=satisBilgi(x.bar);
+    const fEl=document.querySelector(`[data-dfiyat="${i}"]`); if(!fEl) return;
+    const u=x.bar?idx[x.bar]:null;
+    if(u){ fEl.innerHTML=fiyatHtml(x,u); }
+    else if(x.bar){ fEl.id="dara"+i; fEl.innerHTML=`<p class="hkucuk" style="margin:4px 0">🔎 depolarda aranıyor…</p>`; eksik.push({x,i}); }
+    else { fEl.innerHTML=`<p class="hkucuk" style="margin:4px 0 6px">Barkod yok — adla ara:</p><button class="hcip" type="button" data-depara="${kacis(x.ad)}" data-sip="${o.id}">🔎 Depolarda ara</button>`; }
+  });
+  // 4) butonları bağla + eksikleri otomatik ara
+  document.querySelectorAll("[data-dep]").forEach(b=>b.addEventListener("click", ()=>{ SEPET_ORDER=o.id; sepetAc(b.dataset.dep, b.dataset.bar, b.dataset.ad, +b.dataset.a, +b.dataset.m); }));
+  document.querySelectorAll("[data-depara]").forEach(b=>b.addEventListener("click", ()=>{ SEPET_ORDER=b.dataset.sip; location.hash="depoara/"+encodeURIComponent(b.dataset.depara); }));
+  if(eksik.length) sDaCoklu(eksik, o.id);
+}
+// birden çok eksik ilacı tek seferde depolarda arat; sonuçları ilgili satıra bas
+async function sDaCoklu(eksik, orderId){
+  if(!(await oturumKontrol())) return;
+  let l; try{ l=await sepetListe(); }catch(e){ return; }
+  const ids={};
+  for(const e of eksik){ const sid="a"+Date.now().toString(36)+Math.random().toString(36).slice(2,6); ids[e.i]=sid; const bq=String(e.x.bar).replace(/^0(\d{13})$/,"$1"); l.push({ id:sid, tip:"ara", q:bq, durum:"bekliyor", zaman:new Date().toISOString() }); }
+  try{ await db.from("ayar").upsert({ anahtar:"sepet_istek", deger:JSON.stringify({ liste:l.slice(-60) }), guncelleme:new Date().toISOString() }, { onConflict:"anahtar" }); }catch(e){ return; }
+  const kalan = new Set(eksik.map(e=>e.i));
+  for(let t=0; t<40 && kalan.size; t++){
+    await new Promise(r=>setTimeout(r, t<20?1500:3000));
+    if(!document.getElementById("dara"+eksik[0].i) && ![...kalan].some(i=>document.getElementById("dara"+i))) return;  // ekrandan çıkıldı
+    let sonuc=[]; try{ const { data }=await db.from("ayar").select("deger").eq("anahtar","depo_ara_sonuc").maybeSingle(); sonuc = data?(JSON.parse(data.deger).liste||[]):[]; }catch(e){ continue; }
+    for(const i of [...kalan]){
+      const e = eksik.find(z=>z.i===i); const s = sonuc.find(z=>z.id===ids[i]); if(!s) continue;
+      const cont = document.getElementById("dara"+i); if(!cont){ kalan.delete(i); continue; }
+      cont.innerHTML = sDaRender(s);
+      cont.querySelectorAll("[data-dax]").forEach(b=>b.addEventListener("click", ()=>{ const [k,ii,a,m]=b.dataset.dax.split("|"); const prod=s.depolar[k].u[+ii]; SEPET_ORDER=orderId; sepetAc(k, String(prod.b).replace(/^0(\d{13})$/,"$1"), prod.ad||prod.b, +a, +m); }));
+      kalan.delete(i);
+    }
+  }
+  for(const i of kalan){ const cont=document.getElementById("dara"+i); if(cont){ const e=eksik.find(z=>z.i===i); const bq=String(e.x.bar).replace(/^0(\d{13})$/,"$1"); cont.innerHTML=`<p class="hkucuk" style="margin:4px 0 6px">Depo cevabı gelmedi — eczane bilgisayarında Chrome + depo eklentisi açık ve depolar girişli mi?</p><button class="hcip" type="button" data-depara="${kacis(bq)}" data-sip="${orderId}">🔎 Tekrar ara</button>`; const b=cont.querySelector("[data-depara]"); if(b) b.addEventListener("click", ()=>{ SEPET_ORDER=orderId; location.hash="depoara/"+encodeURIComponent(b.dataset.depara); }); } }
+}
+// depo_ara_sonuc'tan bir ilacın depolardaki fiyat seçeneklerini (tl, PIN'siz) + sepete ekle butonlarını üret
+function sDaRender(s){
+  const sira = (s.sira&&s.sira.length)?s.sira:Object.keys(s.depolar||{});
+  let out="";
+  for(const k of sira){ const d=(s.depolar||{})[k]; if(!d || (d.durum && d.durum!=="ok")) continue;
+    const u=(d.u||[]); if(!u.length) continue;
+    const prod=u[0]; const kd=prod.k!=null?Number(prod.k):10; const tek=mfTaban(prod); const mfSecs=depoSecenekler(prod).filter(o=>o.m>0).slice(0,4);
+    if(!(tek>0) && !mfSecs.length) continue;
+    const dx=(a,m,n,etiket)=>`<button class="hcip" type="button" style="margin:2px 4px 2px 0${m>0?'':';border-style:dashed'}" data-dax="${k}|0|${a}|${m}">${etiket} → ${tl(n*(1+kd/100))}</button>`;
+    const btns=(tek>0?dx(1,0,tek,"MF'siz 1 adet"):"")+mfSecs.map(o=>dx(o.a,o.m||0,o.n,secenekAd(o))).join("");
+    out += `<div style="margin-top:6px"><b>${DEPO_AD[k]||k}</b>${prod.s===0?' <span class="hetk kirmizi">stok yok</span>':prod.s===1?' <span class="hetk" style="color:var(--yesil)">stok var</span>':''} <span>${btns}</span></div>`;
+  }
+  return out || `<p class="hkucuk" style="margin:4px 0">Depolarda bulunamadı.</p>`;
+}
+// SGK/elden siparişe sonradan ek (elden) ürün ekle — fiyatı otomatik (PSF), toplama yansır
+function sUrunEkleForm(id){
+  const o = sBul(id); if(!o) return; let bar="";
+  $("#icerik").innerHTML = `<button class="geri" type="button" onclick="sCiz()">‹ Geri</button>
+    <div class="liste-ust"><div><h1>➕ Ürün ekle</h1><p>${kacis(o.ad||"")} · <span class="hkucuk">reçete dışı ek ürün — aynı siparişe eklenir</span></p></div></div>
+    <div class="hkart">
+      <label class="alan"><span>İlaç adı</span><input id="ueAd" autocomplete="off" placeholder="yazınca çıkar"></label>
+      <div id="ueOne" style="${SONE_STIL}"></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <input id="ueAdet" type="number" min="1" value="1" title="Adet" style="width:70px;padding:9px;border:1px solid var(--cizgi);border-radius:8px;background:var(--yuzey);color:var(--murekkep)">
+        <input id="ueFiyat" type="number" min="0" step="0.01" placeholder="Fiyat (TL)" style="flex:1;padding:9px;border:1px solid var(--cizgi);border-radius:8px;background:var(--yuzey);color:var(--murekkep)">
+      </div>
+      <p class="hkucuk" id="ueTop" style="margin:8px 0 0">İlacı yazıp seçince satış fiyatı otomatik gelir, değiştirebilirsin.</p>
+      <p class="hkucuk" id="ueAcik" style="margin:4px 0 0;color:var(--soluk)"></p>
+      <button class="ana-dugme" id="ueKaydet" type="button" style="margin-top:12px">Siparişe ekle</button></div>`;
+  function topYaz(){ const n=Math.max(1,parseInt($("#ueAdet").value)||1); const f=Number($("#ueFiyat").value)||0; $("#ueTop").innerHTML = f>0?`Bu ürün: <b>${sPara(f*n)}</b> · siparişin yeni toplamı: <b>${sPara((Number(o.odeme&&o.odeme.toplam)||0)+f*n)}</b>`:"İlacı yazıp seçince satış fiyatı otomatik gelir, değiştirebilirsin."; }
+  function ueDoldur(u){ $("#ueAd").value=u.ad; bar=u.bar||u.barkod||""; if((u.psf>0) && !$("#ueFiyat").value) $("#ueFiyat").value=Math.round(u.psf*100)/100; topYaz(); sIlacAciklama(bar).then(t=>{ const el=$("#ueAcik"); if(el) el.innerHTML=t; }); }
+  sOneriKutu($("#ueAd"), $("#ueOne"), async v=>(await sIlacAra(v)).map(u=>({_html:`${kacis(u.ad)} <span style="color:var(--soluk)">· stok ${u.stok??0}${u.psf!=null?` · ${sPara(u.psf)}`:""}</span>`, ad:u.ad, bar:u.barkod, psf:u.psf})), ueDoldur);
+  $("#ueAd").addEventListener("blur", ()=>{ setTimeout(async ()=>{ if(bar || $("#ueFiyat").value || !$("#ueAd").value.trim()) return; const r=await sIlacAra($("#ueAd").value); if(r[0]) ueDoldur(r[0]); }, 250); });
+  $("#ueAdet").addEventListener("input", topYaz); $("#ueFiyat").addEventListener("input", topYaz);
+  $("#ueKaydet").addEventListener("click", async ()=>{
+    const ad=$("#ueAd").value.trim(); if(!ad) return alert("İlaç adı gerekli.");
+    const n=Math.max(1,parseInt($("#ueAdet").value)||1); const f=Math.round((Number($("#ueFiyat").value)||0)*100)/100;
+    const it={ad,adet:n,elden:true}; if(bar) it.bar=bar; if(f>0) it.fiyat=f;
+    o.ilac=o.ilac||[]; o.ilac.push(it);
+    o.odeme=o.odeme||{toplam:0,odenen:0}; if(f>0) o.odeme.toplam=Math.round(((Number(o.odeme.toplam)||0)+f*n)*100)/100;
+    await sKaydet(); S.gorunum = o.durum==="teslim"?"arsiv":"aktif"; sCiz();
+  });
+}
+async function sOlusturForm(rec){
+  const r = ((S.aday&&S.aday.liste)||[]).find(x=>x.rec===rec); if(!r) return;
+  let oz = {};
+  try {
+    const barlar = (r.ilac||[]).map(x=>x.bar).filter(Boolean);
+    if(barlar.length){ const { data } = await db.from("urun_ozet").select("barkod,adet_90,kac_ay_yeter,stok").in("barkod", barlar); for(const u of data||[]) oz[u.barkod]=u; }
+  } catch(e){}
+  const satir = (r.ilac||[]).map((x,i)=>{
+    const u = oz[x.bar]||{};
+    const s90 = u.adet_90!=null ? ("90 günde "+u.adet_90+" sattı") : "satış verisi yok";
+    const ay = (u.kac_ay_yeter!=null && u.kac_ay_yeter>0) ? (" · ~"+Number(u.kac_ay_yeter).toFixed(1)+" ay yeter") : "";
+    return `<div class="hilac" style="align-items:center">
+      <span class="n">${kacis(x.ad)} <span class="hkucuk">${s90}${ay} · stok ${x.stok||0}</span></span>
+      <input type="number" min="1" value="${x.eksik}" data-si="${i}" style="width:66px;padding:6px;border:1px solid var(--cizgi);border-radius:8px;background:var(--yuzey);color:var(--murekkep)">
+      <span class="hkucuk">adet</span></div>`;
+  }).join("");
+  const milCip = S_MILLET.map(m=>`<button type="button" class="hcip ${m[0]==="TR"?"secili":""}" data-mv="${m[0]}">${bayrak(m[1])} ${m[2]}</button>`).join("");
+  $("#icerik").innerHTML = `<button class="geri" type="button" onclick="sCiz()">‹ Geri</button>
+    <div class="liste-ust"><div><h1>Sipariş oluştur</h1><p>${kacis(r.ad||"")} · ${kacis(r.rec)}</p></div></div>
+    <div class="hkart"><div class="ilaclar">${satir}</div>
+      <div class="alan" style="margin-top:12px"><span>Milliyet (mesaj dili)</span><div class="hcipler" id="sMilCip">${milCip}</div></div><input type="hidden" id="sMil" value="TR">
+      <label class="alan"><span>Telefon (WhatsApp)</span><input id="sTel" type="tel" value="${kacis(r.tel||sTelBul(r.tc,r.ad)||"")}" placeholder="05xx xxx xx xx"></label>
+      ${sTelBul(r.tc,r.ad)?`<button class="hcip" id="sTelUnut" type="button" style="margin:2px 0 4px;color:#C0552E">🗑️ Kayıtlı numarayı unut</button>`:""}
+      ${SODEME_HTML}
+      <button class="ana-dugme" id="sOnayla" type="button" style="margin-top:12px">Siparişi oluştur</button></div>`;
+  document.querySelectorAll("#sMilCip [data-mv]").forEach(b=>b.addEventListener("click", ()=>{ $("#sMil").value=b.dataset.mv; document.querySelectorAll("#sMilCip .hcip").forEach(x=>x.classList.remove("secili")); b.classList.add("secili"); }));
+  sOdemeBagla();
+  sTelUnutBagla(r.tc,r.ad);
+  $("#sOnayla").addEventListener("click", async ()=>{
+    const ad = [];
+    document.querySelectorAll("[data-si]").forEach(inp=>{ const i=+inp.dataset.si; const n=Math.max(1,parseInt(inp.value)||1); const x=r.ilac[i]; const u=oz[x.bar]||{}; const not=[(u.adet_90!=null?"90g "+u.adet_90:""),(u.stok!=null?"stok "+u.stok:"")].filter(Boolean).join(" · "); ad.push({ad:x.ad,bar:x.bar,adet:n,not}); });
+    const tel=$("#sTel").value.trim();
+    const o = { id:"s"+Date.now().toString(36), kaynak:"sgk", rec:r.rec, prot:r.prot, ad:r.ad, tc:r.tc, tel, mil:$("#sMil").value, ilac:ad, odeme:sOdemeOku(), durum:"verildi", tarih:new Date().toISOString(), sira:{verildi:new Date().toISOString()} };
+    S.kayit.push(o);
+    S.aday.liste = (S.aday.liste||[]).filter(x=>x.rec!==r.rec);   // oluşturuldu → aday listesinden çıkar
+    await sKaydet(); await sAdayKaydet(); await sTelHatirla(r.tc, r.ad, tel);
+    S.gorunum="aktif"; siparisSayfasi();
+  });
+}
+async function sDurumGecir(id, yeni){
+  const o = sBul(id); if(!o) return; o.durum=yeni; o.sira=o.sira||{}; o.sira[yeni]=new Date().toISOString();
+  if(yeni==="geldi") o.geldiGor=true;   // elle geldi dedi -> banner yanmaz
+  await sKaydet();
+  if(yeni==="geldi" && S.ayar.ses) sSesCal(o.ad);
+  siparisSayfasi();
+}
+// OTOMATIK GELDI: siparis tarihinde/sonrasinda alinmis ilac varsa durum=geldi (alim_son feed'i)
+async function sAlimKontrol(){
+  const ilac = (S.alimSon&&S.alimSon.ilac)||{}; let degisti=false, geldiVar=false;
+  for(const o of S.kayit){
+    if(o.durum!=="verildi" && o.durum!=="depoda") continue;
+    const sipTarih = (o.tarih||"").slice(0,10);
+    const geldi = (o.ilac||[]).some(x=> x.bar && ilac[x.bar] && ilac[x.bar].t && ilac[x.bar].t >= sipTarih);
+    if(geldi){ o.durum="geldi"; o.sira=o.sira||{}; o.sira.geldi=new Date().toISOString(); o.geldiGor=false; degisti=true; geldiVar=true; }
+  }
+  if(degisti) await sKaydet();
+  return geldiVar;
+}
+function sSesCal(){
+  if(Date.now()-S_SES_SON < 1500) return; S_SES_SON=Date.now();
+  try { const u = new SpeechSynthesisUtterance("Sipaariş geldi"); u.lang="tr-TR"; u.rate=0.8; u.pitch=1; speechSynthesis.speak(u); } catch(e){}  // gizlilik: hasta adı söylenmez; yavaş ve net okunsun diye
+}
+function sWhatsapp(id){
+  const o = sBul(id); if(!o) return; const t = telNo(o.tel); if(!t) return alert("Telefon numarası yok veya geçersiz.");
+  const sablon = sMesaj(o.mil);
+  const ad = (o.ad||"").trim().split(/\s+/).slice(0,1).join(" ");
+  const msg = sablon.replace("{ad}", ad);
+  window.open("https://wa.me/"+t+"?text="+encodeURIComponent(msg), "_blank");
+  o.durum = "haber"; o.sira=o.sira||{}; o.sira.haber=new Date().toISOString();
+  sKaydet().then(()=>siparisSayfasi());
+}
+function sYerSec(id){
+  const o = sBul(id); if(!o) return;
+  const liste = S.ayar.yerler||[];
+  const se = liste.map(y=>`<span style="display:inline-flex;align-items:center;margin:0 6px 6px 0"><button class="hcip" type="button" data-yd="${kacis(y)}" style="margin:0">📍 ${kacis(y)}</button><button class="hcip" type="button" data-ysil="${kacis(y)}" title="Yeri sil" style="margin:0 0 0 2px;padding:6px 9px;color:#C0552E">×</button></span>`).join("");
+  $("#icerik").innerHTML = `<button class="geri" type="button" onclick="sCiz()">‹ Geri</button>
+    <div class="liste-ust"><div><h1>Nereye koydun?</h1><p>${kacis(o.ad||"")} · ${kacis(o.rec||"")}</p></div></div>
+    <div class="hkart"><div>${se}</div>
+      <label class="alan" style="margin-top:10px"><span>Yeni yer ekle</span><input id="yYeni" placeholder="ör. Raf 3"></label>
+      <button class="hcip" id="yEkle" type="button">+ Ekle</button></div>`;
+  document.querySelectorAll("[data-yd]").forEach(b=>b.addEventListener("click", async ()=>{ o.yer=b.dataset.yd; o.durum="hazir"; o.sira=o.sira||{}; o.sira.hazir=new Date().toISOString(); await sKaydet(); siparisSayfasi(); }));
+  document.querySelectorAll("[data-ysil]").forEach(b=>b.addEventListener("click", async ()=>{ const y=b.dataset.ysil; if(!confirm(`"${y}" yerini listeden silmek istiyor musun?`)) return; S.ayar.yerler=(S.ayar.yerler||[]).filter(x=>x!==y); await sAyarKaydet(); sYerSec(id); }));
+  $("#yEkle").addEventListener("click", async ()=>{ const v=$("#yYeni").value.trim(); if(!v) return; if(!S.ayar.yerler.includes(v)){ S.ayar.yerler.push(v); await sAyarKaydet(); } sYerSec(id); });
+}
+function sMilletSec(id){
+  const o = sBul(id); if(!o) return;
+  const se = S_MILLET.map(m=>`<button class="hcip ${o.mil===m[0]?"secili":""}" type="button" data-md="${m[0]}">${bayrak(m[1])} ${m[2]}</button>`).join("");
+  $("#icerik").innerHTML = `<button class="geri" type="button" onclick="sCiz()">‹ Geri</button>
+    <div class="liste-ust"><div><h1>Milliyet</h1><p>${kacis(o.ad||"")} — WhatsApp mesajı bu dilde gidecek</p></div></div>
+    <div class="hkart"><div class="hcipler">${se}</div></div>`;
+  document.querySelectorAll("[data-md]").forEach(b=>b.addEventListener("click", async ()=>{ o.mil=b.dataset.md; await sKaydet(); siparisSayfasi(); }));
+}
+async function sSil(id){ if(!confirm("Bu siparişi silmek istediğine emin misin?")) return; S.kayit = S.kayit.filter(o=>o.id!==id); await sKaydet(); siparisSayfasi(); }
+// siparişten tek (elden) ürünü çıkar — fiyatı toplamdan düş
+async function sItemSil(id, idx){
+  const o = sBul(id); if(!o || !o.ilac || !o.ilac[idx]) return; const x = o.ilac[idx];
+  if(!confirm(`"${x.ad}" bu siparişten çıkarılsın mı?`)) return;
+  if(x.fiyat>0 && o.odeme){ o.odeme.toplam = Math.max(0, Math.round((((Number(o.odeme.toplam)||0) - x.fiyat*(x.adet||1)))*100)/100); }
+  o.ilac.splice(idx,1);
+  await sKaydet(); sCiz();
+}
+// ---- Elden sipariş (reçete dışı, elle) ----
+function sEldenForm(){
+  const milCip = S_MILLET.map(m=>`<button type="button" class="hcip ${m[0]==="TR"?"secili":""}" data-mv="${m[0]}">${bayrak(m[1])} ${m[2]}</button>`).join("");
+  let say=1, eTc="", topElle=false;
+  const alanStil="flex:1;min-width:130px;padding:8px;border:1px solid var(--cizgi);border-radius:8px;background:var(--yuzey);color:var(--murekkep)";
+  const satir = (i)=>`<div data-erw="${i}" style="margin-bottom:6px">
+      <div class="hilac" data-er="${i}" style="align-items:center;gap:6px;flex-wrap:wrap">
+        <input placeholder="İlaç adı veya barkod" data-en="${i}" autocomplete="off" style="${alanStil}">
+        <input type="number" min="1" value="1" data-ea="${i}" title="Adet" style="width:54px;padding:8px;border:1px solid var(--cizgi);border-radius:8px;background:var(--yuzey);color:var(--murekkep)">
+        <input type="number" min="0" step="0.01" placeholder="Fiyat" data-ef="${i}" title="Tane fiyatı (TL) — seçince otomatik gelir" style="width:88px;padding:8px;border:1px solid var(--cizgi);border-radius:8px;background:var(--yuzey);color:var(--murekkep)">
+        <button class="hcip" type="button" data-esil="${i}" title="Satırı sil" style="padding:6px 9px;color:#C0552E">×</button></div>
+      <div data-eone="${i}" style="${SONE_STIL}"></div>
+      <div data-eacik="${i}" class="hkucuk" style="margin:2px 0 0;color:var(--soluk)"></div></div>`;
+  $("#icerik").innerHTML = `<button class="geri" type="button" onclick="sCiz()">‹ Geri</button>
+    <div class="liste-ust"><div><h1>➕ Elden sipariş</h1><p>Reçete dışı — hasta elden ilaç istedi</p></div></div>
+    <div class="hkart">
+      <label class="alan"><span>Hasta adı <span class="hkucuk">(Rx'te kayıtlıysa yazarken çıkar)</span></span><input id="eAd" autocomplete="off" placeholder="Ad Soyad"></label>
+      <div id="eAdOne" style="${SONE_STIL}"></div>
+      <label class="alan" style="margin-top:8px"><span>Telefon (WhatsApp)</span><input id="sTel" type="tel" placeholder="05xx xxx xx xx"></label>
+      <div class="alan" style="margin-top:10px"><span>Milliyet (mesaj dili)</span><div class="hcipler" id="sMilCip">${milCip}</div></div><input type="hidden" id="sMil" value="TR">
+      <div class="alan" style="margin-top:10px"><span>İlaçlar <span class="hkucuk">· fiyat seçince otomatik gelir, değiştirebilirsin</span></span><div id="eIlac">${satir(0)}</div><button class="hcip" id="eEkle" type="button" style="margin-top:6px">+ İlaç ekle</button></div>
+      ${SODEME_HTML}
+      <button class="ana-dugme" id="sOnayla" type="button" style="margin-top:12px">Siparişi oluştur</button></div>`;
+  document.querySelectorAll("#sMilCip [data-mv]").forEach(b=>b.addEventListener("click", ()=>{ $("#sMil").value=b.dataset.mv; document.querySelectorAll("#sMilCip .hcip").forEach(x=>x.classList.remove("secili")); b.classList.add("secili"); }));
+  sHastaYukle();
+  sOneriKutu($("#eAd"), $("#eAdOne"),
+    async v=> sHastaAra(v).map(h=>({...h, _html:`${kacis(h.ad)}${h.tel?` <span style="color:var(--soluk)">· ${kacis(h.tel)}</span>`:""}`})),
+    h=>{ $("#eAd").value=h.ad; eTc=h.tc||""; if(h.tel && !$("#sTel").value.trim()) $("#sTel").value=h.tel; });
+  function eldenTotal(){
+    let t=0; document.querySelectorAll("#eIlac [data-er]").forEach(row=>{ const inp=row.querySelector("[data-en]"); if(!inp.value.trim()) return; const n=Math.max(1,parseInt(row.querySelector("[data-ea]").value)||1); const f=Number(row.querySelector("[data-ef]").value)||0; t+=f*n; });
+    t=Math.round(t*100)/100; const st=$("#sTop"); if(st && !topElle){ st.value=t||""; st.dispatchEvent(new Event("input")); }
+  }
+  function ilacBagla(i){ const inp=document.querySelector(`[data-en="${i}"]`), kutu=document.querySelector(`[data-eone="${i}"]`); if(!inp||!kutu) return;
+    sOneriKutu(inp, kutu, async v=> (await sIlacAra(v)).map(u=>({_html:`${kacis(u.ad)} <span style="color:var(--soluk)">· stok ${u.stok??0}${u.psf!=null?` · ${sPara(u.psf)}`:""}</span>`, ad:u.ad, bar:u.barkod, stok:u.stok, adet_90:u.adet_90, psf:u.psf})),
+      u=>{ inp.value=u.ad; inp.dataset.eb=u.bar||""; inp.dataset.enot=[(u.adet_90!=null?"90g "+u.adet_90:""),(u.stok!=null?"stok "+u.stok:"")].filter(Boolean).join(" · ");
+           const row=inp.closest("[data-erw]"); const ef=row&&row.querySelector("[data-ef]"); if(ef && u.psf>0 && !ef.value) ef.value=Math.round(u.psf*100)/100; eldenTotal(); sIlacAciklama(u.bar).then(t=>{ const el=document.querySelector('[data-eacik="'+i+'"]'); if(el) el.innerHTML=t; }); }); }
+  ilacBagla(0);
+  function silBagla(){ document.querySelectorAll("[data-esil]").forEach(b=>{ b.onclick=()=>{ if(document.querySelectorAll("#eIlac [data-er]").length<=1) return; b.closest("[data-erw]").remove(); eldenTotal(); }; }); }
+  silBagla();
+  $("#eIlac").addEventListener("input", e=>{ if(e.target.matches("[data-ea],[data-ef]")) eldenTotal(); });
+  $("#eIlac").addEventListener("focusout", e=>{ if(!e.target.matches("[data-en]")) return; const inp=e.target; setTimeout(async ()=>{ const row=inp.closest("[data-erw]"); if(!row) return; const ef=row.querySelector("[data-ef]"); if(inp.dataset.eb || !inp.value.trim() || (ef&&ef.value)) return; const r=await sIlacAra(inp.value); if(r[0]){ inp.dataset.eb=r[0].barkod||""; inp.dataset.enot=[(r[0].adet_90!=null?"90g "+r[0].adet_90:""),(r[0].stok!=null?"stok "+r[0].stok:"")].filter(Boolean).join(" · "); if(ef && r[0].psf>0) ef.value=Math.round(r[0].psf*100)/100; eldenTotal(); const i2=inp.dataset.en; sIlacAciklama(r[0].barkod).then(t=>{ const el=document.querySelector('[data-eacik="'+i2+'"]'); if(el) el.innerHTML=t; }); } }, 250); });
+  $("#eEkle").addEventListener("click", ()=>{ const i=say++; $("#eIlac").insertAdjacentHTML("beforeend", satir(i)); ilacBagla(i); silBagla(); });
+  sOdemeBagla();
+  $("#sTop").addEventListener("input", e=>{ if(e.isTrusted) topElle=true; });   // elle değiştirince otomatik toplam durur
+  $("#sOnayla").addEventListener("click", async ()=>{
+    const adSoyad = $("#eAd").value.trim(); if(!adSoyad) return alert("Hasta adı gerekli.");
+    const ad=[]; document.querySelectorAll("#eIlac [data-en]").forEach(inp=>{ const nm=inp.value.trim(); if(!nm) return; const row=inp.closest("[data-er]"); const n=Math.max(1,parseInt(row.querySelector("[data-ea]").value)||1); const f=Number(row.querySelector("[data-ef]").value)||0; const it={ad:nm,adet:n,elden:true}; if(inp.dataset.eb) it.bar=inp.dataset.eb; if(inp.dataset.enot) it.not=inp.dataset.enot; if(f>0) it.fiyat=Math.round(f*100)/100; ad.push(it); });
+    if(!ad.length) return alert("En az bir ilaç yaz.");
+    const tel=$("#sTel").value.trim();
+    const o={ id:"s"+Date.now().toString(36), kaynak:"elden", rec:"ELDEN", prot:"", ad:adSoyad, tc:eTc, tel, mil:$("#sMil").value, ilac:ad, odeme:sOdemeOku(), durum:"verildi", tarih:new Date().toISOString(), sira:{verildi:new Date().toISOString()} };
+    S.kayit.push(o); await sKaydet(); await sTelHatirla(eTc, adSoyad, tel);
+    S.gorunum="aktif"; siparisSayfasi();
+  });
+}
+// ---- Ayarlar: WhatsApp mesajı + yer listesi ----
+function sAyarEkrani(){
+  const m = (S.ayar.mesaj && S.ayar.mesaj.TR) || S_MESAJ.TR;
+  const yerSe = (S.ayar.yerler||[]).map(y=>`<span style="display:inline-flex;align-items:center;margin:0 6px 6px 0"><span class="hcip" style="margin:0">📍 ${kacis(y)}</span><button class="hcip" type="button" data-ysil="${kacis(y)}" title="Sil" style="margin:0 0 0 2px;padding:6px 9px;color:#C0552E">×</button></span>`).join("");
+  $("#icerik").innerHTML = `<button class="geri" type="button" onclick="sCiz()">‹ Geri</button>
+    <div class="liste-ust"><div><h1>⚙️ Ayarlar</h1><p>WhatsApp mesajı ve yer listesi</p></div></div>
+    <div class="hkart">
+      <label class="alan"><span>WhatsApp mesajı (Türkçe)</span>
+        <textarea id="aMsj" rows="4" style="width:100%;padding:10px;border:1px solid var(--cizgi);border-radius:10px;background:var(--yuzey);color:var(--murekkep);resize:vertical;font-family:inherit">${kacis(m)}</textarea></label>
+      <p class="hkucuk" style="margin:6px 0 0"><b>{ad}</b> yazdığın yere hastanın adı gelir. Yabancı hastalara mesaj otomatik kendi dillerinde gider (çeviriler hazır). Türkçe metni çok değiştirirsen bana söyle, çevirileri de güncelleyeyim.</p>
+      <div style="display:flex;gap:8px;margin-top:8px"><button class="hcip" id="aMsjKaydet" type="button">Mesajı kaydet</button><button class="hcip" id="aMsjSifirla" type="button">Varsayılana dön</button></div>
+    </div>
+    <div class="hkart">
+      <span class="hkucuk">Yerler (hazırlananı nereye koydun)</span>
+      <div style="margin-top:8px">${yerSe||'<span class="hkucuk">Yer yok</span>'}</div>
+      <label class="alan" style="margin-top:8px"><span>Yeni yer</span><input id="aYer" placeholder="ör. Raf 3"></label>
+      <button class="hcip" id="aYerEkle" type="button" style="margin-top:6px">+ Ekle</button>
+    </div>`;
+  $("#aMsjKaydet").addEventListener("click", async ()=>{ S.ayar.mesaj=S.ayar.mesaj||{}; S.ayar.mesaj.TR=$("#aMsj").value.trim()||S_MESAJ.TR; await sAyarKaydet(); const b=$("#aMsjKaydet"); b.textContent="✓ Kaydedildi"; setTimeout(()=>b.textContent="Mesajı kaydet",1500); });
+  $("#aMsjSifirla").addEventListener("click", async ()=>{ if(S.ayar.mesaj) delete S.ayar.mesaj.TR; await sAyarKaydet(); sAyarEkrani(); });
+  $("#aYerEkle").addEventListener("click", async ()=>{ const v=$("#aYer").value.trim(); if(!v) return; S.ayar.yerler=S.ayar.yerler||[]; if(!S.ayar.yerler.includes(v)){ S.ayar.yerler.push(v); await sAyarKaydet(); } sAyarEkrani(); });
+  document.querySelectorAll("[data-ysil]").forEach(b=>b.addEventListener("click", async ()=>{ const y=b.dataset.ysil; if(!confirm(`"${y}" silinsin mi?`)) return; S.ayar.yerler=(S.ayar.yerler||[]).filter(x=>x!==y); await sAyarKaydet(); sAyarEkrani(); }));
+}
+
+$("#siparisDugme").addEventListener("click", ()=>{ location.hash = "siparis"; });
 $("#hastaDugme").addEventListener("click", ()=>{ location.hash = "hastalar"; });
 $("#depoDugme").addEventListener("click", ()=>{ location.hash = "depolar"; });
 $("#nvDugme").addEventListener("click", ()=>{ location.hash = "neverelim"; });
+$("#ibDugme").addEventListener("click", ()=>{ location.hash = "ilacbul"; });
 /* ---------- karekod / barkod okutma (telefon kamerası) ---------- */
 let SON_OKUTMA = null;
 // GS1 karekod: (01) GTIN 14 · (21) seri · (17) SKT YYMMDD · (10) parti
@@ -1927,6 +2817,7 @@ $("#taraDugme").addEventListener("click", taramaAc);
    istek ayar.sepet_istek'e yazılır; eczane bilgisayarındaki sepet döngüsü 1,5 sn içinde görür, Chrome eklentisi depo ekranında sepete ekler. */
 const SEPET_DEPOLAR = ["as","sn","bek"];
 let SEPET_SECIM = null;
+let SEPET_ORDER = null;   // sDepoEkle bunu set eder; istek bu sipariş id'siyle etiketlenir
 async function sepetListe(){
   const { data, error } = await db.from("ayar").select("deger").eq("anahtar","sepet_istek").maybeSingle();
   if(error) throw error;
@@ -1953,7 +2844,7 @@ function sepetToplamYaz(){
 function sepetNot(metin, sure){ let n = $(".sepet-not"); if(!n){ n = document.createElement("div"); n.className = "sepet-not"; document.body.appendChild(n); }
   n.innerHTML = metin; clearTimeout(n._t); if(sure) n._t = setTimeout(()=>n.remove(), sure); }
 $("#sepetKat").addEventListener("input", sepetToplamYaz);
-$("#sepetVazgec").addEventListener("click", ()=>$("#sepetPerde").classList.add("gizli"));
+$("#sepetVazgec").addEventListener("click", ()=>{ SEPET_ORDER=null; $("#sepetPerde").classList.add("gizli"); });
 $("#sepetFormu").addEventListener("submit", async e => {
   e.preventDefault(); const s = SEPET_SECIM; if(!s) return;
   const kat = Math.max(1, Math.min(99, parseInt($("#sepetKat").value||"1",10)||1));
@@ -1962,7 +2853,8 @@ $("#sepetFormu").addEventListener("submit", async e => {
   if(!(await oturumKontrol())) return;
   try {
     const l = await sepetListe();
-    l.push({ id, depo:s.depo, barkod:s.barkod, ad:s.ad, a:s.a, m:s.m, kat, adet:s.a*kat, durum:"bekliyor", zaman:new Date().toISOString() });
+    l.push({ id, depo:s.depo, barkod:s.barkod, ad:s.ad, a:s.a, m:s.m, kat, adet:s.a*kat, durum:"bekliyor", zaman:new Date().toISOString(), ...(SEPET_ORDER?{sip:SEPET_ORDER}:{}) });
+    SEPET_ORDER = null;
     const { error } = await db.from("ayar").upsert({ anahtar:"sepet_istek", deger: JSON.stringify({ liste: l.slice(-60) }), guncelleme: new Date().toISOString() }, { onConflict:"anahtar" });
     if(error) throw error;
   } catch(err){ return sepetNot("✗ İstek gönderilemedi: "+kacis(err.message||err), 6000); }

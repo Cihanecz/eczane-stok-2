@@ -1,4 +1,4 @@
-﻿# Eczane Stok — gözcü. Windows açılınca gizli başlar; Rx'e giriş yapılınca (saat fark etmez) günde bir kez toplayıcıyı çalıştırır; depoları saatte bir okur.
+# Eczane Stok — gözcü. Windows açılınca gizli başlar; Rx'e giriş yapılınca (saat fark etmez) günde bir kez toplayıcıyı çalıştırır; depoları saatte bir okur.
 $KOK = "C:\EczaneStok"
 $RX_ANA = "RxMediaPharma Eczane Y"   # ana pencere adı bununla başlar (Türkçe harfe güvenilmez; giriş ekranı eşleşmez)
 Add-Type @"
@@ -43,14 +43,71 @@ function SepetDonguBak {
     $script:sepetPr = Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$KOK\toplayici.ps1`" -Asama sepetdongu" -WindowStyle Hidden -PassThru
   } catch { }
 }
+# OTOMATIK GUNCELLEME: 30 dk'da bir GitHub'daki son surume bakar; degismisse guncelle.ps1'i calistirir
+# (guncelle.ps1 dosyalari indirir, surum.txt'yi yazar, gozcuyu yeniden baslatir). Elle komut gerekmez.
+$GH_REPO = "Cihanecz/eczane-stok-2"
+$script:gunSon = [datetime]::MinValue
+function OtoGuncelle {
+  try {
+    if (((Get-Date) - $script:gunSon).TotalMinutes -lt 30) { return }
+    $script:gunSon = Get-Date
+    $sha = "$(Invoke-RestMethod -Uri "https://api.github.com/repos/$GH_REPO/commits/main" -Headers @{ Accept = "application/vnd.github.sha"; "User-Agent" = "EczaneStok" } -TimeoutSec 20)".Trim()
+    if ($sha -notmatch '^[0-9a-f]{40}$') { return }
+    $sf = Join-Path $KOK "surum.txt"
+    $yerel = if (Test-Path $sf) { (Get-Content $sf -Raw).Trim() } else { "" }
+    if ($yerel -eq $sha) { return }
+    Log "Yeni surum bulundu ($($sha.Substring(0,7))), guncelleniyor"
+    Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$KOK\guncelle.ps1`" -Repo $GH_REPO -Sha $sha" -WindowStyle Hidden | Out-Null
+  } catch { }
+}
+# EKSIK SGK FEED: rx-eksik.ps1 -DonguSn 3 SUREKLI calisir (3 sn'de bir sorgu, icerik degisince yazar = ANLIK).
+# Kapanirsa 15 sn icinde yeniden acilir. Hicbir PC'de ek kurulum gerekmez: ana PC merkezi DB'yi okur, tum PC'ler gorur.
+$script:eksikPr = $null
+function EksikDonguBak {
+  try {
+    if ($script:eksikPr -and -not $script:eksikPr.HasExited) { return }      # dongu zaten calisiyor
+    if (@(Get-CimInstance Win32_Process -Filter "Name='powershell.exe'" | Where-Object { $_.CommandLine -match 'rx-eksik\.ps1' }).Count) { return }  # baska gozcu baslattiysa tekrar acma
+    if (-not (Get-Process -Name "RxMediaPharmaEYS" -ErrorAction SilentlyContinue)) { return }
+    if (-not (Test-Path (Join-Path $KOK "rx-eksik.ps1"))) { return }
+    if (-not (Test-Path (Join-Path $KOK "giris.dat"))) { return }
+    $script:eksikPr = Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$KOK\rx-eksik.ps1`" -DonguSn 3" -WindowStyle Hidden -PassThru
+  } catch { }
+}
+# HASTA KART FEED: tum Rx hastalari -> hasta_kart (elden siparis oneri). Saatte bir yeter.
+$script:kartSon = [datetime]::MinValue; $script:kartPr = $null
+function RxKartBak {
+  try {
+    if ($script:kartPr -and -not $script:kartPr.HasExited) { return }
+    if (((Get-Date) - $script:kartSon).TotalMinutes -lt 60) { return }
+    if (-not (Get-Process -Name "RxMediaPharmaEYS" -ErrorAction SilentlyContinue)) { return }
+    if (-not (Test-Path (Join-Path $KOK "rx-kart.ps1"))) { return }
+    if (-not (Test-Path (Join-Path $KOK "giris.dat"))) { return }
+    $script:kartSon = Get-Date
+    $script:kartPr = Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$KOK\rx-kart.ps1`"" -WindowStyle Hidden -PassThru
+  } catch { }
+}
+# ALIM FEED: son alislar -> alim_son (web "geldi" otomatik). ~45 sn'de bir yeter.
+$script:alimSon = [datetime]::MinValue; $script:alimPr = $null
+function RxAlimBak {
+  try {
+    if ($script:alimPr -and -not $script:alimPr.HasExited) { return }
+    if (((Get-Date) - $script:alimSon).TotalSeconds -lt 45) { return }
+    if (-not (Test-Path (Join-Path $KOK "rx-alim.ps1"))) { return }
+    if (-not (Test-Path (Join-Path $KOK "giris.dat"))) { return }
+    $script:alimSon = Get-Date
+    $script:alimPr = Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$KOK\rx-alim.ps1`"" -WindowStyle Hidden -PassThru
+  } catch { }
+}
 Log "Gözcü başladı"
 $deneme = @{}
 $depoSon = [datetime]::MinValue
 $tur = 0
 while ($true) {
   # 60 sn'lik ana döngü; arada 15 sn'de bir sepet isteklerine bak
-  for ($k = 0; $k -lt 4; $k++) { SepetDonguBak; Start-Sleep 15 }
-  # Depolar (Rx'e dokunmaz): depo bilgisi kayıtlıysa 08:00-21:00 arası saatte bir fiyat/MF çek
+  for ($k = 0; $k -lt 4; $k++) { SepetDonguBak; EksikDonguBak; RxAlimBak; Start-Sleep 15 }
+  RxKartBak
+  OtoGuncelle
+  # Depolar (Rx'e dokunmaz): depo kaydı (depo.dat) VEYA eklenti-aktif işareti (depo-aktif.txt) varsa 08:00-21:00 arası saatte bir fiyat/MF çek
   $h = (Get-Date).Hour
   if (((Test-Path (Join-Path $KOK "depo.dat")) -or (Test-Path (Join-Path $KOK "depo-aktif.txt"))) -and $h -ge 8 -and $h -lt 21 -and ((Get-Date) - $depoSon).TotalMinutes -ge 60) {
     $depoSon = Get-Date
