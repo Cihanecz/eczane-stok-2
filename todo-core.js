@@ -216,7 +216,7 @@ function yOnayGovde(list){
       <div class="g-alt"><b>${kacis(kisiAd(g.yapan)||"?")}</b> yaptı · ${kacis(new Date(g.yapilmaZamani).toLocaleString("tr-TR"))}</div></div>
     <div class="onay-btn"><button class="mini yesil" onclick="TODO.arsivle('${g.id}')">✓ Arşivle</button><button class="mini kirmizi" onclick="TODO.geri('${g.id}')">↩ Geri çevir</button></div></div>`).join("");
 }
-function calisanLink(id){ const taban=location.href.split("?")[0].replace(/[^/]*$/,""); return taban+"todo-calisan.html?k="+encodeURIComponent(id); }
+function calisanLink(id){ const taban=location.href.split("?")[0].replace(/[^/]*$/,""); return taban+"todo-"+encodeURIComponent(id)+".html"; }
 function yCalisanGovde(){
   const ks=(CFGV.calisanlar||[]).map(k=>{ const l=calisanLink(k.id); return `<div class="g-kart" style="flex-direction:column;align-items:stretch;gap:8px">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div class="g-bas">${kacis(k.ad)}</div><button class="mini kirmizi" onclick="TODO.calisanSil('${k.id}')">sil</button></div>
@@ -326,6 +326,7 @@ window.TODO={
     if(CFG.rol==="yonetici" && (!CFGV.calisanlar||!CFGV.calisanlar.length) && CFG.ilkKadro){ CFGV.calisanlar=CFG.ilkKadro; await cfgYaz(); }
     await bakimYap();
     ciz();
+    try{ if(("Notification" in window)&&Notification.permission==="granted"&&("serviceWorker" in navigator)&&("PushManager" in window)) pushAbone().catch(()=>{}); }catch(e){}
     try{ sonGoruldu=Date.now(); localStorage.setItem("todo_songor_"+(CFG.kisiId||"x"), String(sonGoruldu)); }catch(e){}
     setInterval(()=>tazele(true), 20000);
     document.addEventListener("visibilitychange",()=>{ if(!document.hidden) tazele(false); });
