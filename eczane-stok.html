@@ -55,7 +55,7 @@ a{color:inherit}
 /* ---------- üst çubuk ---------- */
 .ust{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   border-bottom:1px solid var(--cizgi);padding:10px 16px;padding-top:max(10px,env(safe-area-inset-top))}
-.ust-ic{max-width:1320px;margin:0 auto;display:flex;align-items:center;gap:8px}
+.ust-ic{max-width:1320px;margin:0 auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;row-gap:6px}
 .marka{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;white-space:nowrap;
   background:none;border:0;color:var(--murekkep);cursor:pointer;padding:4px 0}
 .marka svg{flex:none}
@@ -448,6 +448,7 @@ button.lj{cursor:pointer} button.lj:hover{background:var(--hover)}
       <button class="ust-dugme hasta" id="saymDugme" type="button" aria-label="Stok sayımı"><span>🔢</span><span class="ek-yazi">Stok Sayımı</span></button>
       <button class="ust-dugme kilit" id="kilit" type="button" aria-label="Tutarları aç"><span id="kilitSimge">🔒</span><span class="ek-yazi">Tutarlar</span></button>
       <button class="ust-dugme" id="cikis" type="button" aria-label="Çıkış" title="Çıkış"><span>🚪</span><span class="ek-yazi">Çıkış</span></button>
+      <button class="ust-dugme" id="yenileDugme" type="button" aria-label="Yenile" title="Her şeyi yenile"><span>🔄</span><span class="ek-yazi">Yenile</span></button>
     </div>
   </header>
   <main class="sayfa" id="icerik" tabindex="-1"></main>
@@ -2834,6 +2835,7 @@ async function saymaSayfasi(){
   document.getElementById("syTemiz").onclick=async()=>{ if(!confirm("Sayım listesini temizle? (telefon ve PC'de sıfırlanır)")) return; SY.set.clear(); SY.ad.clear(); const tk=document.getElementById("syTekrar"); if(tk)tk.textContent=0; document.getElementById("syOnizleme").style.display="none"; syStop(); syCizUI(); try{ await ayarYaz("sayim_oturum",JSON.stringify({zaman:new Date().toISOString(),liste:[]})); }catch(e){} const d=document.getElementById("syDurum"); if(d)d.textContent="Temizlendi."; };
 }
 document.getElementById("saymDugme").addEventListener("click", ()=>{ location.hash = "sayim"; });
+document.getElementById("yenileDugme").addEventListener("click", ()=>{ try{ location.reload(); }catch(e){ location.href=location.pathname+location.search; } });
 
 $("#hastaDugme").addEventListener("click", ()=>{ location.hash = "hastalar"; });
 $("#depoDugme").addEventListener("click", ()=>{ location.hash = "depolar"; });
