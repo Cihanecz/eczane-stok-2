@@ -167,6 +167,7 @@
   <div class="blok">
     <h3>🏷️ Karşı taraf kategorileri <span class="etiket" style="font-weight:400">(firmayı bir kez ata — tüm faturaları o kategoriye geçer)</span></h3>
     <div class="etiket" style="margin:-6px 0 12px;line-height:1.5">Faturaya tek tek bakmazsın. Depo/elektrik gibi çoğu <b>otomatik</b> ayrıldı. Aşağıda <b>gider</b> firmaları en çok harcamadan aza sıralı — "Diğer Gider"de kalan bir firmayı doğru kategoriye ata, o firmanın <b>geçmiş + gelecek tüm faturaları</b> otomatik oraya düşer. Kişisel (kıyafet vb.) aldığın yerleri <b>Kişisel</b> işaretle → üstteki anahtarla eczane giderinden çıkar.</div>
+    <label class="anahtar" id="cariFiltreSw" style="margin-bottom:12px"><span class="sw"></span><span>⚠️ Sadece atanmayı bekleyenleri göster — <b id="cariDigerSay">0</b> firma "Diğer Gider"de</span></label>
     <div style="overflow:auto"><table id="cariTablo"><thead><tr>
       <th>Firma / Karşı taraf</th><th class="sag">Fatura</th><th class="sag">Toplam</th><th>Kategori</th><th>Kişisel</th>
     </tr></thead><tbody></tbody></table></div>
@@ -214,7 +215,7 @@ const renk=k=>RENK[k]||("#"+Math.abs(hash(k)).toString(16).slice(0,6).padEnd(6,"
 function hash(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return h;}
 
 // ---- Durum ----
-let ST={faturalar:[],elle:[],etiket:{},cari:{},ayar:{kategoriler:null},aylar:[],ay:null,kisiselHaric:false};
+let ST={faturalar:[],elle:[],etiket:{},cari:{},ayar:{kategoriler:null},aylar:[],ay:null,kisiselHaric:false,cariFiltre:false};
 
 // ---- TR sayı / tarih ----
 function trSayi(v){
@@ -394,9 +395,12 @@ function cariTablo(){
     if(!map[k]) map[k]={ad:f.unvan,adet:0,toplam:0,ornek:f};
     map[k].adet++; map[k].toplam+=f.tutar;
   });
-  const liste=Object.entries(map).sort((a,b)=>b[1].toplam-a[1].toplam);
+  let liste=Object.entries(map).sort((a,b)=>b[1].toplam-a[1].toplam);
+  const digerSay=liste.filter(([k,c])=>otoKategori(c.ornek)==="Diğer Gider").length;
+  const say=$("#cariDigerSay"); if(say) say.textContent=digerSay;
+  if(ST.cariFiltre) liste=liste.filter(([k,c])=>otoKategori(c.ornek)==="Diğer Gider");
   const tb=$("#cariTablo").querySelector("tbody");
-  if(!liste.length){ tb.innerHTML="<tr><td colspan='5' class='etiket'>Henüz gider faturası yok.</td></tr>"; return; }
+  if(!liste.length){ tb.innerHTML="<tr><td colspan='5' class='etiket'>"+(ST.cariFiltre?"🎉 Hepsi atandı — 'Diğer Gider'de bekleyen firma kalmadı.":"Henüz gider faturası yok.")+"</td></tr>"; return; }
   tb.innerHTML=liste.map(([k,c])=>{
     const kat=otoKategori(c.ornek), kis=kisiselMi(c.ornek);
     const ops=ST.ayar.kategoriler.gider.map(x=>`<option ${x===kat?"selected":""}>${x}</option>`).join("");
@@ -528,6 +532,7 @@ $("#katYonet").onclick=katYonet;
 $("#yenileBtn").onclick=yukle;
 $("#faturaAc").onclick=()=>{const k=$("#faturaKutu");const a=k.style.display==="none";k.style.display=a?"block":"none";$("#faturaOk").textContent=a?"▾ gizle":"▸ göster";};
 $("#kisiselSw").onclick=()=>{ST.kisiselHaric=!ST.kisiselHaric;$("#kisiselSw").classList.toggle("on",ST.kisiselHaric);ciz();};
+$("#cariFiltreSw").onclick=()=>{ST.cariFiltre=!ST.cariFiltre;$("#cariFiltreSw").classList.toggle("on",ST.cariFiltre);ciz();};
 $("#temaBtn").onclick=()=>{const a=document.body.classList.toggle("acik");$("#temaBtn").textContent=a?"☀️":"🌙";
   try{localStorage.setItem("muh_tema",a?"acik":"koyu");}catch(e){} if(gPasta){ciz();}};
 try{ if(localStorage.getItem("muh_tema")==="acik"){document.body.classList.add("acik");$("#temaBtn").textContent="☀️";} }catch(e){}
