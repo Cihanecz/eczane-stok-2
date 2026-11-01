@@ -159,9 +159,16 @@
   </div>
 
   <div class="blok">
-    <h3>📄 Bu ayın faturaları</h3>
-    <div class="etiket" style="margin:-6px 0 12px;line-height:1.5">Kolaysoft'tan gelen her fatura burada tek tek listelenir. Bir fatura yanlış kategoriye düştüyse sağdaki <b>Kategori</b>'den düzelt; üstüne alıp eczaneye kestirdiğin <b>kişisel</b> (kıyafet vb.) faturaları <b>Kişisel</b> kutusuyla işaretle — sonra yukarıdaki anahtarla bunları gerçek eczane giderinden çıkarırsın.</div>
-    <div style="overflow:auto"><table id="faturaTablo"><thead><tr>
+    <h3>🏷️ Karşı taraf kategorileri <span class="etiket" style="font-weight:400">(firmayı bir kez ata — tüm faturaları o kategoriye geçer)</span></h3>
+    <div class="etiket" style="margin:-6px 0 12px;line-height:1.5">Faturaya tek tek bakmazsın. Depo/elektrik gibi çoğu <b>otomatik</b> ayrıldı. Aşağıda <b>gider</b> firmaları en çok harcamadan aza sıralı — "Diğer Gider"de kalan bir firmayı doğru kategoriye ata, o firmanın <b>geçmiş + gelecek tüm faturaları</b> otomatik oraya düşer. Kişisel (kıyafet vb.) aldığın yerleri <b>Kişisel</b> işaretle → üstteki anahtarla eczane giderinden çıkar.</div>
+    <div style="overflow:auto"><table id="cariTablo"><thead><tr>
+      <th>Firma / Karşı taraf</th><th class="sag">Fatura</th><th class="sag">Toplam</th><th>Kategori</th><th>Kişisel</th>
+    </tr></thead><tbody></tbody></table></div>
+  </div>
+
+  <div class="blok">
+    <h3 id="faturaAc" style="cursor:pointer;user-select:none">📄 Tüm faturalar — detay <span class="etiket" style="font-weight:400" id="faturaOk">▸ göster</span></h3>
+    <div id="faturaKutu" style="display:none;overflow:auto"><table id="faturaTablo"><thead><tr>
       <th>No</th><th>Tarih</th><th>Taraf</th><th class="sag">Tutar</th><th>Kategori</th><th>Kişisel</th>
     </tr></thead><tbody></tbody></table></div>
   </div>
@@ -189,17 +196,17 @@ async function yaz(anahtar,deger){
 
 // ---- Varsayılan kategoriler ----
 const VARSAYILAN={
-  gelir:["Perakende Satış","SGK","Diğer Gelir"],
+  gelir:["Satış","SGK","Diğer Gelir"],
   gider:["Depo","Elektrik","Su","Doğalgaz","İnternet / Telefon","Kira","Maaş","SGK / Vergi","Muhasebeci","Kişisel","Diğer Gider"]
 };
 const RENK={ "Depo":"#fb7185","Elektrik":"#fbbf24","Su":"#38bdf8","Doğalgaz":"#f97316","İnternet / Telefon":"#a78bfa",
   "Kira":"#f472b6","Maaş":"#34d399","SGK / Vergi":"#f87171","Muhasebeci":"#22d3ee","Kişisel":"#eab308","Diğer Gider":"#94a3b8",
-  "Perakende Satış":"#34d399","SGK":"#60a5fa","Diğer Gelir":"#c084fc" };
+  "Satış":"#34d399","SGK":"#60a5fa","Diğer Gelir":"#c084fc" };
 const renk=k=>RENK[k]||("#"+Math.abs(hash(k)).toString(16).slice(0,6).padEnd(6,"9"));
 function hash(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return h;}
 
 // ---- Durum ----
-let ST={faturalar:[],elle:[],etiket:{},ayar:{kategoriler:null},aylar:[],ay:null,kisiselHaric:false};
+let ST={faturalar:[],elle:[],etiket:{},cari:{},ayar:{kategoriler:null},aylar:[],ay:null,kisiselHaric:false};
 
 // ---- TR sayı / tarih ----
 function trSayi(v){
@@ -247,37 +254,43 @@ function normalize(o,yon){
   };
 }
 
-// ---- Otomatik kategori ----
+// ---- Karşı taraf (cari) + otomatik kategori ----
+function cariKey(f){ return (f.vkn && f.vkn.length>=10) ? ("v"+f.vkn) : ("u"+((f.unvan||"").toLocaleLowerCase("tr").trim())); }
 function otoKategori(f){
-  const ov=ST.etiket[f.ettn];
+  const ov=ST.etiket[f.ettn];                 // tek fatura istisnası (nadiren)
   if(ov&&ov.kategori) return ov.kategori;
+  const ck=ST.cari[cariKey(f)];               // karşı taraf kuralı (bir kez atanır, hepsine uygulanır)
+  if(ck&&ck.kategori) return ck.kategori;
   const u=(f.unvan+" "+f.vkn).toLocaleLowerCase("tr");
   if(f.yon==="gelen"){ // GİDER
     if(/selçuk|selcuk|as ecza|sancak|bek |b\.e\.k|ecza deposu|ecza depo|farma|pharma/.test(u)) return "Depo";
-    if(/elektrik|enerji|edaş|edas|bedaş|bedas|ayedaş|epdk|perakende sat.*enerji|ck boğaz|ck |uedaş/.test(u)) return "Elektrik";
+    if(/elektrik|enerji|edaş|edas|bedaş|bedas|ayedaş|epdk|ck boğaz|ck |uedaş/.test(u)) return "Elektrik";
     if(/\bsu\b|iski|aski|idari su|su ve kanaliz/.test(u)) return "Su";
     if(/gaz|igdaş|igdas|doğalgaz|dogalgaz|aksa/.test(u)) return "Doğalgaz";
     if(/telekom|turkcell|vodafone|superonline|türk net|internet|ttnet/.test(u)) return "İnternet / Telefon";
     return "Diğer Gider";
   }
-  // GELİR (giden / earsiv)
   if(/sgk|sosyal güvenlik|sosyal guvenlik/.test(u)) return "SGK";
-  return "Perakende Satış";
+  return "Satış";
 }
-const kisiselMi=f=>{const ov=ST.etiket[f.ettn];return !!(ov&&ov.kisisel);};
+function kisiselMi(f){
+  const ov=ST.etiket[f.ettn]; if(ov&&ov.kisisel!=null) return !!ov.kisisel;
+  const ck=ST.cari[cariKey(f)]; return !!(ck&&ck.kisisel);
+}
 const gelirMi=f=>f.yon!=="gelen"; // giden & earsiv = gelir
 
 // ---- Yükle ----
 async function yukle(){
   $("#faturaTablo").querySelector("tbody").innerHTML="";
   try{
-    const m=await oku(["muh_ham_giden","muh_ham_gelen","muh_ham_earsiv","muh_ham_diger","muh_elle","muh_etiket","muh_ayar","muh_kopru_durum","eczane_adi","eczaci_adi"]);
+    const m=await oku(["muh_ham_giden","muh_ham_gelen","muh_ham_earsiv","muh_ham_diger","muh_elle","muh_etiket","muh_cari","muh_ayar","muh_kopru_durum","eczane_adi","eczaci_adi"]);
     const fat=[];
     const ekle=(anahtar,yon)=>{ if(m[anahtar]){ try{ for(const o of JSON.parse(m[anahtar])) fat.push(normalize(o,yon)); }catch(e){} } };
     ekle("muh_ham_giden","giden"); ekle("muh_ham_gelen","gelen"); ekle("muh_ham_earsiv","earsiv"); ekle("muh_ham_diger","giden");
     ST.faturalar=fat;
     ST.elle=m.muh_elle?JSON.parse(m.muh_elle):[];
     ST.etiket=m.muh_etiket?JSON.parse(m.muh_etiket):{};
+    ST.cari=m.muh_cari?JSON.parse(m.muh_cari):{};
     ST.ayar=m.muh_ayar?JSON.parse(m.muh_ayar):{};
     if(!ST.ayar.kategoriler) ST.ayar.kategoriler=JSON.parse(JSON.stringify(VARSAYILAN));
     if(m.eczane_adi) $("#eczaneAd").textContent=m.eczane_adi;
@@ -348,8 +361,40 @@ function ciz(){
   kategoriListe("#giderListe",v.gider,v.tGider);
   pastaCiz(v.gider);
   trendCiz();
+  cariTablo();
   faturaTablo(v.f);
   elleListe(v.e);
+}
+// ---- Karşı taraf (cari) bazlı kategori atama ----
+function cariTablo(){
+  const map={};
+  ST.faturalar.forEach(f=>{
+    if(f.iptal || gelirMi(f)) return;              // sadece GİDER tarafı (depo/fatura firmaları)
+    const k=cariKey(f);
+    if(!map[k]) map[k]={ad:f.unvan,adet:0,toplam:0,ornek:f};
+    map[k].adet++; map[k].toplam+=f.tutar;
+  });
+  const liste=Object.entries(map).sort((a,b)=>b[1].toplam-a[1].toplam);
+  const tb=$("#cariTablo").querySelector("tbody");
+  if(!liste.length){ tb.innerHTML="<tr><td colspan='5' class='etiket'>Henüz gider faturası yok.</td></tr>"; return; }
+  tb.innerHTML=liste.map(([k,c])=>{
+    const kat=otoKategori(c.ornek), kis=kisiselMi(c.ornek);
+    const ops=ST.ayar.kategoriler.gider.map(x=>`<option ${x===kat?"selected":""}>${x}</option>`).join("");
+    return `<tr class="${kis?'kisisel':''}">
+      <td style="font-weight:600">${c.ad}</td>
+      <td class="sag">${c.adet}</td>
+      <td class="sag" style="font-weight:700">${TL(c.toplam)}</td>
+      <td><select class="mini" data-k="${k}" data-rol="kat">${ops}</select></td>
+      <td><input type="checkbox" data-k="${k}" data-rol="kis" ${kis?'checked':''}></td>
+    </tr>`;
+  }).join("");
+  tb.querySelectorAll("[data-rol=kat]").forEach(s=>s.onchange=e=>cariYaz(e.target.dataset.k,{kategori:e.target.value}));
+  tb.querySelectorAll("[data-rol=kis]").forEach(c=>c.onchange=e=>cariYaz(e.target.dataset.k,{kisisel:e.target.checked}));
+}
+async function cariYaz(k,yeni){
+  ST.cari[k]=Object.assign({},ST.cari[k],yeni);
+  try{ await yaz("muh_cari",JSON.stringify(ST.cari)); }catch(e){ alert("Kaydedilemedi: "+e.message); }
+  ciz();
 }
 function kategoriListe(sel,obj,toplam){
   const girdiler=Object.entries(obj).sort((a,b)=>b[1]-a[1]);
@@ -461,6 +506,7 @@ $("#eTip").onchange=katSecDoldur;
 $("#eEkle").onclick=elleEkle;
 $("#katYonet").onclick=katYonet;
 $("#yenileBtn").onclick=yukle;
+$("#faturaAc").onclick=()=>{const k=$("#faturaKutu");const a=k.style.display==="none";k.style.display=a?"block":"none";$("#faturaOk").textContent=a?"▾ gizle":"▸ göster";};
 $("#kisiselSw").onclick=()=>{ST.kisiselHaric=!ST.kisiselHaric;$("#kisiselSw").classList.toggle("on",ST.kisiselHaric);ciz();};
 $("#temaBtn").onclick=()=>{const a=document.body.classList.toggle("acik");$("#temaBtn").textContent=a?"☀️":"🌙";
   try{localStorage.setItem("muh_tema",a?"acik":"koyu");}catch(e){} if(gPasta){ciz();}};
