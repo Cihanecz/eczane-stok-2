@@ -166,7 +166,7 @@
 <script>
 const SB_URL="https://hmgxulrssqsqnfhibmzz.supabase.co";
 const SB_KEY="sb_publishable_kGiwMdnja2OhbzBYEX0zog_dQ9R8m_h";
-const db=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+const db=supabase.createClient(SB_URL,SB_KEY);
 const $=s=>document.querySelector(s);
 const TL=n=>(n||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₺";
 const UUID=/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
@@ -459,8 +459,33 @@ $("#temaBtn").onclick=()=>{const a=document.body.classList.toggle("acik");$("#te
 try{ if(localStorage.getItem("muh_tema")==="acik"){document.body.classList.add("acik");$("#temaBtn").textContent="☀️";} }catch(e){}
 $("#eTarih").value=new Date().toISOString().slice(0,10);
 
-yukle();
-setInterval(yukle,120000); // 2 dk'da bir köprü verisini tazele
+async function oturumVarmi(){ try{const{data}=await db.auth.getSession();return !!(data&&data.session);}catch(e){return false;} }
+function girisEkrani(){
+  if(document.getElementById("girisOverlay")) return;
+  const o=document.createElement("div"); o.id="girisOverlay";
+  o.style.cssText="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(5,10,25,.88);backdrop-filter:blur(5px)";
+  o.innerHTML=`<div style="background:var(--kart2);border:1px solid var(--ince);border-radius:20px;padding:28px 26px;width:min(370px,92vw);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+    <div style="font-size:34px">💊</div>
+    <h2 style="margin:8px 0 2px;font-size:20px">İstiklal Üstün Muhasebe</h2>
+    <div style="color:var(--soluk);font-size:13px;margin-bottom:18px">İstiklal stok programı girişinle bağlan</div>
+    <input id="gEposta" type="email" placeholder="e-posta" autocomplete="username" style="width:100%;margin-bottom:10px;padding:12px;border:1px solid var(--ince);border-radius:11px;background:var(--kart);color:var(--yazi);font-size:15px">
+    <input id="gSifre" type="password" placeholder="şifre" autocomplete="current-password" style="width:100%;margin-bottom:16px;padding:12px;border:1px solid var(--ince);border-radius:11px;background:var(--kart);color:var(--yazi);font-size:15px">
+    <button id="gBtn" style="width:100%;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;border:0;border-radius:11px;padding:13px;font-weight:700;font-size:15px;cursor:pointer">Giriş yap</button>
+    <div id="gMesaj" style="font-size:12px;margin-top:11px;min-height:16px;color:var(--soluk)"></div></div>`;
+  document.body.appendChild(o);
+  const mes=(t,hata)=>{const e=document.getElementById("gMesaj");e.textContent=t;e.style.color=hata?"var(--kirmizi)":"var(--soluk)";};
+  const dene=async()=>{
+    const e=document.getElementById("gEposta").value.trim(),p=document.getElementById("gSifre").value;
+    if(!e||!p){mes("E-posta ve şifre gir",true);return;}
+    mes("Giriş yapılıyor…",false);
+    try{const{error}=await db.auth.signInWithPassword({email:e,password:p});if(error)throw error;o.remove();yukle();}
+    catch(err){mes("Giriş hatası: "+(err.message||err),true);}
+  };
+  document.getElementById("gBtn").onclick=dene;
+  document.getElementById("gSifre").onkeydown=e=>{if(e.key==="Enter")dene();};
+}
+(async()=>{ if(await oturumVarmi()) yukle(); else girisEkrani(); })();
+setInterval(()=>{ if(!document.getElementById("girisOverlay")) yukle(); },120000); // 2 dk'da bir köprü verisini tazele
 </script>
 </body>
 </html>
