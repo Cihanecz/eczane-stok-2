@@ -16,21 +16,20 @@
   let sonDurum = "bağlı, bekleniyor…";
   let flushZaman = null;
 
-  // ---------- Supabase REST ----------
-  const basliklar = (ekstra) => Object.assign({ apikey: SB_KEY, Authorization: "Bearer " + SB_KEY }, ekstra || {});
+  // ---------- Supabase (ana programla aynı kütüphane) ----------
+  const db = (typeof supabase !== "undefined" && supabase.createClient)
+    ? supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: false, autoRefreshToken: false } })
+    : null;
   async function supaOku(anahtar) {
-    const r = await fetch(`${SB_URL}/rest/v1/ayar?anahtar=eq.${encodeURIComponent(anahtar)}&select=deger`, { headers: basliklar() });
-    if (!r.ok) throw new Error("oku " + r.status);
-    const j = await r.json();
-    return (j && j[0]) ? j[0].deger : null;
+    if (!db) throw new Error("supabase yüklenmedi");
+    const { data, error } = await db.from("ayar").select("deger").eq("anahtar", anahtar).maybeSingle();
+    if (error) throw new Error(error.message);
+    return data ? data.deger : null;
   }
   async function supaYaz(anahtar, deger) {
-    const r = await fetch(`${SB_URL}/rest/v1/ayar?on_conflict=anahtar`, {
-      method: "POST",
-      headers: basliklar({ "Content-Type": "application/json", Prefer: "resolution=merge-duplicates,return=minimal" }),
-      body: JSON.stringify({ anahtar, deger, guncelleme: new Date().toISOString() })
-    });
-    if (!r.ok) throw new Error("yaz " + r.status + " " + (await r.text().catch(() => "")).slice(0, 140));
+    if (!db) throw new Error("supabase yüklenmedi");
+    const { error } = await db.from("ayar").upsert({ anahtar, deger, guncelleme: new Date().toISOString() }, { onConflict: "anahtar" });
+    if (error) throw new Error(error.message);
   }
 
   // ---------- Fatura tespiti ----------

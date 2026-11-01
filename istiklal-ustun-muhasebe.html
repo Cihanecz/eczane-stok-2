@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
   :root{
     --bg1:#0b1220; --bg2:#141b35; --kart:rgba(255,255,255,.055); --kart2:rgba(255,255,255,.09);
@@ -165,23 +166,20 @@
 <script>
 const SB_URL="https://hmgxulrssqsqnfhibmzz.supabase.co";
 const SB_KEY="sb_publishable_kGiwMdnja2OhbzBYEX0zog_dQ9R8m_h";
-const BAS={apikey:SB_KEY,Authorization:"Bearer "+SB_KEY};
+const db=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
 const $=s=>document.querySelector(s);
 const TL=n=>(n||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₺";
 const UUID=/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
 
-// ---- Supabase REST ----
+// ---- Supabase ----
 async function oku(anahtarlar){
-  const liste=anahtarlar.map(encodeURIComponent).join(",");
-  const r=await fetch(`${SB_URL}/rest/v1/ayar?anahtar=in.(${liste})&select=anahtar,deger`,{headers:BAS});
-  if(!r.ok) throw new Error("okuma "+r.status);
-  const j=await r.json(); const m={}; for(const x of j) m[x.anahtar]=x.deger; return m;
+  const {data,error}=await db.from("ayar").select("anahtar,deger").in("anahtar",anahtarlar);
+  if(error) throw new Error(error.message);
+  const m={}; for(const x of (data||[])) m[x.anahtar]=x.deger; return m;
 }
 async function yaz(anahtar,deger){
-  const r=await fetch(`${SB_URL}/rest/v1/ayar?on_conflict=anahtar`,{method:"POST",
-    headers:Object.assign({},BAS,{"Content-Type":"application/json",Prefer:"resolution=merge-duplicates,return=minimal"}),
-    body:JSON.stringify({anahtar,deger,guncelleme:new Date().toISOString()})});
-  if(!r.ok) throw new Error("yazma "+r.status+" "+(await r.text().catch(()=>"")).slice(0,160));
+  const {error}=await db.from("ayar").upsert({anahtar,deger,guncelleme:new Date().toISOString()},{onConflict:"anahtar"});
+  if(error) throw new Error(error.message);
 }
 
 // ---- Varsayılan kategoriler ----
