@@ -97,6 +97,10 @@
     cursor:pointer;font-size:13px;font-weight:600}
   .etiket{font-size:11px;color:var(--soluk)}
   canvas{max-height:260px}
+  select{color-scheme:dark}
+  body.acik select{color-scheme:light}
+  select option{background:#141b35;color:#eef2ff}
+  body.acik select option{background:#ffffff;color:#0f172a}
 </style>
 </head>
 <body>
@@ -155,7 +159,8 @@
   </div>
 
   <div class="blok">
-    <h3>📄 Bu ayın faturaları <span class="etiket" style="font-weight:400">(kategori ata, kişiseli işaretle)</span></h3>
+    <h3>📄 Bu ayın faturaları</h3>
+    <div class="etiket" style="margin:-6px 0 12px;line-height:1.5">Kolaysoft'tan gelen her fatura burada tek tek listelenir. Bir fatura yanlış kategoriye düştüyse sağdaki <b>Kategori</b>'den düzelt; üstüne alıp eczaneye kestirdiğin <b>kişisel</b> (kıyafet vb.) faturaları <b>Kişisel</b> kutusuyla işaretle — sonra yukarıdaki anahtarla bunları gerçek eczane giderinden çıkarırsın.</div>
     <div style="overflow:auto"><table id="faturaTablo"><thead><tr>
       <th>No</th><th>Tarih</th><th>Taraf</th><th class="sag">Tutar</th><th>Kategori</th><th>Kişisel</th>
     </tr></thead><tbody></tbody></table></div>
