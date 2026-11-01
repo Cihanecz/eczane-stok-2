@@ -4,7 +4,7 @@
   "short_name": "Muhasebe",
   "description": "İstiklal Üstün Eczanesi gelir/gider muhasebe takibi (Kolaysoft)",
   "start_url": "./istiklal-ustun-muhasebe.html",
-  "scope": "./",
+  "scope": "./istiklal-ustun-muhasebe.html",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#0b1220",
