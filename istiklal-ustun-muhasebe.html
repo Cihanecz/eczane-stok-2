@@ -577,8 +577,8 @@ function pinEkrani(kayit){
     <div style="font-size:32px">🔒</div>
     <h2 style="margin:8px 0 2px;font-size:19px">${kur?"PIN oluştur":"PIN gir"}</h2>
     <div style="color:var(--soluk);font-size:13px;margin-bottom:16px">${kur?"Bir kerelik: 4+ haneli bir PIN belirle. Bundan sonra her açılışta sorulur.":"Devam etmek için PIN'ini gir"}</div>
-    <input id="pPin" type="password" inputmode="numeric" placeholder="PIN" autocomplete="off" style="width:100%;margin-bottom:10px;padding:12px;border:1px solid var(--ince);border-radius:11px;background:var(--kart);color:var(--yazi);font-size:18px;text-align:center;letter-spacing:4px">
-    ${kur?`<input id="pPin2" type="password" inputmode="numeric" placeholder="PIN (tekrar)" autocomplete="off" style="width:100%;margin-bottom:14px;padding:12px;border:1px solid var(--ince);border-radius:11px;background:var(--kart);color:var(--yazi);font-size:18px;text-align:center;letter-spacing:4px">`:``}
+    <input id="pPin" type="password" inputmode="numeric" placeholder="PIN" autocomplete="new-password" readonly name="ks_pin_${Math.random().toString(36).slice(2,8)}" style="width:100%;margin-bottom:10px;padding:12px;border:1px solid var(--ince);border-radius:11px;background:var(--kart);color:var(--yazi);font-size:18px;text-align:center;letter-spacing:4px">
+    ${kur?`<input id="pPin2" type="password" inputmode="numeric" placeholder="PIN (tekrar)" autocomplete="new-password" readonly name="ks_pin2_${Math.random().toString(36).slice(2,8)}" style="width:100%;margin-bottom:14px;padding:12px;border:1px solid var(--ince);border-radius:11px;background:var(--kart);color:var(--yazi);font-size:18px;text-align:center;letter-spacing:4px">`:``}
     <button id="pBtn" style="width:100%;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;border:0;border-radius:11px;padding:13px;font-weight:700;font-size:15px;cursor:pointer">${kur?"Kaydet ve gir":"Gir"}</button>
     <div id="pMesaj" style="font-size:12px;margin-top:11px;min-height:16px;color:var(--kirmizi)"></div></div>`;
   document.body.appendChild(o);
@@ -601,7 +601,9 @@ function pinEkrani(kayit){
   document.getElementById("pBtn").onclick=dene;
   const son=document.getElementById(kur?"pPin2":"pPin");
   son.onkeydown=e=>{if(e.key==="Enter")dene();};
-  document.getElementById("pPin").focus();
+  // Chrome'un kayıtlı şifreyi doldurmasını engelle: readonly, odaklanınca açılır; birkaç kez temizle
+  o.querySelectorAll("input").forEach(el=>{ el.value=""; el.addEventListener("focus",function(){this.removeAttribute("readonly");},{once:true}); });
+  [20,120,400].forEach(ms=>setTimeout(()=>o.querySelectorAll("input").forEach(el=>{ if(document.activeElement!==el) el.value=""; }),ms));
 }
 
 (async()=>{ if(await oturumVarmi()) pinKapisi(); else girisEkrani(); })();
