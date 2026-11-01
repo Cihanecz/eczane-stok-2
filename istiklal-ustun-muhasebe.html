@@ -216,27 +216,30 @@ const ayAnahtar=d=>d?d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"):
 const AY_AD=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 const ayEtiket=a=>{const[y,m]=a.split("-");return AY_AD[+m-1]+" "+y;};
 
-// ---- Fatura normalleştirme (ham Kolaysoft verisinden) ----
-function alanBul(o,re){ for(const k in o){ if(re.test(k)) return o[k]; } return undefined; }
+// ---- Fatura normalleştirme (Kolaysoft EczacıKart alanları — kesin) ----
+// giden/earsiv = bizim satışımız (gelir): karşı taraf = destination (alıcı)
+// gelen = bize kesilen (gider): karşı taraf = source (satıcı)
 function normalize(o,yon){
-  const ettn=(function(){for(const k in o){const v=o[k];if(typeof v==="string"&&UUID.test(v))return v;}return null;})();
-  let no=alanBul(o,/fatura.?no|belge.?no|faturano|documentid|^no$/i);
-  if(no==null) for(const k in o){const v=o[k];if(typeof v==="string"&&/^[A-Z]{2,4}\d{8,}/.test(v)){no=v;break;}}
-  let tarihV=alanBul(o,/fatura.?tar|belge.?tar|issuedate|tarih/i);
-  const tarih=trTarih(tarihV)||trTarih(alanBul(o,/olustur|create|alinma|received/i));
-  let unvan=alanBul(o,/unvan|alici|musteri|titl|partyname|aliciunvan/i);
-  if(unvan==null){ let en=0; for(const k in o){const v=o[k]; if(typeof v==="string"&&/[a-zğüşıöç]/i.test(v)&&!UUID.test(v)&&v.length>en&&v.length<80&&!/\d{4}-\d{2}/.test(v)){en=v.length;unvan=v;} } }
-  let vkn=alanBul(o,/vkn|tckn|tax|vergi.?no/i); if(vkn!=null) vkn=String(vkn).replace(/\D/g,"");
-  let tutar=alanBul(o,/odenecek|payable|genel.?top|grand|toplam.?tutar|yekun/i);
-  if(tutar==null){ let mx=0; for(const k in o){const n=trSayi(o[k]); if(n>mx)mx=n;} tutar=mx; } else tutar=trSayi(tutar);
-  let matrah=trSayi(alanBul(o,/matrah|malhiz|mal\.?hiz|linetotal|taxablebase/i));
-  let kdv=trSayi(alanBul(o,/kdv|vat|tax.?total/i));
-  let senaryo=alanBul(o,/senaryo|scenario|profil/i)||"";
-  let tur=alanBul(o,/fatura.?tur|invoicetype|^tur$|type/i)||"";
-  let durum=alanBul(o,/durum|status|state/i)||"";
-  return {ettn:ettn||no||JSON.stringify(o).slice(0,40),no:no||"-",tarih,ay:ayAnahtar(tarih),
-    unvan:(unvan||"-").toString().trim(),vkn:vkn||"",tutar,matrah,kdv,
-    senaryo:String(senaryo),tur:String(tur),durum:String(durum),yon};
+  const gelir = yon!=="gelen";
+  const taraf = gelir ? (o.destinationTitle||o.sourceTitle) : (o.sourceTitle||o.destinationTitle);
+  const vkn   = gelir ? (o.destinationId||o.sourceId) : (o.sourceId||o.destinationId);
+  const tarih = trTarih(o.documentIssueDate||o.receivedDate||o.documentDate);
+  const tutar = trSayi(o.invoiceTotal!=null?o.invoiceTotal:(o.taxInclusiveAmount!=null?o.taxInclusiveAmount:o.payableAmount));
+  const matrah= trSayi(o.taxExclusiveAmount!=null?o.taxExclusiveAmount:o.lineExtensionAmount);
+  const kdv   = trSayi(o.taxTotalAmount);
+  return {
+    ettn: o.documentUuid||o.documentId||String(o.recordId||JSON.stringify(o).slice(0,36)),
+    no: o.documentId||"-",
+    tarih, ay: ayAnahtar(tarih),
+    unvan: (taraf||"-").toString().trim(),
+    vkn: String(vkn||"").replace(/\D/g,""),
+    tutar, matrah, kdv,
+    senaryo: String(o.documentProfile||""),
+    tur: String(o.invoiceTypeCode||""),
+    durum: String(o.resultExplanation||"").replace(/_/g," "),
+    iptal: (o.isCancelled==1||o.isCancelled===true),
+    yon
+  };
 }
 
 // ---- Otomatik kategori ----
@@ -264,15 +267,6 @@ async function yukle(){
   $("#faturaTablo").querySelector("tbody").innerHTML="";
   try{
     const m=await oku(["muh_ham_giden","muh_ham_gelen","muh_ham_earsiv","muh_ham_diger","muh_elle","muh_etiket","muh_ayar","muh_kopru_durum","eczane_adi","eczaci_adi"]);
-    if(location.search.includes("ham")){
-      const r=m.muh_ham_giden?JSON.parse(m.muh_ham_giden):[];
-      const o=r[0]||{};
-      const xmlAlan=Object.keys(o).find(k=>typeof o[k]==="string" && /<\?xml|<Invoice|<cbc:|<ubl:/i.test(o[k]));
-      document.body.innerHTML="<pre style='color:#0f0;background:#000;padding:14px;font-size:11px;white-space:pre-wrap;word-break:break-all'>ADET giden:"+r.length+
-        "\n\n=== ALANLAR ("+Object.keys(o).length+") ===\n"+Object.keys(o).map(k=>k+" = "+String(o[k]).slice(0,80)).join("\n")+
-        "\n\n=== XML ALANI: "+(xmlAlan||"YOK")+" ===\n"+(xmlAlan?String(o[xmlAlan]).slice(0,4000):"")+"</pre>";
-      return;
-    }
     const fat=[];
     const ekle=(anahtar,yon)=>{ if(m[anahtar]){ try{ for(const o of JSON.parse(m[anahtar])) fat.push(normalize(o,yon)); }catch(e){} } };
     ekle("muh_ham_giden","giden"); ekle("muh_ham_gelen","gelen"); ekle("muh_ham_earsiv","earsiv"); ekle("muh_ham_diger","giden");
@@ -307,7 +301,7 @@ function aylariHazirla(){
 
 // ---- Hesapla ----
 function ayVerisi(ay){
-  const f=ST.faturalar.filter(x=>x.ay===ay);
+  const f=ST.faturalar.filter(x=>x.ay===ay && !x.iptal);
   const e=ST.elle.filter(x=>x.ay===ay);
   const gelir={}, gider={}; let tGelir=0,tGider=0,kisiselTop=0;
   f.forEach(x=>{
