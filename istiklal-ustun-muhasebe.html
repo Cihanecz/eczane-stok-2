@@ -302,9 +302,10 @@ async function yukle(){
     if(m.eczane_adi) $("#eczaneAd").textContent=m.eczane_adi;
     if(m.eczaci_adi) $("#eczaciAd").textContent="💊 "+m.eczaci_adi;
     // köprü durumu
-    if(m.muh_kopru_durum){ try{const d=JSON.parse(m.muh_kopru_durum);const t=d.say?(d.say.giden+d.say.gelen+d.say.earsiv):0;
-      $("#kopruRozet").textContent="köprü ✓ "+t+" fatura · "+new Date(d.zaman).toLocaleString("tr-TR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
-    }catch(e){} } else $("#kopruRozet").textContent="köprü: veri yok";
+    if(m.muh_kopru_durum){ try{const d=JSON.parse(m.muh_kopru_durum);
+      $("#kopruRozet").textContent="köprü ✓ "+fat.length+" fatura · son: "+new Date(d.zaman).toLocaleString("tr-TR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+    }catch(e){ $("#kopruRozet").textContent="köprü ✓ "+fat.length+" fatura"; } }
+    else $("#kopruRozet").textContent=fat.length?("köprü ✓ "+fat.length+" fatura"):"köprü: veri yok";
     aylariHazirla(); katSecDoldur(); ciz();
   }catch(e){
     $("#kopruRozet").textContent="bağlantı hatası";
