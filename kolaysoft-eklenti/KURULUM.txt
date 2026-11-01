@@ -1,0 +1,19 @@
+KOLAYSOFT KÖPRÜSÜ — Kurulum (İstiklal Üstün Muhasebe)
+=====================================================
+
+NE YAPAR: Kolaysoft EczacıKart portalı (portal.eczacikartfatura.com) açıkken
+görüntülenen gelen/giden/e-arşiv faturalarını OKUR ve İstiklal Üstün Muhasebe
+programına (Supabase) aktarır.
+SADECE OKUR: fatura kesmez, göndermez, portalda hiçbir şeye tıklamaz/değiştirmez.
+
+KURULUM (eczane bilgisayarında, Chrome):
+1. chrome://extensions aç
+2. Sağ üstten "Geliştirici modu" (Developer mode) AÇIK yap
+3. "Paketlenmemiş öğe yükle" (Load unpacked) → bu klasörü (kolaysoft-eklenti) seç
+4. Kolaysoft portalına gir (zaten girişli). Sağ altta mavi "🌉 Kolaysoft Köprüsü"
+   paneli çıkar. Giden/Gelen/e-Arşiv listelerine ay ay bakın; görünen faturalar
+   otomatik aktarılır (panelde sayılar artar, "aktarıldı ✓" yazar).
+5. İlk sefer için son 6 ayı ay ay açıp gezin (hepsi düşsün). Sonrası otomatik.
+
+NOT: Depo Köprüsü eklentisine dokunulmadı; bu ayrı bir eklentidir, ikisi birlikte
+çalışır.
