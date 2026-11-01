@@ -264,6 +264,15 @@ async function yukle(){
   $("#faturaTablo").querySelector("tbody").innerHTML="";
   try{
     const m=await oku(["muh_ham_giden","muh_ham_gelen","muh_ham_earsiv","muh_ham_diger","muh_elle","muh_etiket","muh_ayar","muh_kopru_durum","eczane_adi","eczaci_adi"]);
+    if(location.search.includes("ham")){
+      const r=m.muh_ham_giden?JSON.parse(m.muh_ham_giden):[];
+      const o=r[0]||{};
+      const xmlAlan=Object.keys(o).find(k=>typeof o[k]==="string" && /<\?xml|<Invoice|<cbc:|<ubl:/i.test(o[k]));
+      document.body.innerHTML="<pre style='color:#0f0;background:#000;padding:14px;font-size:11px;white-space:pre-wrap;word-break:break-all'>ADET giden:"+r.length+
+        "\n\n=== ALANLAR ("+Object.keys(o).length+") ===\n"+Object.keys(o).map(k=>k+" = "+String(o[k]).slice(0,80)).join("\n")+
+        "\n\n=== XML ALANI: "+(xmlAlan||"YOK")+" ===\n"+(xmlAlan?String(o[xmlAlan]).slice(0,4000):"")+"</pre>";
+      return;
+    }
     const fat=[];
     const ekle=(anahtar,yon)=>{ if(m[anahtar]){ try{ for(const o of JSON.parse(m[anahtar])) fat.push(normalize(o,yon)); }catch(e){} } };
     ekle("muh_ham_giden","giden"); ekle("muh_ham_gelen","gelen"); ekle("muh_ham_earsiv","earsiv"); ekle("muh_ham_diger","giden");
