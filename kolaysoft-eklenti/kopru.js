@@ -145,8 +145,23 @@
       '<div style="font-weight:800;color:' + renk + ';font-size:16px">' + say + '</div><div style="font-size:10px;color:#64748b">' + ad + '</div></div>';
   }
 
+  // Arka plan otomatik tarama: URL'de #ksauto varsa "Son 6 Ay"ı kendi tıklar → liste yüklenir → aktarılır
+  function otoTara() {
+    if (!location.hash.toLowerCase().includes("ksauto")) return;
+    let n = 0;
+    const iv = setInterval(() => {
+      n++;
+      const hedef = [...document.querySelectorAll("button,a,span,div,li")].find(x => {
+        const t = (x.textContent || "").trim();
+        return t === "Son 6 Ay" && x.offsetParent !== null;
+      });
+      if (hedef) { hedef.click(); clearInterval(iv); }
+      else if (n > 40) clearInterval(iv);
+    }, 700);
+  }
+
   if (window.top === window) {
-    const basla = () => { panelCiz(); oturumKontrol(); };
+    const basla = () => { panelCiz(); oturumKontrol(); otoTara(); };
     if (document.body) basla(); else window.addEventListener("DOMContentLoaded", basla);
   }
 })();

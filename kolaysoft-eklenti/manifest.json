@@ -1,13 +1,14 @@
 {
   "manifest_version": 3,
   "name": "Kolaysoft Köprüsü - İstiklal Muhasebe",
-  "version": "1.0.0",
-  "description": "Kolaysoft EczacıKart portalı açıkken gelen/giden/e-arşiv faturalarını OKUR ve İstiklal Muhasebe programına (Supabase) aktarır. Sadece okur: fatura kesmez, göndermez, hiçbir şeyi değiştirmez.",
-  "permissions": ["storage"],
+  "version": "1.1.0",
+  "description": "Kolaysoft EczacıKart portalından gelen/giden/e-arşiv faturalarını OKUR ve İstiklal Muhasebe'ye (Supabase) aktarır. Chrome açıkken 30 dk'da bir arka planda otomatik çeker. Sadece okur: fatura kesmez/göndermez.",
+  "permissions": ["storage", "alarms", "tabs"],
   "host_permissions": [
     "https://portal.eczacikartfatura.com/*",
     "https://hmgxulrssqsqnfhibmzz.supabase.co/*"
   ],
+  "background": { "service_worker": "arka.js" },
   "content_scripts": [
     {
       "matches": ["https://portal.eczacikartfatura.com/*"],
