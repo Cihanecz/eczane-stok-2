@@ -202,12 +202,14 @@ async function yaz(anahtar,deger){
 
 // ---- Varsayılan kategoriler ----
 const VARSAYILAN={
-  gelir:["Satış","SGK","Diğer Gelir"],
-  gider:["Depo","Elektrik","Su","Doğalgaz","İnternet / Telefon","Kira","Maaş","SGK / Vergi","Muhasebeci","Kişisel","Diğer Gider"]
+  gelir:["Online Satış","SGK","Perakende Satış","Diğer Gelir"],
+  gider:["Depo","Elektrik","Su","Doğalgaz","İnternet / Telefon","Kira","Maaş","SGK / Vergi","Muhasebeci","Sigorta","Kargo / Nakliye","Kırtasiye / Baskı","Demirbaş / Ekipman","Yazılım / Hizmet","Turizm / Konaklama","Reklam","Giyim / Tekstil","Kişisel","Diğer Gider"]
 };
 const RENK={ "Depo":"#fb7185","Elektrik":"#fbbf24","Su":"#38bdf8","Doğalgaz":"#f97316","İnternet / Telefon":"#a78bfa",
-  "Kira":"#f472b6","Maaş":"#34d399","SGK / Vergi":"#f87171","Muhasebeci":"#22d3ee","Kişisel":"#eab308","Diğer Gider":"#94a3b8",
-  "Satış":"#34d399","SGK":"#60a5fa","Diğer Gelir":"#c084fc" };
+  "Kira":"#f472b6","Maaş":"#34d399","SGK / Vergi":"#f87171","Muhasebeci":"#22d3ee","Sigorta":"#eab308",
+  "Kargo / Nakliye":"#fb923c","Kırtasiye / Baskı":"#a3e635","Demirbaş / Ekipman":"#60a5fa","Yazılım / Hizmet":"#818cf8",
+  "Turizm / Konaklama":"#f59e0b","Reklam":"#e879f9","Giyim / Tekstil":"#fcd34d","Kişisel":"#facc15","Diğer Gider":"#94a3b8",
+  "Online Satış":"#34d399","SGK":"#60a5fa","Perakende Satış":"#2dd4bf","Diğer Gelir":"#c084fc" };
 const renk=k=>RENK[k]||("#"+Math.abs(hash(k)).toString(16).slice(0,6).padEnd(6,"9"));
 function hash(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return h;}
 
@@ -269,15 +271,26 @@ function otoKategori(f){
   if(ck&&ck.kategori) return ck.kategori;
   const u=(f.unvan+" "+f.vkn).toLocaleLowerCase("tr");
   if(f.yon==="gelen"){ // GİDER
-    if(/selçuk|selcuk|as ecza|sancak|bek |b\.e\.k|ecza deposu|ecza depo|farma|pharma/.test(u)) return "Depo";
-    if(/elektrik|enerji|edaş|edas|bedaş|bedas|ayedaş|epdk|ck boğaz|ck |uedaş/.test(u)) return "Elektrik";
+    if(/selçuk|selcuk|as ecza|sancak|bek |b\.e\.k|ecza deposu|ecza depo|farma|pharma|ecza koop|eczacı koop|eczaci koop|iskoop/.test(u)) return "Depo";
+    if(/elektrik|enerji|edaş|edas|bedaş|bedas|ayedaş|epdk|ck boğaz|ck |uedaş|perakende satış enerji/.test(u)) return "Elektrik";
     if(/\bsu\b|iski|aski|idari su|su ve kanaliz/.test(u)) return "Su";
-    if(/gaz|igdaş|igdas|doğalgaz|dogalgaz|aksa/.test(u)) return "Doğalgaz";
-    if(/telekom|turkcell|vodafone|superonline|türk net|internet|ttnet/.test(u)) return "İnternet / Telefon";
+    if(/doğalgaz|dogalgaz|igdaş|igdas|\bgaz\b|aksa doğal/.test(u)) return "Doğalgaz";
+    if(/telekom|turkcell|vodafone|superonline|türk net|turknet|internet|ttnet|fiber|türk telekom/.test(u)) return "İnternet / Telefon";
+    if(/sigorta|güvence|guvence/.test(u)) return "Sigorta";
+    if(/kargo|nakliye|lojistik|\baras\b|yurtiçi|yurtici|\bmng\b|sürat|surat|ptt kargo|taşıma/.test(u)) return "Kargo / Nakliye";
+    if(/kırtasiye|kirtasiye|matbaa|baskı|baski|kağıt|kagit|etiket|ambalaj/.test(u)) return "Kırtasiye / Baskı";
+    if(/mobilya|demirbaş|demirbas|ekipman|teknoloji|elektronik|bilgisayar|donanım|donanim|beyaz eşya|klima|buzdolab/.test(u)) return "Demirbaş / Ekipman";
+    if(/yazılım|yazilim|bilişim|bilisim|software|lisans|dijital/.test(u)) return "Yazılım / Hizmet";
+    if(/turizm|otel|konaklama|seyahat|tatil|acenta|acente/.test(u)) return "Turizm / Konaklama";
+    if(/reklam|ajans|pazarlama|medya|tanıtım|tanitim/.test(u)) return "Reklam";
+    if(/giyim|tekstil|konfeksiyon|butik|moda|ayakkab|kundura|triko|denim|kıyafet|kiyafet/.test(u)) return "Giyim / Tekstil";
     return "Diğer Gider";
   }
-  if(/sgk|sosyal güvenlik|sosyal guvenlik/.test(u)) return "SGK";
-  return "Satış";
+  // GELİR
+  if(/sgk|sosyal güvenlik|sosyal guvenlik|medula/.test(u)) return "SGK";
+  if(f.yon==="earsiv") return "Perakende Satış";
+  if(/eczane|ecza /.test(u)) return "Online Satış";
+  return "Diğer Gelir";
 }
 function kisiselMi(f){
   const ov=ST.etiket[f.ettn]; if(ov&&ov.kisisel!=null) return !!ov.kisisel;
@@ -292,7 +305,7 @@ async function yukle(){
     const m=await oku(["muh_ham_giden","muh_ham_gelen","muh_ham_earsiv","muh_ham_diger","muh_elle","muh_etiket","muh_cari","muh_ayar","muh_kopru_durum","eczane_adi","eczaci_adi"]);
     const fat=[];
     const ekle=(anahtar,yon)=>{ if(m[anahtar]){ try{ for(const o of JSON.parse(m[anahtar])) fat.push(normalize(o,yon)); }catch(e){} } };
-    ekle("muh_ham_giden","giden"); ekle("muh_ham_gelen","gelen"); ekle("muh_ham_earsiv","earsiv"); ekle("muh_ham_diger","giden");
+    ekle("muh_ham_giden","giden"); ekle("muh_ham_gelen","gelen"); ekle("muh_ham_earsiv","earsiv"); ekle("muh_ham_diger","earsiv");
     ST.faturalar=fat;
     ST.elle=m.muh_elle?JSON.parse(m.muh_elle):[];
     ST.etiket=m.muh_etiket?JSON.parse(m.muh_etiket):{};
@@ -539,14 +552,60 @@ function girisEkrani(){
     const e=document.getElementById("gEposta").value.trim(),p=document.getElementById("gSifre").value;
     if(!e||!p){mes("E-posta ve şifre gir",true);return;}
     mes("Giriş yapılıyor…",false);
-    try{const{error}=await db.auth.signInWithPassword({email:e,password:p});if(error)throw error;o.remove();yukle();}
+    try{const{error}=await db.auth.signInWithPassword({email:e,password:p});if(error)throw error;o.remove();pinKapisi();}
     catch(err){mes("Giriş hatası: "+(err.message||err),true);}
   };
   document.getElementById("gBtn").onclick=dene;
   document.getElementById("gSifre").onkeydown=e=>{if(e.key==="Enter")dene();};
 }
-(async()=>{ if(await oturumVarmi()) yukle(); else girisEkrani(); })();
-setInterval(()=>{ if(!document.getElementById("girisOverlay")) yukle(); },120000); // 2 dk'da bir köprü verisini tazele
+
+// ---- PIN kilidi (her açılışta sorar; eczanede başkası açıp göremesin) ----
+let pinOk=false;
+async function sha(s){ const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join(""); }
+function rastgeleTuz(){ const a=new Uint8Array(8); crypto.getRandomValues(a); return [...a].map(x=>x.toString(16).padStart(2,"0")).join(""); }
+async function pinKapisi(){
+  let kayit=null;
+  try{ const {data}=await db.from("ayar").select("deger").eq("anahtar","muh_pin").maybeSingle(); kayit=data?data.deger:null; }catch(e){}
+  pinEkrani(kayit);
+}
+function pinEkrani(kayit){
+  if(document.getElementById("pinOverlay")) return;
+  const kur=!kayit; // kayıt yoksa ilk kez PIN oluştur
+  const o=document.createElement("div"); o.id="pinOverlay";
+  o.style.cssText="position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(5,10,25,.92);backdrop-filter:blur(6px)";
+  o.innerHTML=`<div style="background:var(--kart2);border:1px solid var(--ince);border-radius:20px;padding:28px 26px;width:min(340px,92vw);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.45)">
+    <div style="font-size:32px">🔒</div>
+    <h2 style="margin:8px 0 2px;font-size:19px">${kur?"PIN oluştur":"PIN gir"}</h2>
+    <div style="color:var(--soluk);font-size:13px;margin-bottom:16px">${kur?"Bir kerelik: 4+ haneli bir PIN belirle. Bundan sonra her açılışta sorulur.":"Devam etmek için PIN'ini gir"}</div>
+    <input id="pPin" type="password" inputmode="numeric" placeholder="PIN" autocomplete="off" style="width:100%;margin-bottom:10px;padding:12px;border:1px solid var(--ince);border-radius:11px;background:var(--kart);color:var(--yazi);font-size:18px;text-align:center;letter-spacing:4px">
+    ${kur?`<input id="pPin2" type="password" inputmode="numeric" placeholder="PIN (tekrar)" autocomplete="off" style="width:100%;margin-bottom:14px;padding:12px;border:1px solid var(--ince);border-radius:11px;background:var(--kart);color:var(--yazi);font-size:18px;text-align:center;letter-spacing:4px">`:``}
+    <button id="pBtn" style="width:100%;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;border:0;border-radius:11px;padding:13px;font-weight:700;font-size:15px;cursor:pointer">${kur?"Kaydet ve gir":"Gir"}</button>
+    <div id="pMesaj" style="font-size:12px;margin-top:11px;min-height:16px;color:var(--kirmizi)"></div></div>`;
+  document.body.appendChild(o);
+  const mes=t=>{document.getElementById("pMesaj").textContent=t;};
+  const tamam=()=>{ pinOk=true; o.remove(); yukle(); };
+  const dene=async()=>{
+    const p=document.getElementById("pPin").value.trim();
+    if(kur){
+      const p2=document.getElementById("pPin2").value.trim();
+      if(p.length<4){mes("En az 4 hane");return;}
+      if(p!==p2){mes("PIN'ler aynı değil");return;}
+      const tuz=rastgeleTuz();
+      try{ await yaz("muh_pin", tuz+":"+await sha(tuz+p)); }catch(e){ mes("Kaydedilemedi: "+e.message); return; }
+      tamam();
+    }else{
+      const [tuz,ozet]=kayit.split(":");
+      if(await sha(tuz+p)===ozet) tamam(); else { mes("Yanlış PIN"); document.getElementById("pPin").value=""; }
+    }
+  };
+  document.getElementById("pBtn").onclick=dene;
+  const son=document.getElementById(kur?"pPin2":"pPin");
+  son.onkeydown=e=>{if(e.key==="Enter")dene();};
+  document.getElementById("pPin").focus();
+}
+
+(async()=>{ if(await oturumVarmi()) pinKapisi(); else girisEkrani(); })();
+setInterval(()=>{ if(pinOk && !document.getElementById("girisOverlay") && !document.getElementById("pinOverlay")) yukle(); },120000); // 2 dk'da bir köprü verisini tazele
 </script>
 </body>
 </html>
