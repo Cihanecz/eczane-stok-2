@@ -1,0 +1,15 @@
+{
+  "name": "İstiklal Üstün Muhasebe",
+  "short_name": "Muhasebe",
+  "description": "İstiklal Üstün Eczanesi gelir/gider muhasebe takibi (Kolaysoft)",
+  "start_url": "./istiklal-ustun-muhasebe.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b1220",
+  "theme_color": "#1746b8",
+  "icons": [
+    { "src": "muhasebe-ikon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "muhasebe-ikon.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
