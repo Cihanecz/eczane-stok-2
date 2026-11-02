@@ -19,7 +19,17 @@ chrome.alarms.onAlarm.addListener(a => { if (a.name === "ks-tara") tara(); });
 let tabId = null, calisiyor = false;
 
 async function sekme() {
-  if (tabId != null) { try { const t = await chrome.tabs.get(tabId); if (t) return t; } catch (e) { tabId = null; } }
+  // MV3 servis worker belleği sıfırlıyor -> tabId'ye güvenme, canlı sekmelerden bul.
+  // Köprünün açtığı sekmeler sabitlenmiş (pinned) Kolaysoft sekmeleridir.
+  let acik = [];
+  try { acik = await chrome.tabs.query({ url: "https://portal.eczacikartfatura.com/*" }); } catch (e) { acik = []; }
+  const bizim = acik.filter(t => t.pinned);
+  if (bizim.length) {
+    const tut = bizim[0];
+    const fazla = bizim.slice(1).map(t => t.id);   // 1 taneden fazlasını kapat (birikmeyi temizler)
+    if (fazla.length) { try { await chrome.tabs.remove(fazla); } catch (e) {} }
+    tabId = tut.id; return tut;
+  }
   const t = await chrome.tabs.create({ url: SAYFALAR[0], active: false, pinned: true });
   tabId = t.id; return t;
 }
